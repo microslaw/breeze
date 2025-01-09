@@ -1,0 +1,26 @@
+class NodeType:
+    all_udn = []
+
+    def __init__(self, func):
+        self.func = func
+        NodeType.all_udn.append(self)
+
+    def wrapper(self, *args, **kwargs):
+        return self.func(*args, **kwargs)
+
+    __call__ = wrapper
+
+    def get_arg_types_names(self):
+        return {
+            arg_name: arg_type.__name__
+            for arg_name, arg_type in self.func.__annotations__.items()
+            if arg_name != "return"
+        }
+
+    def toJSON(self):
+        return {
+            "name": self.func.__name__,
+            "arg_names": self.func.__code__.co_varnames,
+            "arg_types": self.get_arg_types_names(),
+            "return_type": self.func.__annotations__["return"].__name__,
+        }

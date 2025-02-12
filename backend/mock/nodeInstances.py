@@ -1,33 +1,9 @@
+import repository
+import mock.userDefinedNodes
 # in a full implementation this file would not exist, as all the data contained here would be read either from code or
 # created on the frontend
 
-from NodeInstance import NodeInstance
-from utils import persistance
-import os
-import shutil
-
-node1 = NodeInstance(
-    node_id=1,
-    node_type="add_int",
-    input_nodes_ids={},
-)
-node2 = NodeInstance(
-    node_id=2,
-    node_type="add_int",
-    input_nodes_ids={},
-)
-node3 = NodeInstance(
-    node_id=3,
-    node_type="add_int",
-    input_nodes_ids={"a": 1, "b": 2},
-)
-
-node4 = NodeInstance(
-    node_id=4,
-    node_type="remove_outliers",
-    input_nodes_ids={"sd_limit", 3},
-)
-
+# this file creates a following workflow:
 # +--+
 # |n1|->\
 # +--+   \     +--+
@@ -36,12 +12,12 @@ node4 = NodeInstance(
 # |n2|->/              \->|n4|
 # +--+                    +--+
 
-nodes_dir = "./backend/data/nodes"
-if os.path.exists(nodes_dir):
-    shutil.rmtree(nodes_dir)
-os.makedirs(nodes_dir)
 
-node_instances = [node1, node2, node3, node4]
-print("writing")
-for node in node_instances:
-    persistance.write_pickle(node, f"{nodes_dir}/node_{node.node_id}.pickle")
+repository.create_node_link(repository.NodeLink(1, None, 3, 'a'))
+repository.create_node_link(repository.NodeLink(2, None, 3, 'b'))
+repository.create_node_link(repository.NodeLink(3, None, 4, 'sd_limit'))
+
+repository.create_node_instance(repository.NodeInstance(1, 'add_int'))
+repository.create_node_instance(repository.NodeInstance(2, 'add_int'))
+repository.create_node_instance(repository.NodeInstance(3, 'add_int'))
+repository.create_node_instance(repository.NodeInstance(4, 'remove_outliers'))

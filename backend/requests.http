@@ -1,16 +1,51 @@
 ### Get all node types
-
 GET http://127.0.0.1:5000/nodeTypes
 
 ### Get specific node type
-
 GET http://127.0.0.1:5000/nodeTypes/add_int
 
 ### Get specific node type
 GET http://127.0.0.1:5000/nodeTypes/remove_outliers
 
-### Get node ids
-GET http://127.0.0.1:5000/node
+### Get all node ids
+GET http://127.0.0.1:5000/nodeInstances
 
 ### Get specific node
-GET http://127.0.0.1:5000/node/1
+GET http://127.0.0.1:5000/nodeInstances/1
+
+### Get links of a node
+GET http://127.0.0.1:5000/nodeLinks/1
+
+### Remove link between 1 and 3
+DELETE http://127.0.0.1:5000/nodeLinks
+Content-Type: application/json
+
+{
+    "origin_node_id": 1,
+    "origin_node_output": null,
+    "destination_node_id": 3,
+    "destination_node_input": "a"
+}
+
+### Add link between 1 and 3
+POST http://127.0.0.1:5000/nodeLinks
+Content-Type: application/json
+
+{
+    "origin_node_id": 1,
+    "origin_node_output": null,
+    "destination_node_id": 3,
+    "destination_node_input": "a"
+}
+
+### Delete node
+DELETE http://127.0.0.1:5000/nodeInstances/1
+
+### Add node
+POST http://127.0.0.1:5000/nodeInstances
+Content-Type: application/json
+
+{
+    "node_type": "add_int",
+    "node_id": 1
+}

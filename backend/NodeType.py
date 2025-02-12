@@ -10,6 +10,9 @@ class NodeType:
 
     __call__ = wrapper
 
+    def get_name(self):
+        return self.func.__name__
+
     def get_arg_types_names(self):
         return {
             arg_name: arg_type.__name__
@@ -19,7 +22,7 @@ class NodeType:
 
     def toJSON(self):
         return {
-            "name": self.func.__name__,
+            "name": self.get_name(),
             "arg_names": self.func.__code__.co_varnames,
             "arg_types": self.get_arg_types_names(),
             "return_type": self.func.__annotations__["return"].__name__,

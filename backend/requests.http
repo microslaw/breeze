@@ -5,3 +5,12 @@ GET http://127.0.0.1:5000/nodeTypes
 ### Get specific node type
 
 GET http://127.0.0.1:5000/nodeTypes/add_int
+
+### Get specific node type
+GET http://127.0.0.1:5000/nodeTypes/remove_outliers
+
+### Get node ids
+GET http://127.0.0.1:5000/node
+
+### Get specific node
+GET http://127.0.0.1:5000/node/1

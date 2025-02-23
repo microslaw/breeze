@@ -8,36 +8,11 @@ import React from "react";
 import { generateShapes } from "./functions/generateInitShapes";
 import { BlockI } from "./models/block.model";
 import Block from "./components/Block";
+import { handleDragStart, handleDragEnd } from "./functions/handleDefaultShapeInteractions";
 
 function App() {
   const INITIAL_STATE: BlockI[] = generateShapes();
   const [blocks, setBlocks] = React.useState<BlockI[]>(INITIAL_STATE);
-
-  const handleDragStart = (e: any, items: any[], setItems: React.Dispatch<React.SetStateAction<any[]>>) => {
-    const id = e.target.id();
-    setItems(
-      items.map((element) => ({
-        ...element,
-        isDragging: element.id === id,
-      }))
-    );
-  };
-
-  const handleDragEnd = (e: any, items: any[], setItems: React.Dispatch<React.SetStateAction<any[]>>) => {
-    setItems(
-      items.map((element) => {
-        if (element.id === e.target.id()) {
-          return {
-            ...element,
-            x: e.target.x(),
-            y: e.target.y(),
-            isDragging: false,
-          };
-        }
-        return element;
-      })
-    );
-  };
 
   return (
     <div>

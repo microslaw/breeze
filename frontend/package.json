@@ -8,9 +8,11 @@
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
-  "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-konva": "^19.0.3",
+    "konva": "^9.3.18"
   },
   "devDependencies": {
     "@types/react": "^18.0.27",

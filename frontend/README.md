@@ -2,6 +2,8 @@
 
 Welcome to the **Breeze Frontend Application**!
 
+For the best performance and compatibility, we recommend using **Google Chrome** when running the Breeze Frontend Application.
+
 ## 🚀 Quick Start
 
 To get started and run the app locally exetute the following commands in terminal:
@@ -10,6 +12,8 @@ To get started and run the app locally exetute the following commands in termina
 npm install
 npm run dev 
 ```
+
+make sure to execute this commends from this directory (/frontend)
 
 ## 📋 Prerequisites
 Ensure you have the following installed:

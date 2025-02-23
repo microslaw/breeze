@@ -1,4 +1,4 @@
-export interface Block {
+export interface BlockI {
     id: string;
     x: number;
     y: number;

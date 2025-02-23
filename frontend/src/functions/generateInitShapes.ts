@@ -1,6 +1,6 @@
-import { Block } from "../models/block.model";
+import { BlockI } from "../models/block.model";
 
-export function generateShapes(): Block[]{
+export function generateShapes(): BlockI[]{
     return [...Array(10)].map((_, i) => ({
       id: i.toString(),
       x: Math.floor(Math.random() * (window.innerWidth / 100)) * 100,

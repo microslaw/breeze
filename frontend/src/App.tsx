@@ -5,20 +5,12 @@ import { useState } from "react";
 import { Stage, Layer, Rect, Circle } from "react-konva";
 import Menu from "./components/Menu";
 import React from "react";
-
-function generateShapes() {
-  return [...Array(10)].map((_, i) => ({
-    id: i.toString(),
-    x: Math.random() * window.innerWidth,
-    y: Math.random() * window.innerHeight,
-    rotation: Math.random() * 180,
-    isDragging: false,
-  }));
-}
+import { generateShapes } from "./functions/generateInitShapes";
+import { Block } from "./models/block.model";
 
 function App() {
-  const INITIAL_STATE = generateShapes();
-  const [blocks, setBlocks] = React.useState(INITIAL_STATE);
+  const INITIAL_STATE: Block[] = generateShapes();
+  const [blocks, setBlocks] = React.useState<Block[]>(INITIAL_STATE);
 
   const handleDragStart = (e: any) => {
     const id = e.target.id();
@@ -51,8 +43,6 @@ function App() {
       <Menu />
       <Stage width={window.innerWidth} height={window.innerHeight}>
         <Layer>
-          <Rect x={300} y={300} width={50} height={50} fill="red" />
-          <Circle x={400} y={200} stroke="black" radius={50} />
           {blocks.map((block) => (
             <Rect
               key={block.id}
@@ -64,7 +54,6 @@ function App() {
               fill="red"
               opacity={0.8}
               draggable
-              rotation={block.rotation}
               shadowColor="black"
               shadowBlur={10}
               shadowOpacity={0.6}

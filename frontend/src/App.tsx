@@ -5,15 +5,15 @@ import { generateShapes } from "./functions/generateInitShapes";
 import React from "react";
 
 function App() {
-    const INITIAL_STATE: BlockI[] = generateShapes();
-    const [blocks, setBlocks] = React.useState<BlockI[]>(INITIAL_STATE);
+  const INITIAL_STATE: BlockI[] = generateShapes();
+  const [blocks, setBlocks] = React.useState<BlockI[]>(INITIAL_STATE);
 
-    return (
-        <div>
-            <Menu blocks={blocks} setBlocks={setBlocks}/>
-            <MainStage blocks={blocks} setBlocks={setBlocks} />
-        </div>
-    );
+  return (
+    <div>
+      <Menu blocks={blocks} setBlocks={setBlocks} />
+      <MainStage blocks={blocks} setBlocks={setBlocks} />
+    </div>
+  );
 }
 
 export default App;

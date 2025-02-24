@@ -1,4 +1,8 @@
-export const handleDragStart = (e: any, items: any[], setItems: React.Dispatch<React.SetStateAction<any[]>>) => {
+export const handleDragStart = (
+  e: any,
+  items: any[],
+  setItems: React.Dispatch<React.SetStateAction<any[]>>
+) => {
   const id = e.target.id();
   setItems(
     items.map((element) => ({
@@ -8,7 +12,11 @@ export const handleDragStart = (e: any, items: any[], setItems: React.Dispatch<R
   );
 };
 
-export const handleDragEnd = (e: any, items: any[], setItems: React.Dispatch<React.SetStateAction<any[]>>) => {
+export const handleDragEnd = (
+  e: any,
+  items: any[],
+  setItems: React.Dispatch<React.SetStateAction<any[]>>
+) => {
   setItems(
     items.map((element) => {
       if (element.id === e.target.id()) {

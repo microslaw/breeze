@@ -2,7 +2,10 @@ import React from "react";
 import { Layer } from "react-konva";
 import Block from "./Block";
 import { BlockI } from "../models/block.model";
-import { handleDragStart, handleDragEnd } from "../functions/handleDefaultShapeInteractions";
+import {
+  handleDragStart,
+  handleDragEnd,
+} from "../functions/handleDefaultShapeInteractions";
 
 interface FlowLayerProps {
   blocks: BlockI[];

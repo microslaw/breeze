@@ -1,17 +1,33 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./Menu.module.css";
-import Button from "./Button";
+import BlockModal from "./BlockModal";
+import { BlockI } from "../models/block.model";
+import { Button } from "react-bootstrap";
 
-const Menu = () => {
-  return (
-    <div className={styles.menu}>
-      <ul>
-        <Button content="Add new block" onClick={function (): void {
-          throw new Error("Function not implemented.");
-        } } />
-      </ul>
-    </div>
-  );
+interface MenuProps {
+    blocks: BlockI[];
+    setBlocks: React.Dispatch<React.SetStateAction<BlockI[]>>;
+}
+
+const Menu = ({blocks, setBlocks}: MenuProps) => {
+    const [isBlockModalVisible, setIsBlockModalVisible] = useState<boolean>(false);
+    
+
+    return (
+        <div className={styles.menu}>
+        
+            <Button onClick={() => setIsBlockModalVisible(true)}>Add new block</Button>
+            <Button onClick={() => console.log(blocks)}>Log list of blocks</Button>
+            <BlockModal 
+                show={isBlockModalVisible} 
+                handleClose={() => setIsBlockModalVisible(false)}
+                blocks={blocks}
+                setBlocks={setBlocks}
+                >
+            </BlockModal>
+        
+        </div>
+    );
 };
 
 export default Menu;

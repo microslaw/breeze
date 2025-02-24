@@ -8,11 +8,13 @@
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
-    "dependencies": {
+  "dependencies": {
+    "@types/react-bootstrap": "^0.32.37",
+    "konva": "^9.3.18",
     "react": "^19.0.0",
+    "react-bootstrap": "^2.10.9",
     "react-dom": "^19.0.0",
-    "react-konva": "^19.0.3",
-    "konva": "^9.3.18"
+    "react-konva": "^19.0.3"
   },
   "devDependencies": {
     "@types/react": "^18.0.27",

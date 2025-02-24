@@ -1,11 +1,17 @@
 import React from "react";
 import { Stage } from "react-konva";
 import FlowLayer from "./FlowLayer";
+import { BlockI } from "../models/block.model";
 
-const MainStage: React.FC = () => {
+interface MainStageProps {
+  blocks: BlockI[];
+  setBlocks: React.Dispatch<React.SetStateAction<BlockI[]>>;
+}
+
+const MainStage = ({ blocks, setBlocks }: MainStageProps) => {
   return (
     <Stage width={window.innerWidth} height={window.innerHeight}>
-      <FlowLayer />
+      <FlowLayer blocks={blocks} setBlocks={setBlocks} />
     </Stage>
   );
 };

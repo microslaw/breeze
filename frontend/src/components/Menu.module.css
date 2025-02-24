@@ -2,26 +2,16 @@
     position: fixed;
     z-index: 999;
     top: 0;
-    left: 0;
+    right: 0;
     height: 100vh;
-    width: 200px;
-    background-color: #f8f9fa;
+    width: 175px;
+    background-color: #e1e1e1;
     padding: 20px;
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+    opacity: 0.9;
   }
   
-  .menu ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .menu li {
+  .menu Button {
     padding: 10px;
-    cursor: pointer;
+    margin-bottom: 10px;
   }
-  
-  .menu li:hover {
-    background-color: #ddd;
-  }
-  

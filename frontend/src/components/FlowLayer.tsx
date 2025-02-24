@@ -3,12 +3,13 @@ import { Layer } from "react-konva";
 import Block from "./Block";
 import { BlockI } from "../models/block.model";
 import { handleDragStart, handleDragEnd } from "../functions/handleDefaultShapeInteractions";
-import { generateShapes } from "../functions/generateInitShapes";
 
-const FlowLayer: React.FC = () => {
-  const INITIAL_STATE: BlockI[] = generateShapes();
-  const [blocks, setBlocks] = React.useState<BlockI[]>(INITIAL_STATE);
+interface FlowLayerProps {
+  blocks: BlockI[];
+  setBlocks: React.Dispatch<React.SetStateAction<BlockI[]>>;
+}
 
+const FlowLayer: React.FC<FlowLayerProps> = ({ blocks, setBlocks }) => {
   return (
     <Layer>
       {blocks.map((block) => (

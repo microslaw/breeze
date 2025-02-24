@@ -17,6 +17,14 @@ const Block = ({ block, onDragStart, onDragEnd }: BlockProps) => {
     setNamePosition({ x: e.target.x(), y: e.target.y() });
   };
 
+  const handleMouseEnter = (e: any) => {
+    e.target.getStage().container().style.cursor = "pointer";
+  };
+
+  const handleMouseLeave = (e: any) => {
+    e.target.getStage().container().style.cursor = "default";
+  };
+
   return (
     <Group draggable>
       <Rect
@@ -39,6 +47,8 @@ const Block = ({ block, onDragStart, onDragEnd }: BlockProps) => {
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
         onDragMove={handleDragMove}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       />
       <Text
         x={namePosition.x}

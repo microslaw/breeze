@@ -10,7 +10,11 @@ interface MainStageProps {
 
 const MainStage = ({ blocks, setBlocks }: MainStageProps) => {
   return (
-    <Stage width={window.innerWidth} height={window.innerHeight}>
+    <Stage
+      width={window.innerWidth}
+      height={window.innerHeight}
+      draggable={true}
+    >
       <FlowLayer blocks={blocks} setBlocks={setBlocks} />
     </Stage>
   );

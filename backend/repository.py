@@ -4,6 +4,10 @@ from NodeInstance import NodeInstance
 from NodeLink import NodeLink
 
 
+class ObjectNotInDBException(Exception):
+    pass
+
+
 def write_pickle(object, path):
     with open(path, "wb") as f:
         pickle.dump(object, f)
@@ -22,12 +26,14 @@ def execute(query):
 
 def fetchall(query):
     cursor = sqlite3.connect("db.sqlite3").cursor()
+    cursor.execute("PRAGMA foreign_keys = ON")
     fetched = cursor.execute(query).fetchall()
     return fetched
 
 
 def fetchone(query):
     cursor = sqlite3.connect("db.sqlite3").cursor()
+    cursor.execute("PRAGMA foreign_keys = ON")
     fetched = cursor.execute(query).fetchone()
     return fetched
 
@@ -58,7 +64,13 @@ def get_all_node_instance_ids():
     return [i[0] for i in fetchall("SELECT node_id FROM nodeInstances")]
 
 
+def assert_node_instance_exists(node_id):
+    if fetchone(f"SELECT node_id FROM nodeINstances WHERE node_id = {node_id}") is None:
+        raise ObjectNotInDBException(f"Node instance with node_id={node_id} not found")
+
+
 def get_node_instance(node_id) -> NodeInstance:
+    assert_node_instance_exists(node_id)
     nodeRow = fetchone(f"SELECT * FROM nodeInstances WHERE node_id = {node_id}")
     return NodeInstance(nodeRow[0], nodeRow[1])
 
@@ -70,21 +82,38 @@ def create_node_instance(node_instance: NodeInstance):
 
 
 def delete_node_instance(node_id):
+    assert_node_instance_exists(node_id)
     execute(f"DELETE FROM nodeInstances WHERE node_id = {node_id}")
 
-    linksToDelete = get_links_by_origin_node_id(node_id) + get_links_by_destination_node_id(node_id)
+    linksToDelete = get_links_by_origin_node_id(
+        node_id
+    ) + get_links_by_destination_node_id(node_id)
     for link in linksToDelete:
         delete_node_link(link)
 
 
 def get_links_by_origin_node_id(node_id):
+    assert_node_instance_exists(node_id)
     linkRows = fetchall(f"SELECT * FROM nodeLinks WHERE origin_node_id = {node_id}")
     return [
         NodeLink(linkRow[0], linkRow[1], linkRow[2], linkRow[3]) for linkRow in linkRows
     ]
 
 
+def assert_node_link_exists(link: NodeLink):
+    select_one_query = f"""
+        SELECT * FROM nodeLinks
+            WHERE origin_node_id = {link.origin_node_id}
+            AND origin_node_output = '{link.origin_node_output}'
+            AND destination_node_id = {link.destination_node_id}
+            AND destination_node_input = '{link.destination_node_input}'
+        """
+    if fetchone(select_one_query) is None:
+        raise ObjectNotInDBException(f"Node link {link.toJSON()} not found")
+
+
 def get_links_by_destination_node_id(node_id):
+    assert_node_instance_exists(node_id)
     linkRows = fetchall(
         f"SELECT * FROM nodeLinks WHERE destination_node_id = {node_id}"
     )
@@ -103,6 +132,7 @@ def delete_node_link(link: NodeLink):
     """
     Each link is unique only when all fields are the same, so all fields are used
     """
+    assert_node_link_exists(link)
     execute(
         f"""
         DELETE FROM nodeLinks

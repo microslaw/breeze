@@ -13,6 +13,10 @@ app = Flask(__name__)
 node_type_map = {node.get_name(): node.toJSON() for node in NodeType.all_udn}
 
 
+@app.errorhandler(repository.ObjectNotInDBException)
+def server_error(err):
+    return str(err), 404
+
 @app.route("/nodeTypes", methods=["GET"])
 def main_page():
     return list(node_type_map.keys())

@@ -1,44 +1,34 @@
-import pickle
 import sqlite3
 from backend.datatypes import NodeInstance
 from backend.datatypes import NodeLink
+from backend.datatypes import NodeType
 
 
 class ObjectNotInDBException(Exception):
     pass
 
 
-def write_pickle(object, path):
-    with open(path, "wb") as f:
-        pickle.dump(object, f)
-
-
-def read_pickle(path):
-    with open(path, "rb") as f:
-        return pickle.load(f)
-
-
-def execute(query):
+def execute(query: str) -> None:
     cursor = sqlite3.connect("db.sqlite3").cursor()
     cursor.execute(query)
     cursor.connection.commit()
 
 
-def fetchall(query):
+def fetchall(query: str) -> list:
     cursor = sqlite3.connect("db.sqlite3").cursor()
     cursor.execute("PRAGMA foreign_keys = ON")
     fetched = cursor.execute(query).fetchall()
     return fetched
 
 
-def fetchone(query):
+def fetchone(query: str) -> tuple:
     cursor = sqlite3.connect("db.sqlite3").cursor()
     cursor.execute("PRAGMA foreign_keys = ON")
     fetched = cursor.execute(query).fetchone()
     return fetched
 
 
-def init_db():
+def init_db() -> None:
     execute("DROP TABLE IF EXISTS nodeInstances")
     execute(
         """CREATE TABLE nodeInstances (
@@ -60,11 +50,11 @@ def init_db():
     )
 
 
-def get_all_node_instance_ids():
+def get_all_node_instance_ids() -> list:
     return [i[0] for i in fetchall("SELECT node_id FROM nodeInstances")]
 
 
-def assert_node_instance_exists(node_id):
+def assert_node_instance_exists(node_id) -> None:
     if fetchone(f"SELECT node_id FROM nodeINstances WHERE node_id = {node_id}") is None:
         raise ObjectNotInDBException(f"Node instance with node_id={node_id} not found")
 
@@ -75,13 +65,13 @@ def get_node_instance(node_id) -> NodeInstance:
     return NodeInstance(nodeRow[0], nodeRow[1])
 
 
-def create_node_instance(node_instance: NodeInstance):
+def create_node_instance(node_instance: NodeInstance) -> None:
     execute(
         f"INSERT INTO nodeInstances VALUES ({node_instance.node_id}, '{node_instance.node_type}')"
     )
 
 
-def delete_node_instance(node_id):
+def delete_node_instance(node_id: int) -> None:
     assert_node_instance_exists(node_id)
     execute(f"DELETE FROM nodeInstances WHERE node_id = {node_id}")
 
@@ -92,7 +82,7 @@ def delete_node_instance(node_id):
         delete_node_link(link)
 
 
-def get_links_by_origin_node_id(node_id):
+def get_links_by_origin_node_id(node_id: int) -> list:
     assert_node_instance_exists(node_id)
     linkRows = fetchall(f"SELECT * FROM nodeLinks WHERE origin_node_id = {node_id}")
     return [
@@ -100,7 +90,7 @@ def get_links_by_origin_node_id(node_id):
     ]
 
 
-def assert_node_link_exists(link: NodeLink):
+def assert_node_link_exists(link: NodeLink) -> None:
     select_one_query = f"""
         SELECT * FROM nodeLinks
             WHERE origin_node_id = {link.origin_node_id}
@@ -112,7 +102,7 @@ def assert_node_link_exists(link: NodeLink):
         raise ObjectNotInDBException(f"Node link {link.toJSON()} not found")
 
 
-def get_links_by_destination_node_id(node_id):
+def get_links_by_destination_node_id(node_id: int) -> list:
     assert_node_instance_exists(node_id)
     linkRows = fetchall(
         f"SELECT * FROM nodeLinks WHERE destination_node_id = {node_id}"
@@ -122,13 +112,13 @@ def get_links_by_destination_node_id(node_id):
     ]
 
 
-def create_node_link(link: NodeLink):
+def create_node_link(link: NodeLink) -> None:
     execute(
         f"INSERT INTO nodeLinks VALUES ({link.origin_node_id}, '{link.origin_node_output}', {link.destination_node_id}, '{link.destination_node_input}')"
     )
 
 
-def delete_node_link(link: NodeLink):
+def delete_node_link(link: NodeLink) -> None:
     """
     Each link is unique only when all fields are the same, so all fields are used
     """
@@ -142,3 +132,19 @@ def delete_node_link(link: NodeLink):
             AND destination_node_input = '{link.destination_node_input}'
         """
     )
+
+
+def assert_node_type_exists(node_type: int) -> None:
+    if node_type not in get_all_node_types():
+        raise ObjectNotInDBException(f"Node type {node_type} not found")
+
+
+def get_all_node_types() -> list:
+    return [node_type.get_name() for node_type in NodeType.all_udn]
+
+
+def get_node_type(node_type_name: str) -> NodeType:
+    assert_node_type_exists(node_type_name)
+    for node_type in NodeType.all_udn:
+        if node_type.get_name() == node_type_name:
+            return node_type

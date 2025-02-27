@@ -1,34 +1,31 @@
 from flask import Flask, request
-from backend.datatypes import NodeInstance, NodeLink, NodeType
+from backend.datatypes import NodeInstance, NodeLink
 import backend.repository as repository
 repository.init_db()
 
 api_server = Flask(__name__)
-
-def get_node_map():
-    return {node.get_name(): node.toJSON() for node in NodeType.all_udn}
 
 @api_server.errorhandler(repository.ObjectNotInDBException)
 def server_error(err):
     return str(err), 404
 
 @api_server.route("/nodeTypes", methods=["GET"])
-def main_page():
-    return list(get_node_map().keys())
+def get_all_node_types():
+    return repository.get_all_node_types()
 
 
-@api_server.route("/nodeTypes/<node_type>", methods=["GET"])
-def node_type_page(node_type):
-    return get_node_map()[node_type]
+@api_server.route("/nodeTypes/<node_type_name>", methods=["GET"])
+def get_node_type(node_type_name):
+    return repository.get_node_type(node_type_name).toJSON()
 
 
 @api_server.route("/nodeInstances", methods=["GET"])
-def node_instances_page():
+def get_all_node_instances():
     return repository.get_all_node_instance_ids()
 
 
 @api_server.route("/nodeInstances/<node_id>", methods=["GET"])
-def node_instance_page(node_id):
+def get_node_instance(node_id):
     return repository.get_node_instance(node_id).toJSON()
 
 
@@ -44,7 +41,7 @@ def delete_node_instance(node_id):
     return "OK", 200
 
 @api_server.route("/nodeLinks/<node_id>", methods=["GET"])
-def node_link_page(node_id):
+def get_node_link(node_id):
     """
     Returns all links originating from the node with the given id
     """

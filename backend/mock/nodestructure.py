@@ -1,7 +1,6 @@
 import backend.repository as repository
 from backend.datatypes import NodeInstance, NodeLink
-# in a full implementation this file would not exist, as all the data contained here would be read either from code or
-# created on the frontend
+
 
 # this file creates a following workflow:
 # +--+

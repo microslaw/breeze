@@ -2,6 +2,10 @@ from backend import api_server
 from backend import NodeType
 import pandas as pd
 
+# in a full implementation this import would not exist, as all the data contained
+# here would be read either from code or created on the frontend
+from backend.mock import nodestructure
+
 @NodeType
 def add_int(a, b: int) -> int:
     return a + b
@@ -14,4 +18,3 @@ def remove_outliers(df:pd.DataFrame, colname:str, sd_limit:float) -> pd.DataFram
     return df
 
 api_server.run(debug=True)
-print(NodeType.all_udn)

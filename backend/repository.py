@@ -1,7 +1,7 @@
 import pickle
 import sqlite3
-from NodeInstance import NodeInstance
-from NodeLink import NodeLink
+from backend.datatypes import NodeInstance
+from backend.datatypes import NodeLink
 
 
 class ObjectNotInDBException(Exception):

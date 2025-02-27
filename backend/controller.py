@@ -1,54 +1,49 @@
 from flask import Flask, request
-from NodeType import NodeType
-from NodeInstance import NodeInstance
-from NodeLink import NodeLink
-import repository
+from backend.datatypes import NodeInstance, NodeLink, NodeType
+import backend.repository as repository
 repository.init_db()
 
-# importing this initializes the mock data
-import mock.nodeInstances
+api_server = Flask(__name__)
 
-app = Flask(__name__)
+def get_node_map():
+    return {node.get_name(): node.toJSON() for node in NodeType.all_udn}
 
-node_type_map = {node.get_name(): node.toJSON() for node in NodeType.all_udn}
-
-
-@app.errorhandler(repository.ObjectNotInDBException)
+@api_server.errorhandler(repository.ObjectNotInDBException)
 def server_error(err):
     return str(err), 404
 
-@app.route("/nodeTypes", methods=["GET"])
+@api_server.route("/nodeTypes", methods=["GET"])
 def main_page():
-    return list(node_type_map.keys())
+    return list(get_node_map().keys())
 
 
-@app.route("/nodeTypes/<node_type>", methods=["GET"])
+@api_server.route("/nodeTypes/<node_type>", methods=["GET"])
 def node_type_page(node_type):
-    return node_type_map[node_type]
+    return get_node_map()[node_type]
 
 
-@app.route("/nodeInstances", methods=["GET"])
+@api_server.route("/nodeInstances", methods=["GET"])
 def node_instances_page():
     return repository.get_all_node_instance_ids()
 
 
-@app.route("/nodeInstances/<node_id>", methods=["GET"])
+@api_server.route("/nodeInstances/<node_id>", methods=["GET"])
 def node_instance_page(node_id):
     return repository.get_node_instance(node_id).toJSON()
 
 
-@app.route("/nodeInstances", methods=["POST"])
+@api_server.route("/nodeInstances", methods=["POST"])
 def create_node_instance():
     node_instance = NodeInstance.fromJSON(request.json)
     repository.create_node_instance(node_instance)
     return "OK", 200
 
-@app.route("/nodeInstances/<node_id>", methods=["DELETE"])
+@api_server.route("/nodeInstances/<node_id>", methods=["DELETE"])
 def delete_node_instance(node_id):
     repository.delete_node_instance(node_id)
     return "OK", 200
 
-@app.route("/nodeLinks/<node_id>", methods=["GET"])
+@api_server.route("/nodeLinks/<node_id>", methods=["GET"])
 def node_link_page(node_id):
     """
     Returns all links originating from the node with the given id
@@ -57,18 +52,17 @@ def node_link_page(node_id):
     return [link.toJSON() for link in node_links]
 
 
-@app.route("/nodeLinks", methods=["POST"])
+@api_server.route("/nodeLinks", methods=["POST"])
 def create_node_link():
     node_link = NodeLink.fromJSON(request.json)
     repository.create_node_link(node_link)
     return "OK", 200
 
 
-@app.route("/nodeLinks", methods=["DELETE"])
+@api_server.route("/nodeLinks", methods=["DELETE"])
 def delete_node_link():
     node_link = NodeLink.fromJSON(request.json)
     repository.delete_node_link(node_link)
     return "OK", 200
 
 
-app.run(debug=True)

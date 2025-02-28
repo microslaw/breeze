@@ -7,3 +7,7 @@ How to run from cmd:\
 How to install required packages (use of venv is recommended):\
 `pip install -r requirements.txt`
 ---
+
+How to run tests:\
+`pytest -s`
+---

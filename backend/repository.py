@@ -65,10 +65,24 @@ def get_node_instance(node_id) -> NodeInstance:
     return NodeInstance(nodeRow[0], nodeRow[1])
 
 
-def create_node_instance(node_instance: NodeInstance) -> None:
+def get_new_node_instance_id():
+    new_id = fetchone("SELECT MAX(node_id) FROM nodeInstances")[0]
+    if new_id is None:
+        new_id = 0
+    else:
+        new_id += 1
+    return new_id
+
+
+def create_node_instance(node_instance: NodeInstance) -> int:
+    """
+    Returns id of new node instance
+    """
+    node_id = get_new_node_instance_id()
     execute(
-        f"INSERT INTO nodeInstances VALUES ({node_instance.node_id}, '{node_instance.node_type}')"
+        f"INSERT INTO nodeInstances VALUES ({node_id}, '{node_instance.node_type}')"
     )
+    return node_id
 
 
 def delete_node_instance(node_id: int) -> None:

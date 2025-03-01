@@ -82,7 +82,7 @@ def test_all_node_instances():
     with api_server.test_client() as client:
         response = client.get("/nodeInstances")
 
-        assert response.json == [1, 2, 3, 4]
+        assert response.json == [0, 1, 2, 3]
         assert response.status_code == 200
 
 
@@ -94,14 +94,13 @@ def test_create_node_instance():
             "/nodeInstances",
             json={
                 "node_type": "add_int",
-                "node_id": 5,
             },
         )
-        assert response.data == b"OK"
+        assert response.json == {"node_id": 4}
         assert response.status_code == 200
 
         response = client.get("/nodeInstances")
-        assert response.json == [1, 2, 3, 4, 5]
+        assert response.json == [0, 1, 2, 3, 4]
         assert response.status_code == 200
 
 
@@ -110,12 +109,12 @@ def test_delete_node_instance():
 
     with api_server.test_client() as client:
 
-        response = client.delete("/nodeInstances/1")
+        response = client.delete("/nodeInstances/0")
         assert response.data == b"OK"
         assert response.status_code == 200
 
         response = client.get("/nodeInstances")
-        assert response.json == [2, 3, 4]
+        assert response.json == [1, 2, 3]
         assert response.status_code == 200
 
 

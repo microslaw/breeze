@@ -72,14 +72,14 @@ def create_node_instance(node_instance: NodeInstance) -> None:
 
 
 def delete_node_instance(node_id: int) -> None:
-    assert_node_instance_exists(node_id)
-    execute(f"DELETE FROM nodeInstances WHERE node_id = {node_id}")
 
     linksToDelete = get_links_by_origin_node_id(
         node_id
     ) + get_links_by_destination_node_id(node_id)
     for link in linksToDelete:
         delete_node_link(link)
+
+    execute(f"DELETE FROM nodeInstances WHERE node_id = {node_id}")
 
 
 def get_links_by_origin_node_id(node_id: int) -> list:

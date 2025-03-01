@@ -9,5 +9,5 @@ How to install required packages (use of venv is recommended):\
 ---
 
 How to run tests:\
-`pytest -s`
+`pytest -svv`
 ---

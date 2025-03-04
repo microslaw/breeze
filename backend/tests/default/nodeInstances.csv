@@ -1,0 +1,5 @@
+node_id,node_type
+0,add_int
+1,add_int
+2,add_int
+3,remove_outliers

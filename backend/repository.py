@@ -1,3 +1,4 @@
+import pandas as pd
 import sqlite3
 from backend.datatypes import NodeInstance
 from backend.datatypes import NodeLink
@@ -28,6 +29,15 @@ def fetchone(query: str) -> tuple:
     return fetched
 
 
+def from_csv(filename: str, table_name: str):
+    con = sqlite3.connect("db.sqlite3")
+
+    df = pd.read_csv(filename)
+    df.to_sql(table_name, con, if_exists="append", index=False)
+
+    con.close()
+
+
 def init_db() -> None:
     execute("DROP TABLE IF EXISTS nodeInstances")
     execute(
@@ -41,7 +51,7 @@ def init_db() -> None:
     execute(
         """CREATE TABLE nodeLinks (
             origin_node_id INTEGER NOT NULL,
-            origin_node_output TEXT NOT NULL,
+            origin_node_output TEXT,
             destination_node_id INTEGER NOT NULL,
             destination_node_input TEXT,
             FOREIGN KEY (origin_node_id) REFERENCES nodeInstances(node_id),
@@ -108,10 +118,14 @@ def assert_node_link_exists(link: NodeLink) -> None:
     select_one_query = f"""
         SELECT * FROM nodeLinks
             WHERE origin_node_id = {link.origin_node_id}
-            AND origin_node_output = '{link.origin_node_output}'
             AND destination_node_id = {link.destination_node_id}
             AND destination_node_input = '{link.destination_node_input}'
         """
+    if link.origin_node_output is not None:
+        select_one_query += f" AND origin_node_output = '{link.origin_node_output}'"
+    else:
+        select_one_query += f" AND origin_node_output IS NULL"
+
     if fetchone(select_one_query) is None:
         raise ObjectNotInDBException(f"Node link {link.toJSON()} not found")
 
@@ -127,9 +141,15 @@ def get_links_by_destination_node_id(node_id: int) -> list:
 
 
 def create_node_link(link: NodeLink) -> None:
-    execute(
-        f"INSERT INTO nodeLinks VALUES ({link.origin_node_id}, '{link.origin_node_output}', {link.destination_node_id}, '{link.destination_node_input}')"
+
+    origin_node_output = (
+        link.origin_node_output if link.origin_node_output is not None else "NULL"
     )
+    query = f"""
+        INSERT INTO nodeLinks
+            VALUES ({link.origin_node_id}, {origin_node_output}, {link.destination_node_id}, '{link.destination_node_input}')
+    """
+    execute(query)
 
 
 def delete_node_link(link: NodeLink) -> None:
@@ -137,15 +157,18 @@ def delete_node_link(link: NodeLink) -> None:
     Each link is unique only when all fields are the same, so all fields are used
     """
     assert_node_link_exists(link)
-    execute(
-        f"""
+    query = f"""
         DELETE FROM nodeLinks
             WHERE origin_node_id = {link.origin_node_id}
-            AND origin_node_output = '{link.origin_node_output}'
             AND destination_node_id = {link.destination_node_id}
             AND destination_node_input = '{link.destination_node_input}'
         """
-    )
+
+    if link.origin_node_output is not None:
+        query += f" AND origin_node_output = '{link.origin_node_output}'"
+    else:
+        query += f" AND origin_node_output IS NULL"
+    execute(query)
 
 
 def assert_node_type_exists(node_type: int) -> None:

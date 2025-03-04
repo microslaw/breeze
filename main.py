@@ -14,27 +14,9 @@ def remove_outliers(df:pd.DataFrame, colname:str, sd_limit:float) -> pd.DataFram
     df = df[df['z_score'].abs() < sd_limit]
     return df
 
-
-
-# this lines create a following workflow:
-# +--+
-# |n1|->\
-# +--+   \     +--+
-#         +--> |n3|->\
-# +--+   /     +--+   \   +--+
-# |n2|->/              \->|n4|
-# +--+                    +--+
-
-
-repository.create_node_link(NodeLink(1, None, 3, 'a'))
-repository.create_node_link(NodeLink(2, None, 3, 'b'))
-repository.create_node_link(NodeLink(3, None, 4, 'sd_limit'))
-
-repository.create_node_instance(NodeInstance(1, 'add_int'))
-repository.create_node_instance(NodeInstance(2, 'add_int'))
-repository.create_node_instance(NodeInstance(3, 'add_int'))
-repository.create_node_instance(NodeInstance(4, 'remove_outliers'))
-
+repository.init_db()
+repository.from_csv("backend/tests/default/nodeInstances.csv", "nodeInstances")
+repository.from_csv("backend/tests/default/nodeLinks.csv", "nodeLinks")
 
 api_server = create_api_server()
 api_server.run(debug=True)

@@ -9,24 +9,9 @@ import backend.repository as repository
 def initialize_server() -> Flask:
     api_server = create_api_server()
 
-    # this file creates a following workflow:
-    # +--+
-    # |n1|->\
-    # +--+   \     +--+
-    #         +--> |n3|->\
-    # +--+   /     +--+   \   +--+
-    # |n2|->/              \->|n4|
-    # +--+                    +--+
-
     repository.init_db()
-    repository.create_node_link(NodeLink(1, None, 3, "a"))
-    repository.create_node_link(NodeLink(2, None, 3, "b"))
-    repository.create_node_link(NodeLink(3, None, 4, "sd_limit"))
-
-    repository.create_node_instance(NodeInstance(1, "add_int"))
-    repository.create_node_instance(NodeInstance(2, "add_int"))
-    repository.create_node_instance(NodeInstance(3, "add_int"))
-    repository.create_node_instance(NodeInstance(4, "remove_outliers"))
+    repository.from_csv("backend/tests/default/nodeInstances.csv", "nodeInstances")
+    repository.from_csv("backend/tests/default/nodeLinks.csv", "nodeLinks")
 
     @NodeType
     def add_int(a, b: int) -> int:
@@ -128,7 +113,7 @@ def test_get_node_links():
                 "origin_node_id": 1,
                 "destination_node_input": "a",
                 "destination_node_id": 3,
-                "origin_node_output": "None",
+                "origin_node_output": None,
             }
         ]
         assert response.status_code == 200
@@ -156,13 +141,13 @@ def test_create_node_link():
                 "destination_node_id": 3,
                 "destination_node_input": "a",
                 "origin_node_id": 1,
-                "origin_node_output": "None",
+                "origin_node_output": None,
             },
             {
                 "destination_node_id": 4,
                 "destination_node_input": "a",
                 "origin_node_id": 1,
-                "origin_node_output": "None",
+                "origin_node_output": None,
             },
         ]
         assert response.status_code == 200

@@ -12,6 +12,10 @@ def create_api_server():
     def server_error(err):
         return str(err), 404
 
+    @api_server.errorhandler(repository.ObjectAlreadyInDBException)
+    def server_error(err):
+        return str(err), 409
+
     @api_server.route("/nodeTypes", methods=["GET"])
     def get_all_node_types():
         return repository.get_all_node_types()

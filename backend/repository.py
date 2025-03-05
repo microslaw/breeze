@@ -8,6 +8,9 @@ from backend.datatypes import NodeType
 class ObjectNotInDBException(Exception):
     pass
 
+class ObjectAlreadyInDBException(Exception):
+    pass
+
 
 def execute(query: str) -> None:
     cursor = sqlite3.connect("db.sqlite3").cursor()
@@ -64,9 +67,13 @@ def get_all_node_instance_ids() -> list:
     return [i[0] for i in fetchall("SELECT node_id FROM nodeInstances")]
 
 
-def assert_node_instance_exists(node_id) -> None:
+def assert_node_instance_exists(node_id, raise_on=False) -> None:
     if fetchone(f"SELECT node_id FROM nodeINstances WHERE node_id = {node_id}") is None:
-        raise ObjectNotInDBException(f"Node instance with node_id={node_id} not found")
+        if raise_on==False:
+            raise ObjectNotInDBException(f"Node instance with node_id={node_id} not found")
+    else:
+        if raise_on==True:
+            raise ObjectAlreadyInDBException(f"Node instance with node_id={node_id} already exists")
 
 
 def get_node_instance(node_id) -> NodeInstance:
@@ -114,7 +121,7 @@ def get_links_by_origin_node_id(node_id: int) -> list:
     ]
 
 
-def assert_node_link_exists(link: NodeLink) -> None:
+def assert_node_link_exists(link: NodeLink, raise_on=False) -> None:
     select_one_query = f"""
         SELECT * FROM nodeLinks
             WHERE origin_node_id = {link.origin_node_id}
@@ -127,7 +134,11 @@ def assert_node_link_exists(link: NodeLink) -> None:
         select_one_query += f" AND origin_node_output IS NULL"
 
     if fetchone(select_one_query) is None:
-        raise ObjectNotInDBException(f"Node link {link.toJSON()} not found")
+        if raise_on == False:
+            raise ObjectNotInDBException(f"Node link {link.toJSON()} not found")
+    else:
+        if raise_on == True:
+            raise ObjectAlreadyInDBException(f"Node link {link.toJSON()} already exists")
 
 
 def get_links_by_destination_node_id(node_id: int) -> list:
@@ -141,6 +152,7 @@ def get_links_by_destination_node_id(node_id: int) -> list:
 
 
 def create_node_link(link: NodeLink) -> None:
+    assert_node_link_exists(link, raise_on=True)
 
     origin_node_output = (
         link.origin_node_output if link.origin_node_output is not None else "NULL"
@@ -171,10 +183,13 @@ def delete_node_link(link: NodeLink) -> None:
     execute(query)
 
 
-def assert_node_type_exists(node_type: int) -> None:
+def assert_node_type_exists(node_type: int, raise_on = False) -> None:
     if node_type not in get_all_node_types():
-        raise ObjectNotInDBException(f"Node type {node_type} not found")
-
+        if raise_on == False:
+            raise ObjectNotInDBException(f"Node type {node_type} not found")
+    else:
+        if raise_on == True:
+            raise ObjectAlreadyInDBException(f"Node type {node_type} already exists")
 
 def get_all_node_types() -> list:
     return [node_type.get_name() for node_type in NodeType.all_udn]

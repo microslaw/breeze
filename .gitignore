@@ -199,3 +199,5 @@ yarn-error.log*
 *.tmp
 *.bak
 *.orig
+.vscode
+backend/data

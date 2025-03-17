@@ -1,6 +1,6 @@
 name: React Build Test
 
-on: [push, pull_request]
+on: [push, fork, workflow_dispatch]
 
 jobs:
   build:

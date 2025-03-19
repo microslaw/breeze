@@ -2,7 +2,6 @@ from backend.controller import create_api_server
 from backend.datatypes import NodeInstance, NodeLink, NodeType
 import pandas as pd
 from flask import Flask, request
-from pytest import fixture
 import backend.repository as repository
 
 
@@ -103,16 +102,16 @@ def test_delete_node_instance():
         assert response.status_code == 200
 
 
-def test_get_node_links():
+def test_get_node_link():
     api_server = initialize_server()
 
     with api_server.test_client() as client:
-        response = client.get("/nodeLinks/1")
+        response = client.get("/nodeLinks/0")
         assert response.json == [
             {
-                "origin_node_id": 1,
+                "origin_node_id": 0,
                 "destination_node_input": "a",
-                "destination_node_id": 3,
+                "destination_node_id": 2,
                 "origin_node_output": None,
             }
         ]
@@ -126,28 +125,28 @@ def test_create_node_link():
         response = client.post(
             "/nodeLinks",
             json={
-                "origin_node_id": 1,
+                "origin_node_id": 0,
                 "origin_node_output": None,
-                "destination_node_id": 4,
+                "destination_node_id": 3,
                 "destination_node_input": "a",
             },
         )
         assert response.data == b"OK"
         assert response.status_code == 200
 
-        response = client.get("nodeLinks/1")
+        response = client.get("nodeLinks/0")
         assert response.json == [
             {
-                "destination_node_id": 3,
-                "destination_node_input": "a",
-                "origin_node_id": 1,
+                "origin_node_id": 0,
                 "origin_node_output": None,
+                "destination_node_id": 2,
+                "destination_node_input": "a",
             },
             {
-                "destination_node_id": 4,
-                "destination_node_input": "a",
-                "origin_node_id": 1,
+                "origin_node_id": 0,
                 "origin_node_output": None,
+                "destination_node_id": 3,
+                "destination_node_input": "a",
             },
         ]
         assert response.status_code == 200
@@ -162,8 +161,8 @@ def test_delete_node_link():
             json={
                 "origin_node_id": 1,
                 "origin_node_output": None,
-                "destination_node_id": 3,
-                "destination_node_input": "a",
+                "destination_node_id": 2,
+                "destination_node_input": "b",
             },
         )
         assert response.data == b"OK"

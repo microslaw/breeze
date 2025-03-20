@@ -1,29 +1,20 @@
 from backend.controller import create_api_server
-from backend.datatypes import NodeInstance, NodeLink, NodeType
-import pandas as pd
-from flask import Flask, request
+from flask import Flask
 import backend.repository as repository
-
+from importlib import reload
+import backend.tests.default
+from backend import NodeType
 
 def initialize_server() -> Flask:
     api_server = create_api_server()
+
+    NodeType.clear_udns()
+    reload(backend.tests.default)
 
     repository.init_db()
     repository.from_csv("backend/tests/default/nodeInstances.csv", "nodeInstances")
     repository.from_csv("backend/tests/default/nodeLinks.csv", "nodeLinks")
 
-    @NodeType
-    def add_int(a, b: int) -> int:
-        return a + b
-
-    @NodeType
-    def remove_outliers(
-        df: pd.DataFrame, colname: str, sd_limit: float
-    ) -> pd.DataFrame:
-        df = df.copy()
-        df["z_score"] = (df[colname] - df[colname].mean()) / df[colname].std()
-        df = df[df["z_score"].abs() < sd_limit]
-        return df
 
     return api_server
 

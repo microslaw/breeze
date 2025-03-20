@@ -1,8 +1,0 @@
-# this test data creates a following workflow:
-# +--+
-# |n0|->\
-# +--+   \     +--+
-#         +--> |n2|->\
-# +--+   /     +--+   \   +--+
-# |n1|->/              \->|n3|
-# +--+                    +--+

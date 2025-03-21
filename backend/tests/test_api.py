@@ -15,14 +15,10 @@ def initialize_server() -> Flask:
     repository.from_csv("backend/tests/default/nodeInstances.csv", "nodeInstances")
     repository.from_csv("backend/tests/default/nodeLinks.csv", "nodeLinks")
 
-
     return api_server
 
-    # for some reason server is already running before this command
-    # api_server.run('0.0.0.0', 5000, threaded=True)
 
-
-def test_all_node_types():
+def test_get_all_node_types():
     api_server = initialize_server()
 
     with api_server.test_client() as client:
@@ -32,7 +28,7 @@ def test_all_node_types():
         assert response.status_code == 200
 
 
-def test_node_type():
+def test_get_node_type():
     api_server = initialize_server()
 
     with api_server.test_client() as client:
@@ -51,7 +47,7 @@ def test_node_type():
         assert response.status_code == 404
 
 
-def test_all_node_instances():
+def test_get_all_node_instances():
     api_server = initialize_server()
 
     with api_server.test_client() as client:

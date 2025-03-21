@@ -58,6 +58,29 @@ def test_get_all_node_instances():
         assert response.status_code == 200
 
 
+def test_get_node_instance():
+    api_server = initialize_server()
+
+    with api_server.test_client() as client:
+        response = client.get("/nodeInstances/0")
+
+        assert response.json == {
+            "node_id": 0,
+            "node_type": "add_int",
+        }
+        assert response.status_code == 200
+
+
+def test_get_missing_node_instance():
+    api_server = initialize_server()
+
+    with api_server.test_client() as client:
+        response = client.get("/nodeInstances/10")
+
+        assert response.data == b"Node instance with node_id=10 not found"
+        assert response.status_code == 404
+
+
 def test_create_node_instance():
     api_server = initialize_server()
 
@@ -106,6 +129,15 @@ def test_get_node_link():
             }
         ]
         assert response.status_code == 200
+
+
+def test_get_missing_node_link():
+    api_server = initialize_server()
+
+    with api_server.test_client() as client:
+        response = client.get("/nodeLinks/10")
+        assert response.data == b"Node instance with node_id=10 not found"
+        assert response.status_code == 404
 
 
 def test_create_node_link():

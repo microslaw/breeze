@@ -8,6 +8,7 @@ from backend.datatypes import NodeType
 class ObjectNotInDBException(Exception):
     pass
 
+
 class ObjectAlreadyInDBException(Exception):
     pass
 
@@ -69,11 +70,15 @@ def get_all_node_instance_ids() -> list:
 
 def assert_node_instance_exists(node_id, raise_on=False) -> None:
     if fetchone(f"SELECT node_id FROM nodeINstances WHERE node_id = {node_id}") is None:
-        if raise_on==False:
-            raise ObjectNotInDBException(f"Node instance with node_id={node_id} not found")
+        if raise_on == False:
+            raise ObjectNotInDBException(
+                f"Node instance with node_id={node_id} not found"
+            )
     else:
-        if raise_on==True:
-            raise ObjectAlreadyInDBException(f"Node instance with node_id={node_id} already exists")
+        if raise_on == True:
+            raise ObjectAlreadyInDBException(
+                f"Node instance with node_id={node_id} already exists"
+            )
 
 
 def get_node_instance(node_id) -> NodeInstance:
@@ -121,6 +126,23 @@ def get_links_by_origin_node_id(node_id: int) -> list:
     ]
 
 
+def get_links_by_destination_node_id(node_id: int) -> list:
+    assert_node_instance_exists(node_id)
+    linkRows = fetchall(
+        f"SELECT * FROM nodeLinks WHERE destination_node_id = {node_id}"
+    )
+    return [
+        NodeLink(linkRow[0], linkRow[1], linkRow[2], linkRow[3]) for linkRow in linkRows
+    ]
+
+
+def get_all_links() -> list:
+    linkRows = fetchall(f"SELECT * FROM nodeLinks")
+    return [
+        NodeLink(linkRow[0], linkRow[1], linkRow[2], linkRow[3]) for linkRow in linkRows
+    ]
+
+
 def assert_node_link_exists(link: NodeLink, raise_on=False) -> None:
     select_one_query = f"""
         SELECT * FROM nodeLinks
@@ -138,17 +160,9 @@ def assert_node_link_exists(link: NodeLink, raise_on=False) -> None:
             raise ObjectNotInDBException(f"Node link {link.toJSON()} not found")
     else:
         if raise_on == True:
-            raise ObjectAlreadyInDBException(f"Node link {link.toJSON()} already exists")
-
-
-def get_links_by_destination_node_id(node_id: int) -> list:
-    assert_node_instance_exists(node_id)
-    linkRows = fetchall(
-        f"SELECT * FROM nodeLinks WHERE destination_node_id = {node_id}"
-    )
-    return [
-        NodeLink(linkRow[0], linkRow[1], linkRow[2], linkRow[3]) for linkRow in linkRows
-    ]
+            raise ObjectAlreadyInDBException(
+                f"Node link {link.toJSON()} already exists"
+            )
 
 
 def create_node_link(link: NodeLink) -> None:
@@ -183,13 +197,14 @@ def delete_node_link(link: NodeLink) -> None:
     execute(query)
 
 
-def assert_node_type_exists(node_type: int, raise_on = False) -> None:
+def assert_node_type_exists(node_type: int, raise_on=False) -> None:
     if node_type not in get_all_node_types():
         if raise_on == False:
             raise ObjectNotInDBException(f"Node type {node_type} not found")
     else:
         if raise_on == True:
             raise ObjectAlreadyInDBException(f"Node type {node_type} already exists")
+
 
 def get_all_node_types() -> list:
     return [node_type.get_name() for node_type in NodeType.all_udn]

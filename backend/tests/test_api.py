@@ -5,6 +5,7 @@ from importlib import reload
 import backend.tests.default
 from backend import NodeType
 
+
 def initialize_server() -> Flask:
     api_server = create_api_server()
 
@@ -80,13 +81,15 @@ def test_delete_node_instance():
 
     with api_server.test_client() as client:
 
-        response = client.delete("/nodeInstances/0")
+        response = client.delete("/nodeInstances/2")
         assert response.data == b"OK"
         assert response.status_code == 200
 
         response = client.get("/nodeInstances")
-        assert response.json == [1, 2, 3]
+        assert response.json == [0, 1, 3]
         assert response.status_code == 200
+
+        assert repository.get_all_links() == []
 
 
 def test_get_node_link():

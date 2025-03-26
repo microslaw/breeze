@@ -33,7 +33,7 @@ def fetchone(query: str) -> tuple:
     return fetched
 
 
-def from_csv(filename: str, table_name: str):
+def from_csv(filename: str, table_name: str) -> None:
     con = sqlite3.connect("db.sqlite3")
 
     df = pd.read_csv(filename)
@@ -64,11 +64,11 @@ def init_db() -> None:
     )
 
 
-def get_all_node_instance_ids() -> list:
+def get_all_node_instance_ids() -> list[int]:
     return [i[0] for i in fetchall("SELECT node_id FROM nodeInstances")]
 
 
-def assert_node_instance_exists(node_id, raise_on=False) -> None:
+def check_node_instance_exists(node_id: int, raise_on=False) -> None:
     if fetchone(f"SELECT node_id FROM nodeINstances WHERE node_id = {node_id}") is None:
         if raise_on == False:
             raise ObjectNotInDBException(
@@ -82,12 +82,12 @@ def assert_node_instance_exists(node_id, raise_on=False) -> None:
 
 
 def get_node_instance(node_id) -> NodeInstance:
-    assert_node_instance_exists(node_id)
+    check_node_instance_exists(node_id)
     nodeRow = fetchone(f"SELECT * FROM nodeInstances WHERE node_id = {node_id}")
     return NodeInstance(nodeRow[0], nodeRow[1])
 
 
-def get_new_node_instance_id():
+def get_new_node_instance_id() -> int:
     new_id = fetchone("SELECT MAX(node_id) FROM nodeInstances")[0]
     if new_id is None:
         new_id = 0
@@ -118,8 +118,8 @@ def delete_node_instance(node_id: int) -> None:
     execute(f"DELETE FROM nodeInstances WHERE node_id = {node_id}")
 
 
-def get_links_by_origin_node_id(node_id: int) -> list:
-    assert_node_instance_exists(node_id)
+def get_links_by_origin_node_id(node_id: int) -> list[NodeLink]:
+    check_node_instance_exists(node_id)
     linkRows = fetchall(f"SELECT * FROM nodeLinks WHERE origin_node_id = {node_id}")
     return [
         NodeLink(linkRow[0], linkRow[1], linkRow[2], linkRow[3]) for linkRow in linkRows
@@ -127,7 +127,7 @@ def get_links_by_origin_node_id(node_id: int) -> list:
 
 
 def get_links_by_destination_node_id(node_id: int) -> list:
-    assert_node_instance_exists(node_id)
+    check_node_instance_exists(node_id)
     linkRows = fetchall(
         f"SELECT * FROM nodeLinks WHERE destination_node_id = {node_id}"
     )
@@ -143,7 +143,24 @@ def get_all_links() -> list:
     ]
 
 
-def assert_node_link_exists(link: NodeLink, raise_on=False) -> None:
+def get_links_by_destination_node_id(node_id: int) -> list[NodeLink]:
+    check_node_instance_exists(node_id)
+    linkRows = fetchall(
+        f"SELECT * FROM nodeLinks WHERE destination_node_id = {node_id}"
+    )
+    return [
+        NodeLink(linkRow[0], linkRow[1], linkRow[2], linkRow[3]) for linkRow in linkRows
+    ]
+
+
+def get_all_links() -> list[NodeLink]:
+    linkRows = fetchall(f"SELECT * FROM nodeLinks")
+    return [
+        NodeLink(linkRow[0], linkRow[1], linkRow[2], linkRow[3]) for linkRow in linkRows
+    ]
+
+
+def check_node_link_exists(link: NodeLink, raise_on: bool = False) -> None:
     select_one_query = f"""
         SELECT * FROM nodeLinks
             WHERE origin_node_id = {link.origin_node_id}
@@ -166,7 +183,7 @@ def assert_node_link_exists(link: NodeLink, raise_on=False) -> None:
 
 
 def create_node_link(link: NodeLink) -> None:
-    assert_node_link_exists(link, raise_on=True)
+    check_node_link_exists(link, raise_on=True)
 
     origin_node_output = (
         link.origin_node_output if link.origin_node_output is not None else "NULL"
@@ -182,7 +199,7 @@ def delete_node_link(link: NodeLink) -> None:
     """
     Each link is unique only when all fields are the same, so all fields are used
     """
-    assert_node_link_exists(link)
+    check_node_link_exists(link)
     query = f"""
         DELETE FROM nodeLinks
             WHERE origin_node_id = {link.origin_node_id}
@@ -197,7 +214,7 @@ def delete_node_link(link: NodeLink) -> None:
     execute(query)
 
 
-def assert_node_type_exists(node_type: int, raise_on=False) -> None:
+def check_node_type_exists(node_type: int, raise_on: bool = False) -> None:
     if node_type not in get_all_node_types():
         if raise_on == False:
             raise ObjectNotInDBException(f"Node type {node_type} not found")
@@ -211,7 +228,7 @@ def get_all_node_types() -> list:
 
 
 def get_node_type(node_type_name: str) -> NodeType:
-    assert_node_type_exists(node_type_name)
+    check_node_type_exists(node_type_name)
     for node_type in NodeType.all_udn:
         if node_type.get_name() == node_type_name:
             return node_type

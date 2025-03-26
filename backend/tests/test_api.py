@@ -1,18 +1,18 @@
 from backend.controller import create_api_server
 from flask import Flask
-import backend.repository as repository
+from backend import Repository
 from importlib import reload
 import backend.tests.default
 from backend import NodeType
 
 
 def initialize_server() -> Flask:
-    api_server = create_api_server()
+    repository = Repository()
+    api_server = create_api_server(repository)
 
     NodeType.clear_udns()
     reload(backend.tests.default)
 
-    repository.init_db()
     repository.from_csv("backend/tests/default/nodeInstances.csv", "nodeInstances")
     repository.from_csv("backend/tests/default/nodeLinks.csv", "nodeLinks")
 
@@ -112,7 +112,35 @@ def test_delete_node_instance():
         assert response.json == [0, 1, 3]
         assert response.status_code == 200
 
-        assert repository.get_all_links() == []
+        response = client.get("/nodeLinks")
+        assert response.json == []
+
+
+def test_get_all_node_links():
+    api_server = initialize_server()
+
+    with api_server.test_client() as client:
+        response = client.get("/nodeLinks")
+        assert response.json == [
+            {
+                "destination_node_id": 2,
+                "destination_node_input": "a",
+                "origin_node_id": 0,
+                "origin_node_output": None,
+            },
+            {
+                "destination_node_id": 2,
+                "destination_node_input": "b",
+                "origin_node_id": 1,
+                "origin_node_output": None,
+            },
+            {
+                "destination_node_id": 3,
+                "destination_node_input": "sd_limit",
+                "origin_node_id": 2,
+                "origin_node_output": None,
+            },
+        ]
 
 
 def test_get_node_link():

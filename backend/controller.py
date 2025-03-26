@@ -1,18 +1,18 @@
 from flask import Flask, request
 from backend.datatypes import NodeInstance, NodeLink
-import backend.repository as repository
+from backend.repository import Repository
+from backend.repository import ObjectNotInDBException
+from backend.repository import ObjectAlreadyInDBException
 
-repository.init_db()
 
-
-def create_api_server():
+def create_api_server(repository: Repository):
     api_server = Flask(__name__)
 
-    @api_server.errorhandler(repository.ObjectNotInDBException)
+    @api_server.errorhandler(ObjectNotInDBException)
     def server_error(err):
         return str(err), 404
 
-    @api_server.errorhandler(repository.ObjectAlreadyInDBException)
+    @api_server.errorhandler(ObjectAlreadyInDBException)
     def server_error(err):
         return str(err), 409
 
@@ -50,6 +50,14 @@ def create_api_server():
         Returns all links originating from the node with the given id
         """
         node_links = repository.get_links_by_origin_node_id(node_id)
+        return [link.toJSON() for link in node_links]
+
+    @api_server.route("/nodeLinks", methods=["GET"])
+    def get_all_node_links():
+        """
+        Returns all links
+        """
+        node_links = repository.get_all_links()
         return [link.toJSON() for link in node_links]
 
     @api_server.route("/nodeLinks", methods=["POST"])

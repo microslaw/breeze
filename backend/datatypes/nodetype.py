@@ -1,5 +1,12 @@
+from typing import Self
+
+
 class NodeType:
-    all_udn = []
+
+    all_udn: list[Self] = []
+
+    # Prefferable way of doing that (see below) will be made possible in python 3.14 (see pep 749)
+    # all_udn: list[NodeType] = []
 
     def __init__(self, func):
         self.func = func

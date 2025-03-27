@@ -5,6 +5,9 @@ class NodeType:
         self.func = func
         NodeType.all_udn.append(self)
 
+    def clear_udns():
+        NodeType.all_udn = []
+
     def wrapper(self, *args, **kwargs):
         return self.func(*args, **kwargs)
 

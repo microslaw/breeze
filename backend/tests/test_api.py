@@ -1,38 +1,25 @@
 from backend.controller import create_api_server
-from backend.datatypes import NodeInstance, NodeLink, NodeType
-import pandas as pd
-from flask import Flask, request
-from pytest import fixture
+from flask import Flask
 import backend.repository as repository
+from importlib import reload
+import backend.tests.default
+from backend import NodeType
 
 
 def initialize_server() -> Flask:
     api_server = create_api_server()
 
+    NodeType.clear_udns()
+    reload(backend.tests.default)
+
     repository.init_db()
     repository.from_csv("backend/tests/default/nodeInstances.csv", "nodeInstances")
     repository.from_csv("backend/tests/default/nodeLinks.csv", "nodeLinks")
 
-    @NodeType
-    def add_int(a, b: int) -> int:
-        return a + b
-
-    @NodeType
-    def remove_outliers(
-        df: pd.DataFrame, colname: str, sd_limit: float
-    ) -> pd.DataFrame:
-        df = df.copy()
-        df["z_score"] = (df[colname] - df[colname].mean()) / df[colname].std()
-        df = df[df["z_score"].abs() < sd_limit]
-        return df
-
     return api_server
 
-    # for some reason server is already running before this command
-    # api_server.run('0.0.0.0', 5000, threaded=True)
 
-
-def test_all_node_types():
+def test_get_all_node_types():
     api_server = initialize_server()
 
     with api_server.test_client() as client:
@@ -42,7 +29,7 @@ def test_all_node_types():
         assert response.status_code == 200
 
 
-def test_node_type():
+def test_get_node_type():
     api_server = initialize_server()
 
     with api_server.test_client() as client:
@@ -61,7 +48,7 @@ def test_node_type():
         assert response.status_code == 404
 
 
-def test_all_node_instances():
+def test_get_all_node_instances():
     api_server = initialize_server()
 
     with api_server.test_client() as client:
@@ -69,6 +56,29 @@ def test_all_node_instances():
 
         assert response.json == [0, 1, 2, 3]
         assert response.status_code == 200
+
+
+def test_get_node_instance():
+    api_server = initialize_server()
+
+    with api_server.test_client() as client:
+        response = client.get("/nodeInstances/0")
+
+        assert response.json == {
+            "node_id": 0,
+            "node_type": "add_int",
+        }
+        assert response.status_code == 200
+
+
+def test_get_missing_node_instance():
+    api_server = initialize_server()
+
+    with api_server.test_client() as client:
+        response = client.get("/nodeInstances/10")
+
+        assert response.data == b"Node instance with node_id=10 not found"
+        assert response.status_code == 404
 
 
 def test_create_node_instance():
@@ -94,29 +104,40 @@ def test_delete_node_instance():
 
     with api_server.test_client() as client:
 
-        response = client.delete("/nodeInstances/0")
+        response = client.delete("/nodeInstances/2")
         assert response.data == b"OK"
         assert response.status_code == 200
 
         response = client.get("/nodeInstances")
-        assert response.json == [1, 2, 3]
+        assert response.json == [0, 1, 3]
         assert response.status_code == 200
 
+        assert repository.get_all_links() == []
 
-def test_get_node_links():
+
+def test_get_node_link():
     api_server = initialize_server()
 
     with api_server.test_client() as client:
-        response = client.get("/nodeLinks/1")
+        response = client.get("/nodeLinks/0")
         assert response.json == [
             {
-                "origin_node_id": 1,
+                "origin_node_id": 0,
                 "destination_node_input": "a",
-                "destination_node_id": 3,
+                "destination_node_id": 2,
                 "origin_node_output": None,
             }
         ]
         assert response.status_code == 200
+
+
+def test_get_missing_node_link():
+    api_server = initialize_server()
+
+    with api_server.test_client() as client:
+        response = client.get("/nodeLinks/10")
+        assert response.data == b"Node instance with node_id=10 not found"
+        assert response.status_code == 404
 
 
 def test_create_node_link():
@@ -126,28 +147,28 @@ def test_create_node_link():
         response = client.post(
             "/nodeLinks",
             json={
-                "origin_node_id": 1,
+                "origin_node_id": 0,
                 "origin_node_output": None,
-                "destination_node_id": 4,
+                "destination_node_id": 3,
                 "destination_node_input": "a",
             },
         )
         assert response.data == b"OK"
         assert response.status_code == 200
 
-        response = client.get("nodeLinks/1")
+        response = client.get("nodeLinks/0")
         assert response.json == [
             {
-                "destination_node_id": 3,
-                "destination_node_input": "a",
-                "origin_node_id": 1,
+                "origin_node_id": 0,
                 "origin_node_output": None,
+                "destination_node_id": 2,
+                "destination_node_input": "a",
             },
             {
-                "destination_node_id": 4,
-                "destination_node_input": "a",
-                "origin_node_id": 1,
+                "origin_node_id": 0,
                 "origin_node_output": None,
+                "destination_node_id": 3,
+                "destination_node_input": "a",
             },
         ]
         assert response.status_code == 200
@@ -162,8 +183,8 @@ def test_delete_node_link():
             json={
                 "origin_node_id": 1,
                 "origin_node_output": None,
-                "destination_node_id": 3,
-                "destination_node_input": "a",
+                "destination_node_id": 2,
+                "destination_node_input": "b",
             },
         )
         assert response.data == b"OK"

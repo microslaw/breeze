@@ -18,7 +18,7 @@ class NodeInstance:
     def fromJSON(json):
         return NodeInstance(
             node_id=json["node_id"] if "node_id" in json else None,
-            node_type=json["node_type"],
+            node_type=json["node_type"] if "node_type" in json else None,
         )
 
     def process(self):

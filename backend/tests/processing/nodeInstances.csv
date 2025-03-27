@@ -1,0 +1,6 @@
+node_id,node_type
+0,const_1
+1,const_2
+2,add_int
+3,const_1
+4,add_int

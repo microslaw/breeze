@@ -30,6 +30,9 @@ class NodeType:
             if arg_name != "return"
         }
 
+    def get_arg_names(self):
+        return [arg_name for arg_name in self.func.__code__.co_varnames]
+
     def toJSON(self):
         return {
             "name": self.get_name(),

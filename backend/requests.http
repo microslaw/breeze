@@ -65,3 +65,12 @@ Content-Type: application/json
 {
     "node_type": "add_int"
 }
+
+
+### queue processing
+POST http://127.0.0.1:5000/queueProcessing
+Content-Type: application/json
+
+{
+    "node_id":4
+}

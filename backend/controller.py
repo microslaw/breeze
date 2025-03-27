@@ -1,11 +1,12 @@
 from flask import Flask, request
 from backend.datatypes import NodeInstance, NodeLink
 from backend.repository import Repository
-from backend.repository import ObjectNotInDBException
 from backend.repository import ObjectAlreadyInDBException
+from backend.repository import ObjectNotInDBException
+from backend.processor import Processor
 
 
-def create_api_server(repository: Repository):
+def create_api_server(repository: Repository, processor: Processor):
     api_server = Flask(__name__)
 
     @api_server.errorhandler(ObjectNotInDBException)
@@ -70,6 +71,12 @@ def create_api_server(repository: Repository):
     def delete_node_link():
         node_link = NodeLink.fromJSON(request.json)
         repository.delete_node_link(node_link)
+        return "OK", 200
+
+    @api_server.route("/queueProcessing", methods=["POST"])
+    def queue_processing():
+        nodeToProcess = NodeInstance.fromJSON(request.json)
+        processor.update_processing_schedule(nodeToProcess.node_id)
         return "OK", 200
 
     return api_server

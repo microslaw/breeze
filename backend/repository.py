@@ -3,6 +3,9 @@ import sqlite3
 from backend.datatypes import NodeInstance
 from backend.datatypes import NodeLink
 from backend.datatypes import NodeType
+import os
+import shutil
+import pickle
 
 
 class ObjectNotInDBException(Exception):
@@ -15,12 +18,40 @@ class ObjectAlreadyInDBException(Exception):
 
 class Repository:
 
-    def __init__(self, db_name="db.sqlite3"):
+    def __init__(self, db_name="db.sqlite3", db_folder_path="backend/data"):
         self.db_name = db_name
+        self.db_folder_path = db_folder_path
         self.init_db()
 
+    def write_object(
+        self,
+        object: object,
+        producer_node_id: int,
+        producer_node_output: str = None,
+    ) -> None:
+        if producer_node_output is None:
+            object_name = f"{producer_node_id}-output"
+        else:
+            object_name = f"{producer_node_id}-{producer_node_output}-output"
+
+        with open(f"{self.db_folder_path}/objects/{object_name}", "wb") as f:
+            pickle.dump(object, f)
+
+    def read_object(
+        self,
+        producer_node_id: int,
+        producer_node_output: str = None,
+    ) -> object:
+        if producer_node_output is None:
+            object_name = f"{producer_node_id}-output"
+        else:
+            object_name = f"{producer_node_id}-{producer_node_output}-output"
+
+        with open(f"{self.db_folder_path}/objects/{object_name}", "rb") as f:
+            return pickle.load(f)
+
     def get_connection(self) -> sqlite3.Connection:
-        return sqlite3.connect(self.db_name)
+        return sqlite3.connect(f"{self.db_folder_path}/{self.db_name}")
 
     def get_cursor(self) -> sqlite3.Cursor:
         return self.get_connection().cursor()
@@ -30,22 +61,33 @@ class Repository:
         cursor.execute("PRAGMA foreign_keys = ON")
         cursor.execute(query)
         cursor.connection.commit()
+        cursor.connection.close()
 
     def fetchall(self, query: str) -> list[tuple]:
         cursor = self.get_cursor()
         fetched = cursor.execute(query).fetchall()
+        cursor.connection.commit()
+        cursor.connection.close()
         return fetched
 
     def fetchone(self, query: str) -> tuple:
         cursor = self.get_cursor()
         fetched = cursor.execute(query).fetchone()
+        cursor.connection.commit()
+        cursor.connection.close()
         return fetched
 
     def from_csv(self, filename: str, table_name: str) -> None:
         df = pd.read_csv(filename)
-        df.to_sql(table_name, self.get_connection(), if_exists="append", index=False)
+        connection = self.get_connection()
+        df.to_sql(table_name, connection, if_exists="append", index=False)
+        connection.close()
 
     def init_db(self) -> None:
+        if os.path.exists(self.db_folder_path):
+            shutil.rmtree(self.db_folder_path)
+        os.mkdir(self.db_folder_path)
+        os.mkdir(f"{self.db_folder_path}/objects")
 
         self.execute("DROP TABLE IF EXISTS nodeLinks")
         self.execute(
@@ -237,3 +279,15 @@ class Repository:
         for node_type in NodeType.all_udn:
             if node_type.get_name() == node_type_name:
                 return node_type
+
+    def get_prerequisite_node_ids(self, node_id: int) -> list[int]:
+        self.check_node_instance_exists(node_id)
+
+        node_rows = self.fetchall(
+            f"""SELECT node_id
+            FROM nodeInstances
+            JOIN nodeLinks ON origin_node_id = node_id
+            WHERE destination_node_id = {node_id}"""
+        )
+
+        return [node_row[0] for node_row in node_rows]

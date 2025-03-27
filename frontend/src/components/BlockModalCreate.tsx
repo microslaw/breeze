@@ -3,19 +3,19 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { BlockI } from "../models/block.model";
 import { v4 as uuidv4 } from "uuid";
 
-interface BlockModalProps {
+interface BlockModalCreateProps {
   show: boolean;
   handleClose: () => void;
   blocks: BlockI[];
   setBlocks: React.Dispatch<React.SetStateAction<BlockI[]>>;
 }
 
-const BlockModal = ({
+const BlockModalCreate = ({
   show,
   handleClose,
   blocks,
   setBlocks,
-}: BlockModalProps) => {
+}: BlockModalCreateProps) => {
   const [block, setBlock] = useState<BlockI>({
     name: "",
     id: "",
@@ -91,4 +91,4 @@ const BlockModal = ({
   );
 };
 
-export default BlockModal;
+export default BlockModalCreate;

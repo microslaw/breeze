@@ -6,11 +6,17 @@ interface BlockProps {
   block: BlockI;
   onDragStart: (e: any) => void;
   onDragEnd: (e: any) => void;
+  handleDoubleClick: (block: BlockI) => void;
 }
 const RECTANGLE_WIDTH = 200;
 const RECTANGLE_HEIGHT = 130;
 
-const Block = ({ block, onDragStart, onDragEnd }: BlockProps) => {
+const Block = ({
+  block,
+  onDragStart,
+  onDragEnd,
+  handleDoubleClick,
+}: BlockProps) => {
   const [namePosition, setNamePosition] = useState({ x: block.x, y: block.y });
 
   const handleDragMove = (e: any) => {
@@ -49,6 +55,7 @@ const Block = ({ block, onDragStart, onDragEnd }: BlockProps) => {
         onDragMove={handleDragMove}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        onDblClick={() => handleDoubleClick(block)}
       />
       <Text
         x={namePosition.x}

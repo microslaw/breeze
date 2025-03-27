@@ -10,9 +10,14 @@ import {
 interface FlowLayerProps {
   blocks: BlockI[];
   setBlocks: React.Dispatch<React.SetStateAction<BlockI[]>>;
+  handleBlockDoubleClick: (block: BlockI) => void;
 }
 
-const FlowLayer: React.FC<FlowLayerProps> = ({ blocks, setBlocks }) => {
+const FlowLayer = ({
+  blocks,
+  setBlocks,
+  handleBlockDoubleClick,
+}: FlowLayerProps) => {
   return (
     <Layer>
       {blocks.map((block) => (
@@ -21,6 +26,7 @@ const FlowLayer: React.FC<FlowLayerProps> = ({ blocks, setBlocks }) => {
           block={block}
           onDragStart={(e) => handleDragStart(e, blocks, setBlocks)}
           onDragEnd={(e) => handleDragEnd(e, blocks, setBlocks)}
+          handleDoubleClick={(block) => handleBlockDoubleClick(block)}
         />
       ))}
     </Layer>

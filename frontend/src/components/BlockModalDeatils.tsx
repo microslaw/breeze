@@ -23,14 +23,14 @@ const BlockModalDetails = ({
         <Modal.Title>{block.name}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>elko elko witam ze szczegolow blocka</p>
+        <p>witam ze szczegolow blocka</p>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>
           Close
         </Button>
         <Button variant="primary" onClick={handleRunJob}>
-          Run job
+          Save changes
         </Button>
       </Modal.Footer>
     </Modal>

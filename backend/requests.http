@@ -26,8 +26,8 @@ Content-Type: application/json
 {
     "origin_node_id": 1,
     "origin_node_output": null,
-    "destination_node_id": 3,
-    "destination_node_input": "a"
+    "destination_node_id": 2,
+    "destination_node_input": "b"
 }
 
 ### Remove link between 10 and 3
@@ -48,9 +48,12 @@ Content-Type: application/json
 {
     "origin_node_id": 1,
     "origin_node_output": null,
-    "destination_node_id": 4,
+    "destination_node_id": 3,
     "destination_node_input": "a"
 }
+
+### Get all node links
+GET http://127.0.0.1:5000/nodeLinks
 
 ### Delete node
 DELETE http://127.0.0.1:5000/nodeInstances/1

@@ -9,34 +9,51 @@ class Processor:
 
     def __init__(self, repository: Repository):
         self.processing_queue = deque()
-        self.processing_daemon = threading.Thread(
-            target=self.run_processing_daemon, daemon=True
-        )
-        self.processing_daemon.start()
         self.repository = repository
+        self.running = False
 
-    def update_processing_schedule(self, node_id):
-        to_add = [node_id]
+    def get_all_required_node_ids(self, node_id:str) -> list[int]:
         queue_appendix = []
+        to_add = [node_id]
 
         while len(to_add) > 0:
             node_id = to_add.pop()
             required_node_ids = self.repository.get_prerequisite_node_ids(node_id)
             to_add.extend(required_node_ids)
             queue_appendix.append(node_id)
-
         queue_appendix.reverse()
+
+        return queue_appendix
+
+    def update_processing_schedule(self, node_id:int) -> None:
+        queue_appendix = self.get_all_required_node_ids(node_id)
 
         for item in queue_appendix:
             if item not in self.processing_queue:
                 self.processing_queue.append(item)
+        self.start_processing()
 
-    def run_processing_daemon(self):
-        while True:
-            time.sleep(0.01)
-            if len(self.processing_queue) > 0:
-                node_id = self.processing_queue.popleft()
-                self.process(node_id)
+    def start_processing(self):
+        self.running = True
+        self.processing_daemon = threading.Thread(
+            target=self.processing_daemon_loop, daemon=True
+        )
+        self.processing_daemon.start()
+
+    def processing_daemon_loop(self):
+        while self.running and len(self.processing_queue) > 0:
+            node_id = self.processing_queue.popleft()
+            self.process(node_id)
+        self.processing_daemon = None
+
+    def stop_processing_daemon(self):
+        self.running = False
+
+    def wait_till_finished(self, timeout=None):
+        if self.processing_daemon is None:
+            return
+
+        self.processing_daemon.join(None)
 
     def process(self, node_id):
         processed_node_instance = self.repository.get_node_instance(node_id)

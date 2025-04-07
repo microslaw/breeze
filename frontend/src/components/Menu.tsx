@@ -3,6 +3,7 @@ import styles from "./Menu.module.css";
 import BlockModalCreate from "./BlockModalCreate";
 import { BlockI } from "../models/block.model";
 import { Button } from "react-bootstrap";
+import getNodeTypes from "../services/mainApiService";
 
 interface MenuProps {
   blocks: BlockI[];
@@ -19,6 +20,7 @@ const Menu = ({ blocks, setBlocks }: MenuProps) => {
         Add new block
       </Button>
       <Button onClick={() => console.log(blocks)}>Log list of blocks</Button>
+      <Button onClick={() => getNodeTypes()}>Get nodes types from API</Button>
       <BlockModalCreate
         show={isBlockModalCreateVisible}
         handleClose={() => setIsBlockModalCreateVisible(false)}

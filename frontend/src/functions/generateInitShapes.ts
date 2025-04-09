@@ -1,6 +1,8 @@
 import { BlockI } from "../models/block.model";
 import { v4 as uuidv4 } from "uuid";
 
+// DEPRECATED: This function was only used for testing without backend integration.
+// It is not used in the current version of the code.
 export function generateShapes(): BlockI[] {
   return [...Array(3)].map((_, i) => ({
     name: `Block ${i}`,

@@ -1,13 +1,22 @@
 import Menu from "./components/Menu";
 import MainStage from "./components/MainStage";
 import { BlockI } from "./models/block.model";
-import { generateShapes } from "./functions/generateInitShapes";
-import { useState } from "react";
+import { getAllNodes } from "./services/mainApiService";
+import { useEffect, useState } from "react";
 import BlockModalDetails from "./components/BlockModalDeatils";
 
 function App() {
-  const INITIAL_STATE: BlockI[] = generateShapes();
-  const [blocks, setBlocks] = useState<BlockI[]>(INITIAL_STATE);
+  const [blocks, setBlocks] = useState<BlockI[]>([]);
+
+  useEffect(() => {
+    console.log("App mounted");
+    const fetchBlocks = async () => {
+      const nodes = await getAllNodes();
+      setBlocks(nodes);
+    };
+    fetchBlocks();
+  }, []);
+
   const [isBlockModalDeatilsVisible, setIsBlockModalDeatilsVisible] =
     useState<boolean>(false);
 

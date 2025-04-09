@@ -3,7 +3,13 @@ import styles from "./Menu.module.css";
 import BlockModalCreate from "./BlockModalCreate";
 import { BlockI } from "../models/block.model";
 import { Button } from "react-bootstrap";
-import getNodeTypes from "../services/mainApiService";
+import {
+  getNodeTypes,
+  getAllNodes,
+  getNodeById,
+  getAllLinks,
+  getLinksByOriginNode,
+} from "../services/mainApiService";
 
 interface MenuProps {
   blocks: BlockI[];
@@ -16,11 +22,24 @@ const Menu = ({ blocks, setBlocks }: MenuProps) => {
 
   return (
     <div className={styles.menu}>
-      <Button onClick={() => setIsBlockModalCreateVisible(true)}>
-        Add new block
-      </Button>
-      <Button onClick={() => console.log(blocks)}>Log list of blocks</Button>
-      <Button onClick={() => getNodeTypes()}>Get nodes types from API</Button>
+      {/* Button section for testing purposes only */}
+      <span>
+        <Button onClick={() => setIsBlockModalCreateVisible(true)}>
+          Add new block
+        </Button>
+        <Button onClick={() => console.log(blocks)}>Log list of blocks</Button>
+        <Button onClick={() => getNodeTypes()}>Get node types from API</Button>
+        <Button onClick={() => getAllNodes()}>
+          Get node instances from API
+        </Button>
+        <Button onClick={() => getNodeById(1)}>
+          Get node instance by ID from API
+        </Button>
+        <Button onClick={() => getAllLinks()}>Get node links from API</Button>
+        <Button onClick={() => getLinksByOriginNode(1)}>
+          Get node links by origin ID from API
+        </Button>
+      </span>
       <BlockModalCreate
         show={isBlockModalCreateVisible}
         handleClose={() => setIsBlockModalCreateVisible(false)}

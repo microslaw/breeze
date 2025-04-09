@@ -14,6 +14,7 @@ function App() {
   const [selectedBlock, setSelectedBlock] = useState<BlockI>({
     id: "",
     name: "",
+    type: "default",
     x: 0,
     y: 0,
     isDragging: false,

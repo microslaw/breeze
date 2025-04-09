@@ -18,6 +18,7 @@ const BlockModalCreate = ({
 }: BlockModalCreateProps) => {
   const [block, setBlock] = useState<BlockI>({
     name: "",
+    type: "default",
     id: "",
     x: 0,
     y: 0,
@@ -36,7 +37,14 @@ const BlockModalCreate = ({
     block.id = uuidv4();
     console.log(block);
     setBlocks([...blocks, block]);
-    setBlock({ name: "", id: "", x: 0, y: 0, isDragging: false });
+    setBlock({
+      name: "",
+      type: "default",
+      id: "",
+      x: 0,
+      y: 0,
+      isDragging: false,
+    });
     handleClose();
   };
 

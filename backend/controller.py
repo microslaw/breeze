@@ -3,7 +3,7 @@ from backend.datatypes import NodeInstance, NodeLink
 from backend.repository import Repository
 from backend.repository import ObjectAlreadyInDBException
 from backend.repository import ObjectNotInDBException
-from backend.processor import Processor
+from backend.processor import Processor, ProcessingException
 
 
 def create_api_server(repository: Repository, processor: Processor):
@@ -16,6 +16,10 @@ def create_api_server(repository: Repository, processor: Processor):
     @api_server.errorhandler(ObjectAlreadyInDBException)
     def server_error(err):
         return str(err), 409
+
+    @api_server.errorhandler(ProcessingException)
+    def server_error(err: ProcessingException):
+        return err.toJson(), 422
 
     @api_server.route("/nodeTypes", methods=["GET"])
     def get_all_node_types():

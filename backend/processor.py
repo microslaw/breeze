@@ -1,8 +1,8 @@
 from backend.datatypes import NodeInstance, NodeLink
 from backend.repository import Repository
 from collections import deque
-import time
 import threading
+import traceback
 
 
 class Processor:
@@ -11,6 +11,7 @@ class Processor:
         self.processing_queue = deque()
         self.repository = repository
         self.running = False
+        self.cached_exception = None
 
     def get_all_required_node_ids(self, node_id: str) -> list[int]:
         queue_appendix = []
@@ -26,7 +27,10 @@ class Processor:
         return queue_appendix
 
     def get_processing_schedule(self) -> list[int]:
-        return list(self.processing_queue)
+        if self.cached_exception is None:
+            return list(self.processing_queue)
+        else:
+            raise self.cached_exception from self.cached_exception.cause
 
     def update_processing_schedule(
         self, node_id: int, start_processing: bool = True
@@ -58,6 +62,7 @@ class Processor:
 
     def reset_processing_queue(self) -> None:
         self.processing_queue = deque()
+        self.cached_exception = None
 
     def wait_till_finished(self, timeout=None):
         if self.processing_daemon is None:
@@ -84,5 +89,53 @@ class Processor:
                 input_arg_link.origin_node_id, input_arg_link.origin_node_output
             )
 
-        output = processed_node_type(**kwargs)
-        self.repository.write_object(output, node_id)
+        try:
+            output = processed_node_type(**kwargs)
+            self.repository.write_object(output, node_id)
+        except Exception as e:
+            self.stop_processing_daemon()
+            self.cached_exception = ProcessingException(
+                e,
+                processed_node_instance,
+                traceback.format_exception(e),
+                kwargs,
+                list(self.processing_queue),
+            )
+
+
+class ProcessingException(Exception):
+    def __init__(
+        self,
+        e: Exception,
+        node_instance: NodeInstance,
+        traceback: str,
+        input_args: dict[str, object],
+        cancelled_nodes: list[int],
+    ):
+        self.cause = e
+        self.origin: NodeInstance = node_instance
+        self.input_args = input_args
+        self.traceback_str = ProcessingException.prune_traceback(traceback)
+        self.cancelled_nodes = cancelled_nodes
+
+        super().__init__(
+            f"During processing of node {node_instance.toJSON()} an exception occured:\n\n{self.traceback_str}"
+        )
+
+    def prune_traceback(traceback: list[str]) -> str:
+        """
+        Removes part of the trace caused by the breeze library
+        """
+
+        pruned_traceback = traceback[0]
+        pruned_traceback += "".join(trace_file for trace_file in traceback[3:])
+
+        return pruned_traceback
+
+    def toJson(self):
+        return {
+            "origin": self.origin.toJSON(),
+            "input_args": self.input_args,
+            "traceback_str": self.traceback_str,
+            "cancelled_nodes": self.cancelled_nodes,
+        }

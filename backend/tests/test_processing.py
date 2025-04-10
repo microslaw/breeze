@@ -1,7 +1,7 @@
 from backend.datatypes import NodeType
 from importlib import reload
 from backend import Repository
-from backend import Processor
+from backend import Processor, ProcessingException
 from backend import create_api_server
 import backend.tests.processing
 import backend.tests.processing.nodeTypes
@@ -35,6 +35,7 @@ def test_initialization():
         "add_int",
         "const_1",
         "const_2",
+        "const_a",
     ]
 
 
@@ -83,3 +84,35 @@ def test_check_processing_queue():
 
         assert response.json == [0, 1, 2, 3, 4]
         assert response.status_code == 200
+
+
+def test_processing_exception():
+    api_server, processor = initalize_api_server()
+
+    with api_server.test_client() as client:
+        client.post(
+            "/queueProcessing",
+            json={"node_id": 8},
+        )
+        processor.wait_till_finished()
+
+        response = client.get("/queueProcessing")
+
+        assert response.json == {
+            "cancelled_nodes": [8],
+            "input_args": {
+                "a": 1,
+                "b": "a",
+            },
+            "origin": {
+                "node_id": 7,
+                "node_type": "add_int",
+            },
+            "traceback_str": "Traceback (most recent call last):\n"
+            f'  File "{backend.tests.processing.nodeTypes.__file__}", '
+            "line 26, in add_int\n"
+            "    return a + b\n"
+            "           ~~^~~\n"
+            "TypeError: unsupported operand type(s) for +: 'int' and 'str'\n",
+        }
+        assert response.status_code == 422

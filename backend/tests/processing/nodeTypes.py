@@ -10,6 +10,15 @@ from backend.datatypes import NodeType
 # +--+         +--+   /   +--+
 #              |n3|->/
 #              +--+
+# +--+
+# |n6|->\
+# +--+   \     +--+
+#         +--> |n7|->\
+# +--+   /     +--+   \   +--+
+# |n5|->+--------------+->|n8|
+# +--+                    +--+
+#
+#
 
 
 @NodeType
@@ -25,3 +34,8 @@ def const_1():
 @NodeType
 def const_2():
     return 2
+
+
+@NodeType
+def const_a():
+    return "a"

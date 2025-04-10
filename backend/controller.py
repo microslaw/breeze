@@ -79,4 +79,8 @@ def create_api_server(repository: Repository, processor: Processor):
         processor.update_processing_schedule(nodeToProcess.node_id)
         return "OK", 200
 
+    @api_server.route("/queueProcessing", methods=["GET"])
+    def check_processing_queue():
+        return processor.get_processing_schedule()
+
     return api_server

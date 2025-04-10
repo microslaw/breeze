@@ -12,7 +12,7 @@ class Processor:
         self.repository = repository
         self.running = False
 
-    def get_all_required_node_ids(self, node_id:str) -> list[int]:
+    def get_all_required_node_ids(self, node_id: str) -> list[int]:
         queue_appendix = []
         to_add = [node_id]
 
@@ -25,13 +25,20 @@ class Processor:
 
         return queue_appendix
 
-    def update_processing_schedule(self, node_id:int) -> None:
+    def get_processing_schedule(self) -> list[int]:
+        return list(self.processing_queue)
+
+    def update_processing_schedule(
+        self, node_id: int, start_processing: bool = True
+    ) -> None:
         queue_appendix = self.get_all_required_node_ids(node_id)
 
         for item in queue_appendix:
             if item not in self.processing_queue:
                 self.processing_queue.append(item)
-        self.start_processing()
+
+        if start_processing:
+            self.start_processing()
 
     def start_processing(self):
         self.running = True
@@ -48,6 +55,9 @@ class Processor:
 
     def stop_processing_daemon(self):
         self.running = False
+
+    def reset_processing_queue(self) -> None:
+        self.processing_queue = deque()
 
     def wait_till_finished(self, timeout=None):
         if self.processing_daemon is None:

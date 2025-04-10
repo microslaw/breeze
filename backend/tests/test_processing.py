@@ -2,10 +2,12 @@ from backend.datatypes import NodeType
 from importlib import reload
 from backend import Repository
 from backend import Processor
+from backend import create_api_server
 import backend.tests.processing
 import backend.tests.processing.nodeTypes
 import threading
 import time
+from flask import Flask
 
 
 def initialize_processor() -> Processor:
@@ -19,6 +21,12 @@ def initialize_processor() -> Processor:
     repository.from_csv("backend/tests/processing/nodeLinks.csv", "nodeLinks")
 
     return processor
+
+
+def initalize_api_server() -> tuple[Flask, Processor]:
+    processor = initialize_processor()
+    api_server = create_api_server(processor.repository, processor)
+    return api_server, processor
 
 
 def test_initialization():
@@ -61,3 +69,17 @@ def test_processing_results():
 def test_processing_scheduling():
     processor = initialize_processor()
     assert processor.get_all_required_node_ids(4) == [0, 1, 2, 3, 4]
+
+
+# Processor-reliant api tests
+
+
+def test_check_processing_queue():
+    api_server, processor = initalize_api_server()
+    processor.update_processing_schedule(4, start_processing=False)
+
+    with api_server.test_client() as client:
+        response = client.get("/queueProcessing")
+
+        assert response.json == [0, 1, 2, 3, 4]
+        assert response.status_code == 200

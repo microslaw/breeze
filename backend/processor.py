@@ -1,5 +1,6 @@
 from backend.datatypes import NodeInstance, NodeLink
 from backend.repository import Repository
+from backend.formatting import format_for_display
 from collections import deque
 import threading
 import traceback
@@ -135,7 +136,10 @@ class ProcessingException(Exception):
     def toJson(self):
         return {
             "origin": self.origin.toJSON(),
-            "input_args": self.input_args,
             "traceback_str": self.traceback_str,
             "cancelled_nodes": self.cancelled_nodes,
+            "input_args": {
+                name: format_for_display(value)
+                for name, value in self.input_args.items()
+            },
         }

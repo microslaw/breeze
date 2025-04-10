@@ -8,3 +8,4 @@ node_id,node_type
 6,const_a
 7,add_int
 8,add_int
+9,create_my_class

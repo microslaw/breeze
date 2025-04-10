@@ -42,12 +42,20 @@ class Repository:
         producer_node_id: int,
         producer_node_output: str = None,
     ) -> object:
+        self.check_node_instance_exists(producer_node_id)
+
         if producer_node_output is None:
             object_name = f"{producer_node_id}-output"
         else:
             object_name = f"{producer_node_id}-{producer_node_output}-output"
 
-        with open(f"{self.db_folder_path}/objects/{object_name}", "rb") as f:
+        full_path = f"{self.db_folder_path}/objects/{object_name}"
+        if not os.path.isfile(full_path):
+            raise ObjectNotInDBException(
+                f"Processing result of node with node_id={producer_node_id} not found"
+            )
+
+        with open(full_path, "rb") as f:
             return pickle.load(f)
 
     def get_connection(self) -> sqlite3.Connection:

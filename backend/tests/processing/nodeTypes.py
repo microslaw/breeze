@@ -1,4 +1,5 @@
 from backend.datatypes import NodeType
+from backend.formatting import add_display_format
 
 # data in .csv files will create a following workflow:
 # +--+
@@ -18,7 +19,9 @@ from backend.datatypes import NodeType
 # |n5|->+--------------+->|n8|
 # +--+                    +--+
 #
-#
+# +--+
+# |n9|
+# +--+
 
 
 @NodeType
@@ -39,3 +42,19 @@ def const_2():
 @NodeType
 def const_a():
     return "a"
+
+
+class MyClass:
+    def __init__(self, name: str):
+        self.name = name
+
+    def describe(self):
+        return f"MyClass named {self.name}"
+
+
+add_display_format(MyClass, lambda x: x.describe())
+
+
+@NodeType
+def create_my_class():
+    return MyClass("a class")

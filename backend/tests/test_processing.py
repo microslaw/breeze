@@ -36,6 +36,7 @@ def test_initialization():
         "const_1",
         "const_2",
         "const_a",
+        "create_my_class",
     ]
 
 
@@ -101,7 +102,7 @@ def test_processing_exception():
         assert response.json == {
             "cancelled_nodes": [8],
             "input_args": {
-                "a": 1,
+                "a": "1",
                 "b": "a",
             },
             "origin": {
@@ -110,9 +111,41 @@ def test_processing_exception():
             },
             "traceback_str": "Traceback (most recent call last):\n"
             f'  File "{backend.tests.processing.nodeTypes.__file__}", '
-            "line 26, in add_int\n"
+            f"line {backend.tests.processing.nodeTypes.add_int.func.__code__.co_firstlineno + 2}, in add_int\n"
             "    return a + b\n"
             "           ~~^~~\n"
             "TypeError: unsupported operand type(s) for +: 'int' and 'str'\n",
         }
         assert response.status_code == 422
+
+
+def test_get_processing_result():
+    api_server, processor = initalize_api_server()
+
+    with api_server.test_client() as client:
+        client.post(
+            "/queueProcessing",
+            json={"node_id": 4},
+        )
+        processor.wait_till_finished()
+
+        response = client.get("/processingResult/4")
+
+        assert response.status_code == 200
+        assert response.data == b"4"
+
+
+def test_custom_format_for_display():
+    api_server, processor = initalize_api_server()
+
+    with api_server.test_client() as client:
+        client.post(
+            "/queueProcessing",
+            json={"node_id": 9},
+        )
+        processor.wait_till_finished()
+
+        response = client.get("/processingResult/9")
+
+        assert response.status_code == 200
+        assert response.data == b"MyClass named a class"

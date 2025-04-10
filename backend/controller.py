@@ -4,6 +4,7 @@ from backend.repository import Repository
 from backend.repository import ObjectAlreadyInDBException
 from backend.repository import ObjectNotInDBException
 from backend.processor import Processor, ProcessingException
+from backend.formatting import format_for_display
 
 
 def create_api_server(repository: Repository, processor: Processor):
@@ -86,5 +87,9 @@ def create_api_server(repository: Repository, processor: Processor):
     @api_server.route("/queueProcessing", methods=["GET"])
     def check_processing_queue():
         return processor.get_processing_schedule()
+
+    @api_server.route("/processingResult/<node_id>", methods=["GET"])
+    def get_processing_result(node_id):
+        return format_for_display(repository.read_object(node_id))
 
     return api_server

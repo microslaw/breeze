@@ -11,12 +11,13 @@ import pandas as pd
 # +--+                    +--+
 
 
+# Intentionaly omiting testing tag, to test if no arg decorators work
 @NodeType
 def add_int(a, b: int) -> int:
     return a + b
 
 
-@NodeType
+@NodeType(tags=["testing", "pandas"])
 def remove_outliers(df: pd.DataFrame, colname: str, sd_limit: float) -> pd.DataFrame:
     df = df.copy()
     df["z_score"] = (df[colname] - df[colname].mean()) / df[colname].std()

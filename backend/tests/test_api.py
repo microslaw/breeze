@@ -42,6 +42,31 @@ def test_get_node_type():
             "arg_names": ["a", "b"],
             "arg_types": {"b": "int"},
             "return_type": "int",
+            "tags": [],
+        }
+        assert response.status_code == 200
+
+        response = client.get("/nodeTypes/nonexistent_func")
+        assert response.data == b"Node type nonexistent_func not found"
+        assert response.status_code == 404
+
+
+def test_get_decorated_node_type():
+    controller = initialize_server()
+
+    with controller.test_client() as client:
+
+        response = client.get("/nodeTypes/remove_outliers")
+        assert response.json == {
+            "name": "remove_outliers",
+            "arg_names": ["df", "colname", "sd_limit"],
+            "arg_types": {
+                "colname": "str",
+                "df": "DataFrame",
+                "sd_limit": "float",
+            },
+            "return_type": "DataFrame",
+            "tags": ["testing", "pandas"],
         }
         assert response.status_code == 200
 

@@ -8,15 +8,26 @@ class NodeType:
     # Prefferable way of doing that (see below) will be made possible in python 3.14 (see pep 749)
     # all_udn: list[NodeType] = []
 
-    def __init__(self, func):
-        self.func = func
+    # This constuctor may be used in two ways:
+    # @NodeType or @NodeType(args)
+    # First case will end up as @NodeType(__func), and the function will be assigned correctly
+    # In second case, expression will unfold to @NodeType(args)(__func)
+    def __init__(self, __func=None, tags=[]):
+        self.func = __func
+        self.tags = tags
         NodeType.all_udn.append(self)
 
     def clear_udns():
         NodeType.all_udn = []
 
     def wrapper(self, *args, **kwargs):
-        return self.func(*args, **kwargs)
+        if self.func is not None:
+            return self.func(*args, **kwargs)
+        return self.ending_constructor(*args, **kwargs)
+
+    def ending_constructor(self, __func):
+        self.func = __func
+        return self
 
     __call__ = wrapper
 
@@ -33,7 +44,7 @@ class NodeType:
     def get_arg_names(self):
         return [
             arg_name
-            for arg_name in self.func.__code__.co_varnames[:self.get_arg_count()]
+            for arg_name in self.func.__code__.co_varnames[: self.get_arg_count()]
         ]
 
     def get_arg_count(self):
@@ -45,4 +56,5 @@ class NodeType:
             "arg_names": self.get_arg_names(),
             "arg_types": self.get_arg_types_names(),
             "return_type": self.func.__annotations__["return"].__name__,
+            "tags": self.tags,
         }

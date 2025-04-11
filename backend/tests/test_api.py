@@ -1,16 +1,16 @@
-from backend.controller import create_api_server
 from flask import Flask
-from backend import Repository
 from importlib import reload
 import backend.tests.default.nodeTypes
 from backend import NodeType
+from backend import Repository
 from backend import Processor
+from backend import Controller
 
 
-def initialize_server() -> Flask:
+def initialize_server() -> Controller:
     repository = Repository()
     processor = Processor(repository)
-    api_server = create_api_server(repository, processor)
+    controller = Controller(repository, processor)
 
     NodeType.clear_udns()
     reload(backend.tests.default.nodeTypes)
@@ -18,13 +18,13 @@ def initialize_server() -> Flask:
     repository.from_csv("backend/tests/default/nodeInstances.csv", "nodeInstances")
     repository.from_csv("backend/tests/default/nodeLinks.csv", "nodeLinks")
 
-    return api_server
+    return controller
 
 
 def test_get_all_node_types():
-    api_server = initialize_server()
+    controller = initialize_server()
 
-    with api_server.test_client() as client:
+    with controller.test_client() as client:
         response = client.get("/nodeTypes")
 
         assert response.json == ["add_int", "remove_outliers"]
@@ -32,9 +32,9 @@ def test_get_all_node_types():
 
 
 def test_get_node_type():
-    api_server = initialize_server()
+    controller = initialize_server()
 
-    with api_server.test_client() as client:
+    with controller.test_client() as client:
 
         response = client.get("/nodeTypes/add_int")
         assert response.json == {
@@ -51,9 +51,9 @@ def test_get_node_type():
 
 
 def test_get_all_node_instances():
-    api_server = initialize_server()
+    controller = initialize_server()
 
-    with api_server.test_client() as client:
+    with controller.test_client() as client:
         response = client.get("/nodeInstances")
 
         assert response.json == [0, 1, 2, 3]
@@ -61,9 +61,9 @@ def test_get_all_node_instances():
 
 
 def test_get_node_instance():
-    api_server = initialize_server()
+    controller = initialize_server()
 
-    with api_server.test_client() as client:
+    with controller.test_client() as client:
         response = client.get("/nodeInstances/0")
 
         assert response.json == {
@@ -74,9 +74,9 @@ def test_get_node_instance():
 
 
 def test_get_missing_node_instance():
-    api_server = initialize_server()
+    controller = initialize_server()
 
-    with api_server.test_client() as client:
+    with controller.test_client() as client:
         response = client.get("/nodeInstances/10")
 
         assert response.data == b"Node instance with node_id=10 not found"
@@ -84,9 +84,9 @@ def test_get_missing_node_instance():
 
 
 def test_create_node_instance():
-    api_server = initialize_server()
+    controller = initialize_server()
 
-    with api_server.test_client() as client:
+    with controller.test_client() as client:
         response = client.post(
             "/nodeInstances",
             json={
@@ -102,9 +102,9 @@ def test_create_node_instance():
 
 
 def test_delete_node_instance():
-    api_server = initialize_server()
+    controller = initialize_server()
 
-    with api_server.test_client() as client:
+    with controller.test_client() as client:
 
         response = client.delete("/nodeInstances/2")
         assert response.data == b"OK"
@@ -119,9 +119,9 @@ def test_delete_node_instance():
 
 
 def test_get_all_node_links():
-    api_server = initialize_server()
+    controller = initialize_server()
 
-    with api_server.test_client() as client:
+    with controller.test_client() as client:
         response = client.get("/nodeLinks")
         assert response.json == [
             {
@@ -146,9 +146,9 @@ def test_get_all_node_links():
 
 
 def test_get_node_link():
-    api_server = initialize_server()
+    controller = initialize_server()
 
-    with api_server.test_client() as client:
+    with controller.test_client() as client:
         response = client.get("/nodeLinks/0")
         assert response.json == [
             {
@@ -162,18 +162,18 @@ def test_get_node_link():
 
 
 def test_get_missing_node_link():
-    api_server = initialize_server()
+    controller = initialize_server()
 
-    with api_server.test_client() as client:
+    with controller.test_client() as client:
         response = client.get("/nodeLinks/10")
         assert response.data == b"Node instance with node_id=10 not found"
         assert response.status_code == 404
 
 
 def test_create_node_link():
-    api_server = initialize_server()
+    controller = initialize_server()
 
-    with api_server.test_client() as client:
+    with controller.test_client() as client:
         response = client.post(
             "/nodeLinks",
             json={
@@ -205,9 +205,9 @@ def test_create_node_link():
 
 
 def test_delete_node_link():
-    api_server = initialize_server()
+    controller = initialize_server()
 
-    with api_server.test_client() as client:
+    with controller.test_client() as client:
         response = client.delete(
             "/nodeLinks",
             json={

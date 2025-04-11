@@ -1,7 +1,7 @@
 import Menu from "./components/Menu";
 import MainStage from "./components/MainStage";
 import { BlockI } from "./models/block.model";
-import { getAllNodes } from "./services/mainApiService";
+import { deleteNodeById, getAllNodes } from "./services/mainApiService";
 import { useEffect, useState } from "react";
 import BlockModalDetails from "./components/BlockModalDeatils";
 
@@ -34,6 +34,18 @@ function App() {
     setIsBlockModalDeatilsVisible(true);
   };
 
+  const handleCloseBlockDetails = () => {
+    setIsBlockModalDeatilsVisible(false);
+  };
+
+  const handleDeleteBlock = (blockId: number) => {
+    deleteNodeById(blockId);
+    setBlocks((prevBlocks) =>
+      prevBlocks.filter((block) => block.id !== selectedBlock.id)
+    );
+    handleCloseBlockDetails();
+  };
+
   return (
     <div>
       <Menu blocks={blocks} setBlocks={setBlocks} />
@@ -46,7 +58,8 @@ function App() {
       <BlockModalDetails
         block={selectedBlock}
         show={isBlockModalDeatilsVisible}
-        handleClose={() => setIsBlockModalDeatilsVisible(false)}
+        handleClose={() => handleCloseBlockDetails()}
+        handleDelete={(blockId) => handleDeleteBlock(blockId)}
       />
     </div>
   );

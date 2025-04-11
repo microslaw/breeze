@@ -1,18 +1,19 @@
 import React, { useState } from "react";
 import { Modal, Button, Table } from "react-bootstrap";
 import { BlockI } from "../models/block.model";
-import { deleteNodeById } from "../services/mainApiService";
 
 interface BlockModalDeatilsProps {
   show: boolean;
   block: BlockI;
   handleClose: () => void;
+  handleDelete: (blockId: number) => void;
 }
 
 const BlockModalDetails = ({
   show,
   block,
   handleClose,
+  handleDelete,
 }: BlockModalDeatilsProps) => {
   const handleSaveChanges = () => {
     console.info("Running job is not yet supported!");
@@ -48,8 +49,7 @@ const BlockModalDetails = ({
         <Button variant="primary" onClick={handleSaveChanges}>
           Save changes
         </Button>
-        {/* TODO close component, add handling of the blocks array, etc. */}
-        <Button variant="primary" onClick={() => deleteNodeById(block.id)}>
+        <Button variant="danger" onClick={() => handleDelete(block.id)}>
           Delete
         </Button>
       </Modal.Footer>

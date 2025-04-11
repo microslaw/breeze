@@ -12,3 +12,7 @@ class BreezeApp:
 
     def start(self):
         self.controller.run(debug=True)
+
+    def load_test_preset(self, set_name:str):
+        self.repository.from_csv(f"backend/tests/{set_name}/nodeInstances.csv", "nodeInstances")
+        self.repository.from_csv(f"backend/tests/{set_name}/nodeLinks.csv", "nodeLinks")

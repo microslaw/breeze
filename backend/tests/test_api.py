@@ -1,6 +1,6 @@
 from flask import Flask
 from importlib import reload
-import backend.tests.default.nodeTypes
+import backend.prefabs.testing.default
 from backend import NodeType
 from backend import Repository
 from backend import Processor
@@ -13,10 +13,10 @@ def initialize_server() -> Controller:
     controller = Controller(repository, processor)
 
     NodeType.clear_udns()
-    reload(backend.tests.default.nodeTypes)
+    reload(backend.prefabs.testing.default)
 
-    repository.from_csv("backend/tests/default/nodeInstances.csv", "nodeInstances")
-    repository.from_csv("backend/tests/default/nodeLinks.csv", "nodeLinks")
+    repository.from_csv("backend/tests/csv_workflows/default/nodeInstances.csv", "nodeInstances")
+    repository.from_csv("backend/tests/csv_workflows/default/nodeLinks.csv", "nodeLinks")
 
     return controller
 

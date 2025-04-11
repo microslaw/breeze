@@ -49,7 +49,7 @@ def test_get_node_type():
         assert response.data == b"Node type nonexistent_func not found"
         assert response.status_code == 404
 
-
+# TODO update tests for whole node objects in response
 def test_get_all_node_instances():
     api_server = initialize_server()
 

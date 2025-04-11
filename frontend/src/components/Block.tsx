@@ -35,7 +35,7 @@ const Block = ({
     <Group draggable>
       <Rect
         key={block.id}
-        id={block.id}
+        id={block.id.toString()}
         x={block.x}
         y={block.y}
         width={RECTANGLE_WIDTH}

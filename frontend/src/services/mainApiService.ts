@@ -33,6 +33,16 @@ export async function getNodeById(id: number) {
   return response.data;
 }
 
+export async function deleteNodeById(id: number) {
+  const response = await axios({
+    method: "delete",
+    url: "http://127.0.0.1:5000/nodeInstances/" + id,
+    responseType: "stream",
+  });
+  console.log(response.data);
+  return response.data;
+}
+
 // TODO implement non primitive handling of the response
 export async function getAllLinks() {
   const response = await axios({

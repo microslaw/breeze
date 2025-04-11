@@ -19,7 +19,7 @@ const BlockModalCreate = ({
   const [block, setBlock] = useState<BlockI>({
     name: "",
     type: "default",
-    id: "",
+    id: 999,
     x: 0,
     y: 0,
     isDragging: false,
@@ -34,13 +34,13 @@ const BlockModalCreate = ({
   };
 
   const handleSubmit = () => {
-    block.id = uuidv4();
+    block.id = Math.floor(Math.random() * 1000000);
     console.log(block);
     setBlocks([...blocks, block]);
     setBlock({
       name: "",
       type: "default",
-      id: "",
+      id: Math.floor(Math.random() * 1000000),
       x: 0,
       y: 0,
       isDragging: false,

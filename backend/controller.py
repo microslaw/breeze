@@ -9,13 +9,12 @@ from backend.formatting import format_for_display
 
 
 class Controller:
-    def __init__ (self, repository: Repository = None, processor: Processor = None):
+    def __init__ (self, repository: Repository, processor: Processor):
         self.flask_server = Flask(__name__)
         CORS(self.flask_server, origins=["http://localhost:5173"])
 
-        self.repository = repository if repository is not None else Repository()
-        self.processor = processor if processor is not None else Processor(self.repository)
-
+        self.repository = repository
+        self.processor = processor
 
         @self.flask_server.errorhandler(ObjectNotInDBException)
         def server_error(err):

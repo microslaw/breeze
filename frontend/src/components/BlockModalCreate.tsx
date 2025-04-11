@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { BlockI } from "../models/block.model";
-import { v4 as uuidv4 } from "uuid";
+import { getNodeTypes } from "../services/mainApiService";
 
 interface BlockModalCreateProps {
   show: boolean;
@@ -25,7 +25,22 @@ const BlockModalCreate = ({
     isDragging: false,
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [blockTypes, setBlockTypes] = useState<string[]>([]);
+
+  useEffect(() => {
+    console.log("BlockModalCreate mounted");
+    const fetchBlockTypes = async () => {
+      const nodeTypes = await getNodeTypes();
+      setBlockTypes(nodeTypes);
+    };
+    fetchBlockTypes();
+  }, []);
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
     const { name, value } = e.target;
     setBlock((prevBlock) => ({
       ...prevBlock,
@@ -65,6 +80,22 @@ const BlockModalCreate = ({
               onChange={handleChange}
             />
           </Form.Group>
+          <Form.Group controlId="formBlockType">
+            <Form.Label>Type</Form.Label>
+            <Form.Select
+              as="input"
+              type="string"
+              name="type"
+              value={block.name}
+              onChange={handleChange}
+            >
+              {blockTypes.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </Form.Select>
+          </Form.Group>
           <Form.Group controlId="formBlockX">
             <Form.Label>X Coordinate</Form.Label>
             <Form.Control
@@ -73,6 +104,7 @@ const BlockModalCreate = ({
               name="x"
               value={block.x}
               onChange={handleChange}
+              disabled
             />
           </Form.Group>
           <Form.Group controlId="formBlockY">
@@ -83,6 +115,7 @@ const BlockModalCreate = ({
               name="y"
               value={block.y}
               onChange={handleChange}
+              disabled
             />
           </Form.Group>
         </Form>

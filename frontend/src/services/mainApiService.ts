@@ -27,7 +27,6 @@ export async function getNodeById(id: number) {
   const response = await axios({
     method: "get",
     url: "http://127.0.0.1:5000/nodeInstances/" + id,
-    responseType: "stream",
   });
   console.log(response.data);
   return response.data;
@@ -37,7 +36,6 @@ export async function deleteNodeById(id: number) {
   const response = await axios({
     method: "delete",
     url: "http://127.0.0.1:5000/nodeInstances/" + id,
-    responseType: "stream",
   });
   console.log(response.data);
   return response.data;
@@ -48,7 +46,6 @@ export async function getAllLinks() {
   const response = await axios({
     method: "get",
     url: "http://127.0.0.1:5000/nodeLinks",
-    responseType: "stream",
   });
   console.log(response.data);
   return response.data;
@@ -59,19 +56,27 @@ export async function getLinksByOriginNode(nodeId: number) {
   const response = await axios({
     method: "get",
     url: "http://127.0.0.1:5000/nodeLinks/" + nodeId,
-    responseType: "stream",
   });
   console.log(response.data);
   return response.data;
 }
 
 // TODO implement non primitive handling of the response
-export async function getNodeTypes() {
-  const response = await axios({
-    method: "get",
-    url: "http://127.0.0.1:5000/nodeTypes",
-    responseType: "stream",
-  });
-  console.log(response.data);
-  return response.data;
+export async function getNodeTypes(): Promise<string[]> {
+  try {
+    const response = await axios({
+      method: "get",
+      url: "http://127.0.0.1:5000/nodeTypes",
+    });
+
+    if (!Array.isArray(response.data)) {
+      throw new Error("API response is not an array");
+    }
+
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching node types:", error);
+    throw error;
+  }
 }

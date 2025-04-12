@@ -1,0 +1,4 @@
+node_id,node_type
+0,read_csv
+1,select_subset
+2,groupby_agg

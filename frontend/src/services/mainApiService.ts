@@ -14,7 +14,7 @@ export async function getAllNodes(): Promise<BlockI[]> {
     }
 
     const blocks: BlockI[] = mapApiResponseToBlocks(response.data);
-    console.log(blocks);
+    console.log(response.request);
     return blocks;
   } catch (error) {
     console.error("Error fetching nodes:", error);
@@ -39,6 +39,26 @@ export async function deleteNodeById(id: number) {
   });
   console.log(response.data);
   return response.data;
+}
+
+export async function createNode(node: BlockI) {
+  console.log("createNode", node);
+  try {
+    const response = await axios({
+      method: "post",
+      url: "http://127.0.0.1:5000/nodeInstances",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: {
+        node_type: node.type,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error creating node:", error);
+    throw error;
+  }
 }
 
 // TODO implement non primitive handling of the response

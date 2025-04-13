@@ -9,6 +9,7 @@ import {
   getNodeById,
   getAllLinks,
   getLinksByOriginNode,
+  createNode,
 } from "../services/mainApiService";
 
 interface MenuProps {
@@ -29,6 +30,20 @@ const Menu = ({ blocks, setBlocks }: MenuProps) => {
         </Button>
         <Button onClick={() => console.log(blocks)}>Log list of blocks</Button>
         <Button onClick={() => getNodeTypes()}>Get node types from API</Button>
+        <Button
+          onClick={() =>
+            createNode({
+              name: "a",
+              type: "add_int",
+              x: 0,
+              y: 0,
+              id: 0,
+              isDragging: true,
+            })
+          }
+        >
+          Add new node
+        </Button>
         <Button onClick={() => getAllNodes()}>
           Get node instances from API
         </Button>

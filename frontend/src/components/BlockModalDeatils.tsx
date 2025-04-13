@@ -15,7 +15,7 @@ const BlockModalDetails = ({
   handleClose,
   handleDelete,
 }: BlockModalDeatilsProps) => {
-  const handleSaveChanges = () => {
+  const handleRunJob = () => {
     console.info("Running job is not yet supported!");
   };
 
@@ -46,8 +46,8 @@ const BlockModalDetails = ({
         <Button variant="secondary" onClick={handleClose}>
           Close
         </Button>
-        <Button variant="primary" onClick={handleSaveChanges}>
-          Save changes
+        <Button variant="primary" onClick={handleRunJob}>
+          Run job
         </Button>
         <Button variant="danger" onClick={() => handleDelete(block.id)}>
           Delete

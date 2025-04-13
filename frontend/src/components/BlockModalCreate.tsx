@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { BlockI } from "../models/block.model";
-import { getNodeTypes } from "../services/mainApiService";
+import { createNode, getNodeTypes } from "../services/mainApiService";
 
 interface BlockModalCreateProps {
   show: boolean;
@@ -60,6 +60,9 @@ const BlockModalCreate = ({
       y: 0,
       isDragging: false,
     });
+    createNode(block).then((response) => {
+      console.log(response);
+    });
     handleClose();
   };
 
@@ -86,7 +89,7 @@ const BlockModalCreate = ({
               as="input"
               type="string"
               name="type"
-              value={block.name}
+              value={block.type}
               onChange={handleChange}
             >
               {blockTypes.map((type) => (

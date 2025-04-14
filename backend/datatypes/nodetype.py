@@ -30,10 +30,19 @@ class NodeType:
             if arg_name != "return"
         }
 
+    def get_arg_names(self):
+        return [
+            arg_name
+            for arg_name in self.func.__code__.co_varnames[:self.get_arg_count()]
+        ]
+
+    def get_arg_count(self):
+        return self.func.__code__.co_argcount
+
     def toJSON(self):
         return {
             "name": self.get_name(),
-            "arg_names": self.func.__code__.co_varnames,
+            "arg_names": self.get_arg_names(),
             "arg_types": self.get_arg_types_names(),
             "return_type": self.func.__annotations__["return"].__name__,
         }

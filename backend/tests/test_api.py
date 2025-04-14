@@ -2,16 +2,18 @@ from backend.controller import create_api_server
 from flask import Flask
 from backend import Repository
 from importlib import reload
-import backend.tests.default
+import backend.tests.default.nodeTypes
 from backend import NodeType
+from backend import Processor
 
 
 def initialize_server() -> Flask:
     repository = Repository()
-    api_server = create_api_server(repository)
+    processor = Processor(repository)
+    api_server = create_api_server(repository, processor)
 
     NodeType.clear_udns()
-    reload(backend.tests.default)
+    reload(backend.tests.default.nodeTypes)
 
     repository.from_csv("backend/tests/default/nodeInstances.csv", "nodeInstances")
     repository.from_csv("backend/tests/default/nodeLinks.csv", "nodeLinks")

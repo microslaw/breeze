@@ -1,11 +1,13 @@
 from flask import Flask, request
 from backend.datatypes import NodeInstance, NodeLink
 from backend.repository import Repository
-from backend.repository import ObjectNotInDBException
 from backend.repository import ObjectAlreadyInDBException
+from backend.repository import ObjectNotInDBException
+from backend.processor import Processor, ProcessingException
+from backend.formatting import format_for_display
 
 
-def create_api_server(repository: Repository):
+def create_api_server(repository: Repository, processor: Processor):
     api_server = Flask(__name__)
 
     @api_server.errorhandler(ObjectNotInDBException)
@@ -15,6 +17,10 @@ def create_api_server(repository: Repository):
     @api_server.errorhandler(ObjectAlreadyInDBException)
     def server_error(err):
         return str(err), 409
+
+    @api_server.errorhandler(ProcessingException)
+    def server_error(err: ProcessingException):
+        return err.toJson(), 422
 
     @api_server.route("/nodeTypes", methods=["GET"])
     def get_all_node_types():
@@ -71,5 +77,19 @@ def create_api_server(repository: Repository):
         node_link = NodeLink.fromJSON(request.json)
         repository.delete_node_link(node_link)
         return "OK", 200
+
+    @api_server.route("/queueProcessing", methods=["POST"])
+    def queue_processing():
+        nodeToProcess = NodeInstance.fromJSON(request.json)
+        processor.update_processing_schedule(nodeToProcess.node_id)
+        return "OK", 200
+
+    @api_server.route("/queueProcessing", methods=["GET"])
+    def check_processing_queue():
+        return processor.get_processing_schedule()
+
+    @api_server.route("/processingResult/<node_id>", methods=["GET"])
+    def get_processing_result(node_id):
+        return format_for_display(repository.read_object(node_id))
 
     return api_server

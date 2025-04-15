@@ -49,15 +49,31 @@ def test_get_node_type():
         assert response.data == b"Node type nonexistent_func not found"
         assert response.status_code == 404
 
-
 def test_get_all_node_instances():
     api_server = initialize_server()
 
     with api_server.test_client() as client:
         response = client.get("/nodeInstances")
 
-        assert response.json == [0, 1, 2, 3]
-        assert response.status_code == 200
+    assert response.json == [
+        {
+            "node_id": 0,
+            "node_type": "add_int"
+        },
+        {
+            "node_id": 1,
+            "node_type": "add_int"
+        },
+        {
+            "node_id": 2,
+            "node_type": "add_int"
+        },
+        {
+            "node_id": 3,
+            "node_type": "remove_outliers"
+        }
+    ]
+    assert response.status_code == 200
 
 
 def test_get_node_instance():
@@ -97,7 +113,28 @@ def test_create_node_instance():
         assert response.status_code == 200
 
         response = client.get("/nodeInstances")
-        assert response.json == [0, 1, 2, 3, 4]
+        assert response.json == [
+            {
+                "node_id": 0,
+                "node_type": "add_int"
+            },
+            {
+                "node_id": 1,
+                "node_type": "add_int"
+            },
+            {
+                "node_id": 2,
+                "node_type": "add_int"
+            },
+            {
+                "node_id": 3,
+                "node_type": "remove_outliers"
+            },
+            {
+                "node_id": 4,
+                "node_type": "add_int"
+            }
+        ]
         assert response.status_code == 200
 
 
@@ -111,7 +148,20 @@ def test_delete_node_instance():
         assert response.status_code == 200
 
         response = client.get("/nodeInstances")
-        assert response.json == [0, 1, 3]
+        assert response.json == [
+            {
+                "node_id": 0,
+                "node_type": "add_int"
+            },
+            {
+                "node_id": 1,
+                "node_type": "add_int"
+            },
+            {
+                "node_id": 3,
+                "node_type": "remove_outliers"
+            }
+        ]
         assert response.status_code == 200
 
         response = client.get("/nodeLinks")

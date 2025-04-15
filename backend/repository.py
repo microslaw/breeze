@@ -117,13 +117,14 @@ class Repository:
                 )"""
         )
 
-    def get_all_node_instance_ids(self) -> list[int]:
-        return [i[0] for i in self.fetchall("SELECT node_id FROM nodeInstances")]
+    def get_all_node_instances(self) -> list[NodeInstance]:
+        rows = self.fetchall("SELECT * FROM nodeInstances")
+        return [NodeInstance(row[0], row[1]) for row in rows]
 
     def check_node_instance_exists(self, node_id: int, raise_on=False) -> None:
         if (
             self.fetchone(
-                f"SELECT node_id FROM nodeINstances WHERE node_id = {node_id}"
+                f"SELECT node_id FROM nodeInstances WHERE node_id = {node_id}"
             )
             is None
         ):

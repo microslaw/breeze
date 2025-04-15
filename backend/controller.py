@@ -1,4 +1,5 @@
 from flask import Flask, request
+from flask_cors import CORS
 from backend.datatypes import NodeInstance, NodeLink
 from backend.repository import Repository
 from backend.repository import ObjectAlreadyInDBException
@@ -9,6 +10,7 @@ from backend.formatting import format_for_display
 
 def create_api_server(repository: Repository, processor: Processor):
     api_server = Flask(__name__)
+    CORS(api_server, origins=["http://localhost:5173"])
 
     @api_server.errorhandler(ObjectNotInDBException)
     def server_error(err):
@@ -32,7 +34,8 @@ def create_api_server(repository: Repository, processor: Processor):
 
     @api_server.route("/nodeInstances", methods=["GET"])
     def get_all_node_instances():
-        return repository.get_all_node_instance_ids()
+        node_instances = repository.get_all_node_instances()
+        return [node.toJSON() for node in node_instances]
 
     @api_server.route("/nodeInstances/<node_id>", methods=["GET"])
     def get_node_instance(node_id):

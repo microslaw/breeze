@@ -1,4 +1,5 @@
 from typing import Self
+from backend.formatting import format_for_display
 
 
 class NodeType:
@@ -33,8 +34,18 @@ class NodeType:
     def get_arg_names(self):
         return [
             arg_name
-            for arg_name in self.func.__code__.co_varnames[:self.get_arg_count()]
+            for arg_name in self.func.__code__.co_varnames[: self.get_arg_count()]
         ]
+
+    def get_default_args(self):
+        if self.func.__defaults__ is None:
+            return {}
+
+        arg_names = self.get_arg_names()[-len(self.func.__defaults__) :]
+        return {
+            arg_name: default
+            for arg_name, default in zip(arg_names, self.func.__defaults__)
+        }
 
     def get_arg_count(self):
         return self.func.__code__.co_argcount
@@ -44,5 +55,9 @@ class NodeType:
             "name": self.get_name(),
             "arg_names": self.get_arg_names(),
             "arg_types": self.get_arg_types_names(),
+            "default_args": {
+                arg_name: format_for_display(default_value)
+                for arg_name, default_value in self.get_default_args().items()
+            },
             "return_type": self.func.__annotations__["return"].__name__,
         }

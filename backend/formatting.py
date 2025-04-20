@@ -1,11 +1,16 @@
 import pandas as pd
 
-display_format_map = {
-}
+display_format_map = {}
+input_format_map = {}
 
+# TODO implement formatting exception
 
 def add_display_format(type: type, format_function: callable):
     display_format_map[type] = format_function
+
+
+def add_input_format(type: type, format_function: callable):
+    input_format_map[type] = format_function
 
 
 def format_for_display(obj: object) -> object:
@@ -18,3 +23,25 @@ def format_for_display(obj: object) -> object:
         obj_str = obj_str[:100] + "..."
 
     return obj_str
+
+
+def format_from_input(obj: object, type: type = None) -> object:
+    if type is None:
+        return str(obj)
+
+    if type not in input_format_map:
+        return str(obj)
+
+    return input_format_map[type](obj)
+
+
+def show(x):
+    """Function intended for debugging formatting"""
+    print(f"Formatting object of type {type(x)}  :")
+    print(x)
+
+
+# default formattings
+add_input_format(str, lambda x: x.decode("utf-8"))
+add_input_format(float, lambda x: float(x.decode("utf-8")))
+add_input_format(int, lambda x: int(x.decode("utf-8")))

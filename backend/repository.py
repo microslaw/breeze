@@ -23,19 +23,25 @@ class Repository:
         self.db_folder_path = db_folder_path
         self.init_db()
 
+    def get_output_path(self, node_id: int, output_name: str):
+        if output_name is None:
+            object_name = f"{node_id}-output"
+        else:
+            object_name = f"{node_id}-{output_name}-output"
+        return f"{self.db_folder_path}/objects/{object_name}"
+
     def write_output(
         self,
         object: object,
         producer_node_id: int,
         producer_node_output: str = None,
     ) -> None:
-        if producer_node_output is None:
-            object_name = f"{producer_node_id}-output"
-        else:
-            object_name = f"{producer_node_id}-{producer_node_output}-output"
 
-        with open(f"{self.db_folder_path}/objects/{object_name}", "wb") as f:
+        with open(self.get_output_path(producer_node_id, producer_node_output), "wb") as f:
             pickle.dump(object, f)
+
+    def does_output_exist(self, node_id: int, output_name: str = None) -> bool:
+        return os.path.isfile(self.get_output_path(node_id, output_name))
 
     def read_output(
         self,
@@ -44,19 +50,20 @@ class Repository:
     ) -> object:
         self.check_node_instance_exists(producer_node_id)
 
-        if producer_node_output is None:
-            object_name = f"{producer_node_id}-output"
-        else:
-            object_name = f"{producer_node_id}-{producer_node_output}-output"
-
-        full_path = f"{self.db_folder_path}/objects/{object_name}"
-        if not os.path.isfile(full_path):
+        if not self.does_output_exist(producer_node_id, producer_node_output):
             raise ObjectNotInDBException(
                 f"Processing result of node with node_id={producer_node_id} not found"
             )
 
-        with open(full_path, "rb") as f:
+        with open(self.get_output_path(producer_node_id, producer_node_output), "rb") as f:
             return pickle.load(f)
+
+    def get_kwarg_path(self, node_id, kwarg_name):
+        return f"{self.db_folder_path}/objects/{node_id}-{kwarg_name}-kwarg"
+
+    def does_kwarg_exist(self, node_id:int, kwarg_name:str) -> bool:
+        return os.path.isfile(self.get_kwarg_path(node_id, kwarg_name))
+
 
     def write_kwarg(
         self,
@@ -68,7 +75,7 @@ class Repository:
         self.check_node_kwarg_exists(node_type_name, kwarg_name)
 
         with open(
-            f"{self.db_folder_path}/objects/{parent_node_id}-{kwarg_name}-kwarg", "wb"
+            self.get_kwarg_path(parent_node_id, kwarg_name), "wb"
         ) as f:
             pickle.dump(object, f)
 
@@ -81,7 +88,7 @@ class Repository:
         self.check_node_kwarg_exists(node_type_name, kwarg_name)
 
         full_path = f"{self.db_folder_path}/objects/{parent_node_id}-{kwarg_name}-kwarg"
-        if not os.path.isfile(full_path):
+        if not self.does_kwarg_exist(parent_node_id, kwarg_name):
             raise ObjectNotInDBException(
                 f"Kwarg {kwarg_name} of node with node_id={parent_node_id} not found"
             )

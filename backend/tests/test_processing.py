@@ -70,7 +70,7 @@ def test_processing_results():
 
 def test_processing_scheduling():
     processor = initialize_processor()
-    assert processor.get_all_required_node_ids(4) == [0, 1, 2, 3, 4]
+    assert processor.get_all_prerequisite_node_ids(4) == [0, 1, 2, 3, 4]
 
 
 # Processor-reliant api tests

@@ -65,7 +65,7 @@ def test_processing_results():
     processor = initialize_processor()
     processor.update_processing_schedule(0)
     processor.wait_till_finished()
-    assert processor.repository.read_object(0) == 1
+    assert processor.repository.read_output(0) == 1
 
 
 def test_processing_scheduling():
@@ -108,6 +108,7 @@ def test_processing_exception():
             "origin": {
                 "node_id": 7,
                 "node_type": "add_int",
+                "overwrite_kwargs": {},
             },
             "traceback_str": "Traceback (most recent call last):\n"
             f'  File "{backend.tests.processing.nodeTypes.__file__}", '

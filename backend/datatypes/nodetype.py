@@ -31,6 +31,13 @@ class NodeType:
             if arg_name != "return"
         }
 
+    def get_arg_types(self) -> dict[str:type]:
+        return {
+            arg_name: arg_type
+            for arg_name, arg_type in self.func.__annotations__.items()
+            if arg_name != "return"
+        }
+
     def get_arg_names(self):
         return [
             arg_name
@@ -51,6 +58,12 @@ class NodeType:
         return self.func.__code__.co_argcount
 
     def toJSON(self):
+        func_annotations = self.func.__annotations__
+        if "return" not in func_annotations:
+            return_type = None
+        else:
+            return_type = func_annotations["return"].__name__
+
         return {
             "name": self.get_name(),
             "arg_names": self.get_arg_names(),
@@ -59,5 +72,5 @@ class NodeType:
                 arg_name: format_for_display(default_value)
                 for arg_name, default_value in self.get_default_args().items()
             },
-            "return_type": self.func.__annotations__["return"].__name__,
+            "return_type": return_type,
         }

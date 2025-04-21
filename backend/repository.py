@@ -23,7 +23,7 @@ class Repository:
         self.db_folder_path = db_folder_path
         self.init_db()
 
-    def write_object(
+    def write_output(
         self,
         object: object,
         producer_node_id: int,
@@ -37,7 +37,7 @@ class Repository:
         with open(f"{self.db_folder_path}/objects/{object_name}", "wb") as f:
             pickle.dump(object, f)
 
-    def read_object(
+    def read_output(
         self,
         producer_node_id: int,
         producer_node_output: str = None,
@@ -57,6 +57,54 @@ class Repository:
 
         with open(full_path, "rb") as f:
             return pickle.load(f)
+
+    def write_kwarg(
+        self,
+        object: object,
+        parent_node_id: int,
+        kwarg_name: str = None,
+    ) -> None:
+        node_type_name = self.get_node_instance(parent_node_id).node_type
+        self.check_node_kwarg_exists(node_type_name, kwarg_name)
+
+        with open(
+            f"{self.db_folder_path}/objects/{parent_node_id}-{kwarg_name}-kwarg", "wb"
+        ) as f:
+            pickle.dump(object, f)
+
+    def read_kwarg(
+        self,
+        parent_node_id: int,
+        kwarg_name: str = None,
+    ) -> object:
+        node_type_name = self.get_node_instance_type_name(parent_node_id)
+        self.check_node_kwarg_exists(node_type_name, kwarg_name)
+
+        full_path = f"{self.db_folder_path}/objects/{parent_node_id}-{kwarg_name}-kwarg"
+        if not os.path.isfile(full_path):
+            raise ObjectNotInDBException(
+                f"Kwarg {kwarg_name} of node with node_id={parent_node_id} not found"
+            )
+
+        with open(full_path, "rb") as f:
+            return pickle.load(f)
+
+    def read_instance_kwargs(self, instance_id: int):
+        self.check_node_instance_exists(instance_id)
+
+        object_paths = os.listdir(f"{self.db_folder_path}/objects")
+        # e.g. object_path: 3-colname-kwarg
+        # object_path.split("-")[0] == 3 <instance_id> and object_path.split("-")[1] == colname <kwarg_name>
+
+        instance_kwarg_names = [
+            filename.split("-")[1]
+            for filename in object_paths
+            if int(filename.split("-")[0]) == instance_id
+        ]
+
+        return {
+            name: self.read_kwarg(instance_id, name) for name in instance_kwarg_names
+        }
 
     def get_connection(self) -> sqlite3.Connection:
         return sqlite3.connect(f"{self.db_folder_path}/{self.db_name}")
@@ -143,7 +191,12 @@ class Repository:
         nodeRow = self.fetchone(
             f"SELECT * FROM nodeInstances WHERE node_id = {node_id}"
         )
-        return NodeInstance(nodeRow[0], nodeRow[1])
+        instance = NodeInstance(
+            node_id=nodeRow[0],
+            node_type=nodeRow[1],
+            overwrite_kwargs=self.read_instance_kwargs(nodeRow[0]),
+        )
+        return instance
 
     def get_new_node_instance_id(self) -> int:
         new_id = self.fetchone("SELECT MAX(node_id) FROM nodeInstances")[0]
@@ -270,24 +323,45 @@ class Repository:
             query += f" AND origin_node_output IS NULL"
         self.execute(query)
 
-    def check_node_type_exists(self, node_type: int, raise_on: bool = False) -> None:
-        if node_type not in self.get_all_node_types():
+    def check_node_type_exists(
+        self, node_type_name: str, raise_on: bool = False
+    ) -> None:
+        if node_type_name not in self.get_all_node_types():
             if raise_on == False:
-                raise ObjectNotInDBException(f"Node type {node_type} not found")
+                raise ObjectNotInDBException(f"Node type {node_type_name} not found")
         else:
             if raise_on == True:
                 raise ObjectAlreadyInDBException(
-                    f"Node type {node_type} already exists"
+                    f"Node type {node_type_name} already exists"
                 )
 
-    def get_all_node_types(self) -> list:
+    def check_node_kwarg_exists(self, node_type_name: str, kwarg_name: str):
+
+        node_type = self.get_node_type(node_type_name)
+        if kwarg_name not in node_type.get_arg_names():
+            raise ObjectNotInDBException(
+                f"""Nodes of type_name= "{node_type.get_name()}" do not have any argument with kwarg_name="{kwarg_name}\""""
+            )
+
+    def get_all_node_types(self) -> list[NodeType]:
         return [node_type.get_name() for node_type in NodeType.all_udn]
+
+    def get_node_instance_type_name(self, node_id: int) -> str:
+        self.check_node_instance_exists(node_id)
+        node_type_name = self.fetchone(
+            f"SELECT node_type FROM nodeInstances WHERE node_id = {node_id}"
+        )[0]
+        return node_type_name
 
     def get_node_type(self, node_type_name: str) -> NodeType:
         self.check_node_type_exists(node_type_name)
         for node_type in NodeType.all_udn:
             if node_type.get_name() == node_type_name:
                 return node_type
+
+    def get_arg_type(self, node_type_name: str, arg_name: str):
+        self.check_node_kwarg_exists(node_type_name, arg_name)
+        return self.get_node_type(node_type_name).get_arg_types().get(arg_name)
 
     def get_prerequisite_node_ids(self, node_id: int) -> list[int]:
         self.check_node_instance_exists(node_id)

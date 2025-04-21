@@ -60,20 +60,24 @@ def test_get_all_node_instances():
     assert response.json == [
         {
             "node_id": 0,
-            "node_type": "add_int"
+            "node_type": "add_int",
+            "overwrite_kwargs": {},
         },
         {
             "node_id": 1,
-            "node_type": "add_int"
+            "node_type": "add_int",
+            "overwrite_kwargs": {},
         },
         {
             "node_id": 2,
-            "node_type": "add_int"
+            "node_type": "add_int",
+            "overwrite_kwargs": {},
         },
         {
             "node_id": 3,
-            "node_type": "remove_outliers"
-        }
+            "node_type": "remove_outliers",
+            "overwrite_kwargs": {},
+        },
     ]
     assert response.status_code == 200
 
@@ -87,6 +91,7 @@ def test_get_node_instance():
         assert response.json == {
             "node_id": 0,
             "node_type": "add_int",
+            "overwrite_kwargs": {},
         }
         assert response.status_code == 200
 
@@ -118,24 +123,29 @@ def test_create_node_instance():
         assert response.json == [
             {
                 "node_id": 0,
-                "node_type": "add_int"
+                "node_type": "add_int",
+                "overwrite_kwargs": {},
             },
             {
                 "node_id": 1,
-                "node_type": "add_int"
+                "node_type": "add_int",
+                "overwrite_kwargs": {},
             },
             {
                 "node_id": 2,
-                "node_type": "add_int"
+                "node_type": "add_int",
+                "overwrite_kwargs": {},
             },
             {
                 "node_id": 3,
-                "node_type": "remove_outliers"
+                "node_type": "remove_outliers",
+                "overwrite_kwargs": {},
             },
             {
                 "node_id": 4,
-                "node_type": "add_int"
-            }
+                "node_type": "add_int",
+                "overwrite_kwargs": {},
+            },
         ]
         assert response.status_code == 200
 
@@ -153,16 +163,19 @@ def test_delete_node_instance():
         assert response.json == [
             {
                 "node_id": 0,
-                "node_type": "add_int"
+                "node_type": "add_int",
+                "overwrite_kwargs": {},
             },
             {
                 "node_id": 1,
-                "node_type": "add_int"
+                "node_type": "add_int",
+                "overwrite_kwargs": {},
             },
             {
                 "node_id": 3,
-                "node_type": "remove_outliers"
-            }
+                "node_type": "remove_outliers",
+                "overwrite_kwargs": {},
+            },
         ]
         assert response.status_code == 200
 

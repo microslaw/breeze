@@ -150,3 +150,11 @@ def test_custom_format_for_display():
 
         assert response.status_code == 200
         assert response.data == b"MyClass named a class"
+
+
+def test_excluding_processed_prerequisite():
+    processor = initialize_processor()
+
+    processor.repository.write_output(object=3, producer_node_id=2)
+
+    assert processor.get_all_prerequisite_node_ids(node_id=4) == [3, 4]

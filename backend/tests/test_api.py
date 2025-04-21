@@ -43,6 +43,32 @@ def test_get_node_type():
             "arg_types": {"b": "int"},
             "return_type": "int",
             "default_args": {},
+            "tags": ["testing"],
+        }
+        assert response.status_code == 200
+
+        response = client.get("/nodeTypes/nonexistent_func")
+        assert response.data == b"Node type nonexistent_func not found"
+        assert response.status_code == 404
+
+
+def test_get_undecorated_node_type():
+    controller = initialize_server()
+
+    @NodeType
+    def multiply_int(x):
+        return x * 2
+
+    with controller.test_client() as client:
+
+        response = client.get("/nodeTypes/multiply_int")
+        assert response.json == {
+            "name": "multiply_int",
+            "arg_types": {},
+            "arg_names": ["x"],
+            "default_args": {},
+            "return_type": None,
+            "tags": [],
         }
         assert response.status_code == 200
 

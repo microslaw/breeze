@@ -46,6 +46,9 @@ def test_get_default_arg():
             "default_args": {"digits": "2"},
             "name": "round_float",
             "return_type": None,
+            "tags":[
+                "testing"
+            ]
         }
         assert response.status_code == 200
 

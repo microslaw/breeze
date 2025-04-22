@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { BlockI } from "../models/block.model";
-import { v4 as uuidv4 } from "uuid";
+import { createNode, getNodeTypes } from "../services/mainApiService";
 
 interface BlockModalCreateProps {
   show: boolean;
@@ -18,13 +18,29 @@ const BlockModalCreate = ({
 }: BlockModalCreateProps) => {
   const [block, setBlock] = useState<BlockI>({
     name: "",
-    id: "",
+    type: "default",
+    id: 999,
     x: 0,
     y: 0,
     isDragging: false,
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [blockTypes, setBlockTypes] = useState<string[]>([]);
+
+  useEffect(() => {
+    console.log("BlockModalCreate mounted");
+    const fetchBlockTypes = async () => {
+      const nodeTypes = await getNodeTypes();
+      setBlockTypes(nodeTypes);
+    };
+    fetchBlockTypes();
+  }, []);
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
     const { name, value } = e.target;
     setBlock((prevBlock) => ({
       ...prevBlock,
@@ -33,10 +49,20 @@ const BlockModalCreate = ({
   };
 
   const handleSubmit = () => {
-    block.id = uuidv4();
+    block.id = Math.floor(Math.random() * 1000000);
     console.log(block);
     setBlocks([...blocks, block]);
-    setBlock({ name: "", id: "", x: 0, y: 0, isDragging: false });
+    setBlock({
+      name: "",
+      type: "default",
+      id: Math.floor(Math.random() * 1000000),
+      x: 0,
+      y: 0,
+      isDragging: false,
+    });
+    createNode(block).then((response) => {
+      console.log(response);
+    });
     handleClose();
   };
 
@@ -57,6 +83,22 @@ const BlockModalCreate = ({
               onChange={handleChange}
             />
           </Form.Group>
+          <Form.Group controlId="formBlockType">
+            <Form.Label>Type</Form.Label>
+            <Form.Select
+              as="input"
+              type="string"
+              name="type"
+              value={block.type}
+              onChange={handleChange}
+            >
+              {blockTypes.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </Form.Select>
+          </Form.Group>
           <Form.Group controlId="formBlockX">
             <Form.Label>X Coordinate</Form.Label>
             <Form.Control
@@ -65,6 +107,7 @@ const BlockModalCreate = ({
               name="x"
               value={block.x}
               onChange={handleChange}
+              disabled
             />
           </Form.Group>
           <Form.Group controlId="formBlockY">
@@ -75,6 +118,7 @@ const BlockModalCreate = ({
               name="y"
               value={block.y}
               onChange={handleChange}
+              disabled
             />
           </Form.Group>
         </Form>

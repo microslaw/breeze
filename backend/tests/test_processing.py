@@ -2,7 +2,7 @@ from backend.datatypes import NodeType
 from importlib import reload
 from backend import Repository
 from backend import Processor, ProcessingException
-from backend import create_api_server
+from backend import Controller
 import backend.tests.processing
 import backend.tests.processing.nodeTypes
 import threading
@@ -23,10 +23,10 @@ def initialize_processor() -> Processor:
     return processor
 
 
-def initalize_api_server() -> tuple[Flask, Processor]:
+def initalize_api_server() -> Controller:
     processor = initialize_processor()
-    api_server = create_api_server(processor.repository, processor)
-    return api_server, processor
+    controller = Controller(processor.repository, processor)
+    return controller
 
 
 def test_initialization():
@@ -77,10 +77,10 @@ def test_processing_scheduling():
 
 
 def test_check_processing_queue():
-    api_server, processor = initalize_api_server()
-    processor.update_processing_schedule(4, start_processing=False)
+    controller = initalize_api_server()
+    controller.processor.update_processing_schedule(4, start_processing=False)
 
-    with api_server.test_client() as client:
+    with controller.test_client() as client:
         response = client.get("/queueProcessing")
 
         assert response.json == [0, 1, 2, 3, 4]
@@ -88,14 +88,14 @@ def test_check_processing_queue():
 
 
 def test_processing_exception():
-    api_server, processor = initalize_api_server()
+    controller = initalize_api_server()
 
-    with api_server.test_client() as client:
+    with controller.test_client() as client:
         client.post(
             "/queueProcessing",
             json={"node_id": 8},
         )
-        processor.wait_till_finished()
+        controller.processor.wait_till_finished()
 
         response = client.get("/queueProcessing")
 
@@ -120,14 +120,14 @@ def test_processing_exception():
 
 
 def test_get_processing_result():
-    api_server, processor = initalize_api_server()
+    controller = initalize_api_server()
 
-    with api_server.test_client() as client:
+    with controller.test_client() as client:
         client.post(
             "/queueProcessing",
             json={"node_id": 4},
         )
-        processor.wait_till_finished()
+        controller.processor.wait_till_finished()
 
         response = client.get("/processingResult/4")
 
@@ -136,14 +136,14 @@ def test_get_processing_result():
 
 
 def test_custom_format_for_display():
-    api_server, processor = initalize_api_server()
+    controller = initalize_api_server()
 
-    with api_server.test_client() as client:
+    with controller.test_client() as client:
         client.post(
             "/queueProcessing",
             json={"node_id": 9},
         )
-        processor.wait_till_finished()
+        controller.processor.wait_till_finished()
 
         response = client.get("/processingResult/9")
 

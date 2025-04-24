@@ -42,12 +42,14 @@ def test_get_node_type():
             "arg_names": ["a", "b"],
             "arg_types": {"b": "int"},
             "return_type": "int",
+            "default_args": {},
         }
         assert response.status_code == 200
 
         response = client.get("/nodeTypes/nonexistent_func")
         assert response.data == b"Node type nonexistent_func not found"
         assert response.status_code == 404
+
 
 def test_get_all_node_instances():
     controller = initialize_server()
@@ -58,20 +60,24 @@ def test_get_all_node_instances():
     assert response.json == [
         {
             "node_id": 0,
-            "node_type": "add_int"
+            "node_type": "add_int",
+            "overwrite_kwargs": {},
         },
         {
             "node_id": 1,
-            "node_type": "add_int"
+            "node_type": "add_int",
+            "overwrite_kwargs": {},
         },
         {
             "node_id": 2,
-            "node_type": "add_int"
+            "node_type": "add_int",
+            "overwrite_kwargs": {},
         },
         {
             "node_id": 3,
-            "node_type": "remove_outliers"
-        }
+            "node_type": "remove_outliers",
+            "overwrite_kwargs": {},
+        },
     ]
     assert response.status_code == 200
 
@@ -85,6 +91,7 @@ def test_get_node_instance():
         assert response.json == {
             "node_id": 0,
             "node_type": "add_int",
+            "overwrite_kwargs": {},
         }
         assert response.status_code == 200
 
@@ -116,24 +123,29 @@ def test_create_node_instance():
         assert response.json == [
             {
                 "node_id": 0,
-                "node_type": "add_int"
+                "node_type": "add_int",
+                "overwrite_kwargs": {},
             },
             {
                 "node_id": 1,
-                "node_type": "add_int"
+                "node_type": "add_int",
+                "overwrite_kwargs": {},
             },
             {
                 "node_id": 2,
-                "node_type": "add_int"
+                "node_type": "add_int",
+                "overwrite_kwargs": {},
             },
             {
                 "node_id": 3,
-                "node_type": "remove_outliers"
+                "node_type": "remove_outliers",
+                "overwrite_kwargs": {},
             },
             {
                 "node_id": 4,
-                "node_type": "add_int"
-            }
+                "node_type": "add_int",
+                "overwrite_kwargs": {},
+            },
         ]
         assert response.status_code == 200
 
@@ -151,16 +163,19 @@ def test_delete_node_instance():
         assert response.json == [
             {
                 "node_id": 0,
-                "node_type": "add_int"
+                "node_type": "add_int",
+                "overwrite_kwargs": {},
             },
             {
                 "node_id": 1,
-                "node_type": "add_int"
+                "node_type": "add_int",
+                "overwrite_kwargs": {},
             },
             {
                 "node_id": 3,
-                "node_type": "remove_outliers"
-            }
+                "node_type": "remove_outliers",
+                "overwrite_kwargs": {},
+            },
         ]
         assert response.status_code == 200
 

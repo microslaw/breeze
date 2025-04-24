@@ -5,11 +5,11 @@ from backend.repository import Repository
 from backend.repository import ObjectAlreadyInDBException
 from backend.repository import ObjectNotInDBException
 from backend.processor import Processor, ProcessingException
-from backend.formatting import format_for_display
+from backend.formatting import format_for_display, format_from_input
 
 
 class Controller:
-    def __init__ (self, repository: Repository, processor: Processor):
+    def __init__(self, repository: Repository, processor: Processor):
         self.flask_server = Flask(__name__)
         CORS(self.flask_server, origins=["http://localhost:5173"])
 
@@ -96,7 +96,24 @@ class Controller:
 
         @self.flask_server.route("/processingResult/<node_id>", methods=["GET"])
         def get_processing_result(node_id):
-            return format_for_display(self.repository.read_object(node_id))
+            return format_for_display(self.repository.read_output(node_id))
+
+        @self.flask_server.route(
+            "/nodeInstances/<node_id>/kwargs/<kwarg_name>", methods=["GET"]
+        )
+        def get_kwarg(node_id, kwarg_name):
+            return format_for_display(repository.read_kwarg(node_id, kwarg_name))
+
+        @self.flask_server.route(
+            "/nodeInstances/<node_id>/kwargs/<kwarg_name>", methods=["PUT"]
+        )
+        def put_node_kwarg(node_id, kwarg_name):
+            node_type_name = repository.get_node_instance_type_name(node_id)
+            arg_type = repository.get_arg_type(node_type_name, kwarg_name)
+            repository.write_kwarg(
+                format_from_input(request.data, arg_type), node_id, kwarg_name
+            )
+            return "OK", 200
 
     def test_client(self, **kwargs):
         return self.flask_server.test_client(**kwargs)

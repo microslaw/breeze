@@ -65,12 +65,12 @@ def test_processing_results():
     processor = initialize_processor()
     processor.update_processing_schedule(0)
     processor.wait_till_finished()
-    assert processor.repository.read_object(0) == 1
+    assert processor.repository.read_output(0) == 1
 
 
 def test_processing_scheduling():
     processor = initialize_processor()
-    assert processor.get_all_required_node_ids(4) == [0, 1, 2, 3, 4]
+    assert processor.get_all_prerequisite_node_ids(4) == [0, 1, 2, 3, 4]
 
 
 # Processor-reliant api tests
@@ -108,6 +108,7 @@ def test_processing_exception():
             "origin": {
                 "node_id": 7,
                 "node_type": "add_int",
+                "overwrite_kwargs": {},
             },
             "traceback_str": "Traceback (most recent call last):\n"
             f'  File "{backend.tests.processing.nodeTypes.__file__}", '
@@ -149,3 +150,11 @@ def test_custom_format_for_display():
 
         assert response.status_code == 200
         assert response.data == b"MyClass named a class"
+
+
+def test_excluding_processed_prerequisite():
+    processor = initialize_processor()
+
+    processor.repository.write_output(object=3, producer_node_id=2)
+
+    assert processor.get_all_prerequisite_node_ids(node_id=4) == [3, 4]

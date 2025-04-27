@@ -1,20 +1,28 @@
 import Menu from "./components/Menu";
 import MainStage from "./components/MainStage";
 import { BlockI } from "./models/block.model";
-import { deleteNodeById, getAllNodes } from "./services/mainApiService";
+import {
+  deleteNodeById,
+  getAllLinks,
+  getAllNodes,
+} from "./services/mainApiService";
 import { useEffect, useState } from "react";
 import BlockModalDetails from "./components/BlockModalDeatils";
+import { LinkI } from "./models/link.model";
 
 function App() {
   const [blocks, setBlocks] = useState<BlockI[]>([]);
+  const [links, setLinks] = useState<LinkI[]>([]);
 
   useEffect(() => {
     console.log("App mounted");
-    const fetchBlocks = async () => {
+    const fetchAppState = async () => {
       const nodes = await getAllNodes();
+      const links = await getAllLinks();
       setBlocks(nodes);
+      setLinks(links);
     };
-    fetchBlocks();
+    fetchAppState();
   }, []);
 
   const [isBlockModalDeatilsVisible, setIsBlockModalDeatilsVisible] =
@@ -53,6 +61,8 @@ function App() {
       <MainStage
         blocks={blocks}
         setBlocks={setBlocks}
+        links={links}
+        setLinks={setLinks}
         handleBlockDoubleClick={(block) => handleBlockDoubleClick(block)}
       />
       <BlockModalDetails

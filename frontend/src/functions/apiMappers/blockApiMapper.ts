@@ -7,8 +7,16 @@ export function mapApiResponseToBlocks(apiResponse: any[]): BlockI[] {
     name: node.node_type,
     type: node.node_type,
     id: node.node_id.toString(),
-    x: 0,
-    y: 0,
+    x: node.position_x,
+    y: node.position_y,
     isDragging: false,
   }));
+}
+
+export function mapBlockToApiPostRequest(block: BlockI): any {
+  return {
+    node_type: block.type,
+    position_x: block.x,
+    position_y: block.y,
+  };
 }

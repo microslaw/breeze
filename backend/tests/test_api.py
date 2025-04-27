@@ -126,7 +126,7 @@ def test_get_node_instance():
             "node_id": 0,
             "node_type": "add_int",
             "position_x" : 100,
-            "position_y" : 100
+            "position_y" : 100,
             "overwrite_kwargs": {},
         }
         assert response.status_code == 200

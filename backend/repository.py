@@ -203,6 +203,8 @@ class Repository:
         instance = NodeInstance(
             node_id=nodeRow[0],
             node_type=nodeRow[1],
+            position_x=nodeRow[2],
+            position_y=nodeRow[3],
             overwrite_kwargs=self.read_instance_kwargs(nodeRow[0]),
         )
         return instance

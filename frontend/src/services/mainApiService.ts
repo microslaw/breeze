@@ -1,5 +1,8 @@
 import axios from "axios";
-import { mapApiResponseToBlocks } from "../functions/apiMappers/blockApiMapper";
+import {
+  mapApiResponseToBlocks,
+  mapBlockToApiPostRequest,
+} from "../functions/apiMappers/blockApiMapper";
 import { BlockI } from "../models/block.model";
 
 export async function getAllNodes(): Promise<BlockI[]> {
@@ -22,16 +25,6 @@ export async function getAllNodes(): Promise<BlockI[]> {
   }
 }
 
-// TODO implement non primitive handling of the response
-export async function getNodeById(id: number) {
-  const response = await axios({
-    method: "get",
-    url: "http://127.0.0.1:5000/nodeInstances/" + id,
-  });
-  console.log(response.data);
-  return response.data;
-}
-
 export async function deleteNodeById(id: number) {
   const response = await axios({
     method: "delete",
@@ -41,8 +34,8 @@ export async function deleteNodeById(id: number) {
   return response.data;
 }
 
-export async function createNode(node: BlockI) {
-  console.log("createNode", node);
+export async function createNode(block: BlockI) {
+  const node = mapBlockToApiPostRequest(block);
   try {
     const response = await axios({
       method: "post",
@@ -50,15 +43,23 @@ export async function createNode(node: BlockI) {
       headers: {
         "Content-Type": "application/json",
       },
-      data: {
-        node_type: node.type,
-      },
+      data: node,
     });
     return response.data;
   } catch (error) {
     console.error("Error creating node:", error);
     throw error;
   }
+}
+
+// TODO implement non primitive handling of the response
+export async function getNodeById(id: number) {
+  const response = await axios({
+    method: "get",
+    url: "http://127.0.0.1:5000/nodeInstances/" + id,
+  });
+  console.log(response.data);
+  return response.data;
 }
 
 // TODO implement non primitive handling of the response

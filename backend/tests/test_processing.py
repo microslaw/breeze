@@ -108,6 +108,8 @@ def test_processing_exception():
             "origin": {
                 "node_id": 7,
                 "node_type": "add_int",
+                "position_x": 0,
+                "position_y": 0,
                 "overwrite_kwargs": {},
             },
             "traceback_str": "Traceback (most recent call last):\n"

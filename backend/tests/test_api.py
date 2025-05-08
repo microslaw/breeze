@@ -87,21 +87,29 @@ def test_get_all_node_instances():
         {
             "node_id": 0,
             "node_type": "add_int",
+            "position_x" : 100,
+            "position_y" : 100,
             "overwrite_kwargs": {},
         },
         {
             "node_id": 1,
             "node_type": "add_int",
+            "position_x" : 100,
+            "position_y" : 300,
             "overwrite_kwargs": {},
         },
         {
             "node_id": 2,
             "node_type": "add_int",
+            "position_x" : 400,
+            "position_y" : 200,
             "overwrite_kwargs": {},
         },
         {
             "node_id": 3,
             "node_type": "remove_outliers",
+            "position_x" : 700,
+            "position_y" : 200,
             "overwrite_kwargs": {},
         },
     ]
@@ -117,6 +125,8 @@ def test_get_node_instance():
         assert response.json == {
             "node_id": 0,
             "node_type": "add_int",
+            "position_x" : 100,
+            "position_y" : 100,
             "overwrite_kwargs": {},
         }
         assert response.status_code == 200
@@ -140,6 +150,8 @@ def test_create_node_instance():
             "/nodeInstances",
             json={
                 "node_type": "add_int",
+                "position_x" : 100,
+                "position_y" : 100
             },
         )
         assert response.json == {"node_id": 4}
@@ -150,26 +162,36 @@ def test_create_node_instance():
             {
                 "node_id": 0,
                 "node_type": "add_int",
+                "position_x" : 100,
+                "position_y" : 100,
                 "overwrite_kwargs": {},
             },
             {
                 "node_id": 1,
                 "node_type": "add_int",
+                "position_x" : 100,
+                "position_y" : 300,
                 "overwrite_kwargs": {},
             },
             {
                 "node_id": 2,
                 "node_type": "add_int",
+                "position_x" : 400,
+                "position_y" : 200,
                 "overwrite_kwargs": {},
             },
             {
                 "node_id": 3,
                 "node_type": "remove_outliers",
+                "position_x" : 700,
+                "position_y" : 200,
                 "overwrite_kwargs": {},
             },
             {
                 "node_id": 4,
                 "node_type": "add_int",
+                "position_x" : 100,
+                "position_y" : 100,
                 "overwrite_kwargs": {},
             },
         ]
@@ -190,16 +212,22 @@ def test_delete_node_instance():
             {
                 "node_id": 0,
                 "node_type": "add_int",
+                "position_x" : 100,
+                "position_y" : 100,
                 "overwrite_kwargs": {},
             },
             {
                 "node_id": 1,
                 "node_type": "add_int",
+                "position_x" : 100,
+                "position_y" : 300,
                 "overwrite_kwargs": {},
             },
             {
                 "node_id": 3,
                 "node_type": "remove_outliers",
+                "position_x" : 700,
+                "position_y" : 200,
                 "overwrite_kwargs": {},
             },
         ]

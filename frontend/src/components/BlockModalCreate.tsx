@@ -18,7 +18,7 @@ const BlockModalCreate = ({
 }: BlockModalCreateProps) => {
   const [block, setBlock] = useState<BlockI>({
     name: "",
-    type: "default",
+    type: "",
     id: 999,
     x: 0,
     y: 0,
@@ -50,7 +50,6 @@ const BlockModalCreate = ({
 
   const handleSubmit = () => {
     block.id = Math.floor(Math.random() * 1000000);
-    console.log(block);
     setBlocks([...blocks, block]);
     setBlock({
       name: "",
@@ -92,6 +91,9 @@ const BlockModalCreate = ({
               value={block.type}
               onChange={handleChange}
             >
+              <option value="" disabled>
+                Select a type
+              </option>
               {blockTypes.map((type) => (
                 <option key={type} value={type}>
                   {type}
@@ -107,7 +109,6 @@ const BlockModalCreate = ({
               name="x"
               value={block.x}
               onChange={handleChange}
-              disabled
             />
           </Form.Group>
           <Form.Group controlId="formBlockY">
@@ -118,7 +119,6 @@ const BlockModalCreate = ({
               name="y"
               value={block.y}
               onChange={handleChange}
-              disabled
             />
           </Form.Group>
         </Form>

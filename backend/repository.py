@@ -168,13 +168,15 @@ class Repository:
         self.execute(
             """CREATE TABLE nodeInstances (
                 node_id INTEGER PRIMARY KEY,
-                node_type TEXT NOT NULL
+                node_type TEXT NOT NULL,
+                position_x INTEGER NOT NULL,
+                position_y INTEGER NOT NULL
                 )"""
         )
 
     def get_all_node_instances(self) -> list[NodeInstance]:
         rows = self.fetchall("SELECT * FROM nodeInstances")
-        return [NodeInstance(row[0], row[1]) for row in rows]
+        return [NodeInstance(row[0], row[1], row[2], row[3]) for row in rows]
 
     def check_node_instance_exists(self, node_id: int, raise_on=False) -> None:
         if (
@@ -201,6 +203,8 @@ class Repository:
         instance = NodeInstance(
             node_id=nodeRow[0],
             node_type=nodeRow[1],
+            position_x=nodeRow[2],
+            position_y=nodeRow[3],
             overwrite_kwargs=self.read_instance_kwargs(nodeRow[0]),
         )
         return instance
@@ -219,7 +223,7 @@ class Repository:
         """
         node_id = self.get_new_node_instance_id()
         self.execute(
-            f"INSERT INTO nodeInstances VALUES ({node_id}, '{node_instance.node_type}')"
+            f"INSERT INTO nodeInstances VALUES ({node_id}, '{node_instance.node_type}', {node_instance.position_x}, {node_instance.position_y})"
         )
         return node_id
 

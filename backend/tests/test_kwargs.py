@@ -68,6 +68,8 @@ def test_put_kwarg():
         assert response.json == {
             "node_id": 0,
             "node_type": "add_float",
+            "position_x": 0,
+            "position_y": 0,
             "overwrite_kwargs": {"a": "3.1415"},
         }
 
@@ -89,6 +91,8 @@ def test_put_overwriting_kwarg():
         assert response.json == {
             "node_id": 2,
             "node_type": "round_float",
+            "position_x": 0,
+            "position_y": 0,
             "overwrite_kwargs": {
                 "digits": "1",
             },

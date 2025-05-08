@@ -28,32 +28,18 @@ const Menu = ({ blocks, setBlocks }: MenuProps) => {
         <Button onClick={() => setIsBlockModalCreateVisible(true)}>
           Add new block
         </Button>
-        <Button onClick={() => console.log(blocks)}>Log list of blocks</Button>
+        {/* <Button onClick={() => console.log(blocks)}>Log list of blocks</Button>
         <Button onClick={() => getNodeTypes()}>Get node types from API</Button>
-        <Button
-          onClick={() =>
-            createNode({
-              name: "a",
-              type: "add_int",
-              x: 0,
-              y: 0,
-              id: 0,
-              isDragging: true,
-            })
-          }
-        >
-          Add new node
-        </Button>
         <Button onClick={() => getAllNodes()}>
           Get node instances from API
         </Button>
         <Button onClick={() => getNodeById(1)}>
           Get node instance by ID from API
         </Button>
-        <Button onClick={() => getAllLinks()}>Get node links from API</Button>
         <Button onClick={() => getLinksByOriginNode(1)}>
-          Get node links by origin ID from API
-        </Button>
+        Get node links by origin ID from API
+        </Button> */}
+        <Button onClick={() => getAllLinks()}>Get node links from API</Button>
       </span>
       <BlockModalCreate
         show={isBlockModalCreateVisible}

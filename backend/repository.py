@@ -113,6 +113,13 @@ class Repository:
             name: self.read_kwarg(instance_id, name) for name in instance_kwarg_names
         }
 
+    def load_workflow(self, path, filetype="csv"):
+        if filetype == "csv":
+            self.from_csv(f"{path}/nodeInstances.csv", "nodeInstances")
+            self.from_csv(f"{path}/nodeLinks.csv", "nodeLinks")
+        else:
+            raise NotImplementedError
+
     def get_connection(self) -> sqlite3.Connection:
         return sqlite3.connect(f"{self.db_folder_path}/{self.db_name}")
 

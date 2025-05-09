@@ -1,29 +1,6 @@
 from backend.datatypes import NodeType
 from backend.formatting import add_display_format
 
-# data in .csv files will create a following workflow:
-# +--+
-# |n0|->\
-# +--+   \     +--+
-#         +--> |n2|->\
-# +--+   /     +--+   \   +--+
-# |n1|->/              +->|n4|
-# +--+         +--+   /   +--+
-#              |n3|->/
-#              +--+
-# +--+
-# |n6|->\
-# +--+   \     +--+
-#         +--> |n7|->\
-# +--+   /     +--+   \   +--+
-# |n5|->+--------------+->|n8|
-# +--+                    +--+
-#
-# +--+
-# |n9|
-# +--+
-
-
 @NodeType(tags=["testing"])
 def add_int(a: int, b: int) -> int:
     return a + b

@@ -2,16 +2,6 @@ from backend.datatypes import NodeType
 import pandas as pd
 from backend.formatting import add_input_format
 
-
-# data in .csv files will create a following workflow:
-# +--+
-# |n0|->\
-# +--+   \     +--+
-#         +--> |n1|->\
-# +--+         +--+   \   +--+
-# |n3|                 \->|n2|
-# +--+                    +--+
-
 @NodeType(tags=["testing"])
 def add_float(a: float, b: float) -> float:
     return a + b

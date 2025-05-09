@@ -3,8 +3,8 @@ from importlib import reload
 from backend import Repository
 from backend import Processor, ProcessingException
 from backend import Controller
-import backend.tests.processing
-import backend.tests.processing.nodeTypes
+import backend.prefabs.testing.processing
+import backend.prefabs.testing.processing
 import threading
 import time
 from flask import Flask
@@ -15,10 +15,9 @@ def initialize_processor() -> Processor:
     processor = Processor(repository)
 
     NodeType.clear_udns()
-    reload(backend.tests.processing.nodeTypes)
+    reload(backend.prefabs.testing.processing)
 
-    repository.from_csv("backend/tests/processing/nodeInstances.csv", "nodeInstances")
-    repository.from_csv("backend/tests/processing/nodeLinks.csv", "nodeLinks")
+    repository.load_workflow("backend/tests/workflows/processing")
 
     return processor
 
@@ -113,8 +112,8 @@ def test_processing_exception():
                 "overwrite_kwargs": {},
             },
             "traceback_str": "Traceback (most recent call last):\n"
-            f'  File "{backend.tests.processing.nodeTypes.__file__}", '
-            f"line {backend.tests.processing.nodeTypes.add_int.func.__code__.co_firstlineno + 2}, in add_int\n"
+            f'  File "{backend.prefabs.testing.processing.__file__}", '
+            f"line {backend.prefabs.testing.processing.add_int.func.__code__.co_firstlineno + 2}, in add_int\n"
             "    return a + b\n"
             "           ~~^~~\n"
             "TypeError: unsupported operand type(s) for +: 'int' and 'str'\n",

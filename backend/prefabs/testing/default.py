@@ -1,15 +1,6 @@
 from backend.datatypes import NodeType
 import pandas as pd
 
-# data in .csv files will create a following workflow:
-# +--+
-# |n0|->\
-# +--+   \     +--+
-#         +--> |n2|->\
-# +--+   /     +--+   \   +--+
-# |n1|->/              \->|n3|
-# +--+                    +--+
-
 
 @NodeType(tags=["testing"])
 def add_int(a, b: int) -> int:

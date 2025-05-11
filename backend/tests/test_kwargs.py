@@ -1,7 +1,7 @@
 from backend.datatypes import NodeType
 from importlib import reload
 from backend import BreezeApp
-import backend.tests.kwargs.nodeTypes
+import backend.prefabs.testing.kwargs
 import threading
 import time
 from flask import Flask
@@ -11,10 +11,8 @@ def initalize_app() -> BreezeApp:
     app = BreezeApp()
 
     NodeType.clear_udns()
-    reload(backend.tests.kwargs.nodeTypes)
-
-    app.repository.from_csv("backend/tests/kwargs/nodeInstances.csv", "nodeInstances")
-    app.repository.from_csv("backend/tests/kwargs/nodeLinks.csv", "nodeLinks")
+    reload(backend.prefabs.testing.kwargs)
+    app.repository.load_workflow("backend/tests/workflows/kwargs")
 
     return app
 
@@ -193,4 +191,4 @@ def test_custom_format_from_input():
 
     assert app.repository.does_kwarg_exist(node_id=3, kwarg_name="instance")
     instance = app.repository.read_kwarg(parent_node_id=3, kwarg_name="instance")
-    assert instance.describe() == backend.tests.kwargs.nodeTypes.MyClass("name").describe()
+    assert instance.describe() == backend.prefabs.testing.kwargs.MyClass("name").describe()

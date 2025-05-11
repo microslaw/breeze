@@ -1,0 +1,8 @@
+data in .csv files will create a following workflow:
++--+
+|n0|->\
++--+   \     +--+
+        +--> |n2|->\
++--+   /     +--+   \   +--+
+|n1|->/              \->|n3|
++--+                    +--+

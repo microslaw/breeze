@@ -12,7 +12,7 @@ const Link: React.FC<LinkProps> = ({ link }) => {
   return (
     <Arrow
       draggable
-      points={[0, 0, 100, 100]}
+      points={[link.startX, link.startY, link.endX, link.endY]}
       stroke="black"
       fill="black"
       strokeWidth={2}

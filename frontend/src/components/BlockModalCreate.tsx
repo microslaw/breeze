@@ -28,7 +28,6 @@ const BlockModalCreate = ({
   const [blockTypes, setBlockTypes] = useState<string[]>([]);
 
   useEffect(() => {
-    console.log("BlockModalCreate mounted");
     const fetchBlockTypes = async () => {
       const nodeTypes = await getNodeTypes();
       setBlockTypes(nodeTypes);

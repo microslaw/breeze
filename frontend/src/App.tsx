@@ -9,6 +9,7 @@ import {
 import { useEffect, useState } from "react";
 import BlockModalDetails from "./components/BlockModalDeatils";
 import { LinkI } from "./models/link.model";
+import assignLinksPositionByBlocksPosition from "./functions/assignLinksPositionByBlocksPosition";
 
 function App() {
   const [blocks, setBlocks] = useState<BlockI[]>([]);
@@ -17,10 +18,11 @@ function App() {
   useEffect(() => {
     console.log("App mounted");
     const fetchAppState = async () => {
-      const nodes = await getAllNodes();
+      const blocks = await getAllNodes();
       const links = await getAllLinks();
-      setBlocks(nodes);
+      setBlocks(blocks);
       setLinks(links);
+      assignLinksPositionByBlocksPosition(blocks, links);
     };
     fetchAppState();
   }, []);

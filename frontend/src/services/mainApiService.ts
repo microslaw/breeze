@@ -4,6 +4,8 @@ import {
   mapBlockToApiPostRequest,
 } from "../functions/apiMappers/blockApiMapper";
 import { BlockI } from "../models/block.model";
+import mapApiResponseToLinks from "../functions/apiMappers/linkApiMapper";
+import { LinkI } from "../models/link.model";
 
 export async function getAllNodes(): Promise<BlockI[]> {
   try {
@@ -17,7 +19,6 @@ export async function getAllNodes(): Promise<BlockI[]> {
     }
 
     const blocks: BlockI[] = mapApiResponseToBlocks(response.data);
-    console.log(response.request);
     return blocks;
   } catch (error) {
     console.error("Error fetching nodes:", error);
@@ -30,7 +31,6 @@ export async function deleteNodeById(id: number) {
     method: "delete",
     url: "http://127.0.0.1:5000/nodeInstances/" + id,
   });
-  console.log(response.data);
   return response.data;
 }
 
@@ -58,18 +58,27 @@ export async function getNodeById(id: number) {
     method: "get",
     url: "http://127.0.0.1:5000/nodeInstances/" + id,
   });
-  console.log(response.data);
   return response.data;
 }
 
 // TODO implement non primitive handling of the response
-export async function getAllLinks() {
-  const response = await axios({
-    method: "get",
-    url: "http://127.0.0.1:5000/nodeLinks",
-  });
-  console.log(response.data);
-  return response.data;
+export async function getAllLinks(): Promise<LinkI[]> {
+  try {
+    const response = await axios({
+      method: "get",
+      url: "http://127.0.0.1:5000/nodeLinks",
+    });
+
+    if (!Array.isArray(response.data)) {
+      throw new Error("API response is not an array");
+    }
+
+    const links: LinkI[] = mapApiResponseToLinks(response.data);
+    return links;
+  } catch (error) {
+    console.error("Error fetching links:", error);
+    throw error;
+  }
 }
 
 // TODO implement non primitive handling of the response
@@ -78,7 +87,6 @@ export async function getLinksByOriginNode(nodeId: number) {
     method: "get",
     url: "http://127.0.0.1:5000/nodeLinks/" + nodeId,
   });
-  console.log(response.data);
   return response.data;
 }
 
@@ -94,7 +102,6 @@ export async function getNodeTypes(): Promise<string[]> {
       throw new Error("API response is not an array");
     }
 
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching node types:", error);

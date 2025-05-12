@@ -2,16 +2,21 @@ import React from "react";
 import { Stage } from "react-konva";
 import FlowLayer from "./FlowLayer";
 import { BlockI } from "../models/block.model";
+import { LinkI } from "../models/link.model";
 
 interface MainStageProps {
   blocks: BlockI[];
   setBlocks: React.Dispatch<React.SetStateAction<BlockI[]>>;
+  links: LinkI[];
+  setLinks: React.Dispatch<React.SetStateAction<LinkI[]>>;
   handleBlockDoubleClick: (block: BlockI) => void;
 }
 
 const MainStage = ({
   blocks,
   setBlocks,
+  links,
+  setLinks,
   handleBlockDoubleClick,
 }: MainStageProps) => {
   return (
@@ -23,6 +28,8 @@ const MainStage = ({
       <FlowLayer
         blocks={blocks}
         setBlocks={setBlocks}
+        links={links}
+        setLinks={setLinks}
         handleBlockDoubleClick={(block) => handleBlockDoubleClick(block)}
       />
     </Stage>

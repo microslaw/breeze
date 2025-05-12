@@ -6,16 +6,22 @@ import {
   handleDragStart,
   handleDragEnd,
 } from "../functions/handleDefaultShapeInteractions";
+import { LinkI } from "../models/link.model";
+import Link from "./Link";
 
 interface FlowLayerProps {
   blocks: BlockI[];
   setBlocks: React.Dispatch<React.SetStateAction<BlockI[]>>;
+  links: LinkI[];
+  setLinks: React.Dispatch<React.SetStateAction<LinkI[]>>;
   handleBlockDoubleClick: (block: BlockI) => void;
 }
 
 const FlowLayer = ({
   blocks,
   setBlocks,
+  links,
+  setLinks,
   handleBlockDoubleClick,
 }: FlowLayerProps) => {
   return (
@@ -28,6 +34,9 @@ const FlowLayer = ({
           onDragEnd={(e) => handleDragEnd(e, blocks, setBlocks)}
           handleDoubleClick={(block) => handleBlockDoubleClick(block)}
         />
+      ))}
+      {links.map((link, index) => (
+        <Link key={index} link={link} />
       ))}
     </Layer>
   );

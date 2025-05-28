@@ -11,7 +11,6 @@ interface LinkProps {
 const Link: React.FC<LinkProps> = ({ link }) => {
   return (
     <Arrow
-      draggable
       points={[link.startX, link.startY, link.endX, link.endY]}
       stroke="black"
       fill="black"

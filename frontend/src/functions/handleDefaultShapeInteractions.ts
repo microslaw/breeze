@@ -1,33 +1,55 @@
-export const handleDragStart = (
-  e: any,
-  items: any[],
+import { BlockI } from "../models/block.model";
+import { LinkI } from "../models/link.model";
+import { updateNode } from "../services/mainApiService";
+
+// Block interactions
+export const handleDragBlockStart = (
+  block: BlockI,
+  blocks: BlockI[],
   setItems: React.Dispatch<React.SetStateAction<any[]>>
 ) => {
-  const id = e.target.id();
+  const id = block.id;
   setItems(
-    items.map((element) => ({
+    blocks.map((element) => ({
       ...element,
       isDragging: element.id === id,
     }))
   );
 };
 
-export const handleDragEnd = (
+export const handleDragBlockEnd = (
   e: any,
-  items: any[],
-  setItems: React.Dispatch<React.SetStateAction<any[]>>
+  block: BlockI,
+  blocks: BlockI[],
+  setItems: React.Dispatch<React.SetStateAction<any[]>>,
+  links: LinkI[],
+  setLinks: React.Dispatch<React.SetStateAction<any[]>>
 ) => {
   setItems(
-    items.map((element) => {
-      if (element.id === e.target.id()) {
-        return {
-          ...element,
-          x: e.target.x(),
-          y: e.target.y(),
-          isDragging: false,
-        };
+    blocks.map((element) => {
+      if (element.id === block.id) {
+        element.isDragging = false;
+        element.x = e.target.x();
+        element.y = e.target.y();
+        updateNode(element).then((response) => {
+          console.log("updated node position on backend", response);
+        });
       }
       return element;
+    })
+  );
+
+  setLinks(
+    links.map((link) => {
+      if (link.originNodeId === block.id) {
+        link.startX = e.target.x() + 200;
+        link.startY = e.target.y() + 65;
+      }
+      if (link.destinationNodeId === block.id) {
+        link.endX = e.target.x();
+        link.endY = e.target.y() + 65;
+      }
+      return link;
     })
   );
 };

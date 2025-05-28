@@ -3,8 +3,8 @@ import { Layer } from "react-konva";
 import Block from "./Block";
 import { BlockI } from "../models/block.model";
 import {
-  handleDragStart,
-  handleDragEnd,
+  handleDragBlockStart,
+  handleDragBlockEnd,
 } from "../functions/handleDefaultShapeInteractions";
 import { LinkI } from "../models/link.model";
 import Link from "./Link";
@@ -30,8 +30,10 @@ const FlowLayer = ({
         <Block
           key={block.id}
           block={block}
-          onDragStart={(e) => handleDragStart(e, blocks, setBlocks)}
-          onDragEnd={(e) => handleDragEnd(e, blocks, setBlocks)}
+          onDragStart={(e) => handleDragBlockStart(block, blocks, setBlocks)}
+          onDragEnd={(e) =>
+            handleDragBlockEnd(e, block, blocks, setBlocks, links, setLinks)
+          }
           handleDoubleClick={(block) => handleBlockDoubleClick(block)}
         />
       ))}

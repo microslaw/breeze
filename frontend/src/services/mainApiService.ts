@@ -53,6 +53,12 @@ export async function createNode(block: BlockI) {
 }
 
 // TODO implement non primitive handling of the response
+export async function updateNode(block: BlockI) {
+  const node = mapBlockToApiPostRequest(block);
+  // TODO when backend ready send request to update node
+}
+
+// TODO implement non primitive handling of the response
 export async function getNodeById(id: number) {
   const response = await axios({
     method: "get",

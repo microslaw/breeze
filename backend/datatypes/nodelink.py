@@ -29,8 +29,8 @@ class NodeLink:
     def fromNameDict(nameDict: dict[str, object]) -> Self:
         return NodeLink(
             node_link_id=nameDict.get("node_link_id"),
-            origin_node_id=nameDict["origin_node_id"],
-            origin_node_output=nameDict["origin_node_output"],
-            destination_node_id=nameDict["destination_node_id"],
+            origin_node_id=nameDict.get("origin_node_id"),
+            origin_node_output=nameDict.get("origin_node_output"),
+            destination_node_id=nameDict.get("destination_node_id"),
             destination_node_input=nameDict.get("destination_node_input"),
         )

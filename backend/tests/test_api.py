@@ -326,6 +326,32 @@ def test_create_node_link():
         assert response.status_code == 200
 
 
+def test_update_node_link():
+    controller = initialize_server()
+
+    with controller.test_client() as client:
+        response = client.patch(
+            "/nodeLinks/0",
+            json={
+                "destination_node_id": 3,
+                "destination_node_input": "b",
+                "origin_node_id": 0,
+            },
+        )
+        assert response.data == b"OK"
+        assert response.status_code == 200
+
+        response = client.get("nodeLinks/0")
+        assert response.json == {
+            "origin_node_id": 0,
+            "origin_node_output": None,
+            "node_link_id": 0,
+            "destination_node_id": 3,
+            "destination_node_input": "b",
+        }
+        assert response.status_code == 200
+
+
 def test_delete_node_link():
     controller = initialize_server()
     with controller.test_client() as client:

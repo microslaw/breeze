@@ -8,6 +8,10 @@ from backend.processor import Processor, ProcessingException
 from backend.formatting import format_for_display, format_from_input
 
 
+class BadRequestException(Exception):
+    pass
+
+
 class Controller:
     def __init__(self, repository: Repository, processor: Processor):
         self.flask_server = Flask(__name__)
@@ -27,6 +31,10 @@ class Controller:
         @self.flask_server.errorhandler(ProcessingException)
         def server_error(err: ProcessingException):
             return err.toJson(), 422
+
+        @self.flask_server.errorhandler(BadRequestException)
+        def server_error(err: BadRequestException):
+            return err.toJson(), 400
 
         @self.flask_server.route("/nodeTypes", methods=["GET"])
         def get_all_node_types():
@@ -81,6 +89,17 @@ class Controller:
             node_link_id = self.repository.create_node_link(node_link)
             response = {"node_link_id": node_link_id}
             return response, 200
+
+        @self.flask_server.route("/nodeLinks/<node_link_id>", methods=["PATCH"])
+        def patch_node_link(node_link_id):
+
+            if "node_link_id" in request.json:
+                raise BadRequestException("Field node_link_id cannot be patched")
+
+            node_link_update = NodeLink.fromNameDict(request.json)
+            self.repository.update_node_link(node_link_update, node_link_id)
+
+            return "OK", 200
 
         @self.flask_server.route("/nodeLinks/<node_link_id>", methods=["DELETE"])
         def delete_node_link(node_link_id):

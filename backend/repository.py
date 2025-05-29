@@ -368,6 +368,24 @@ class Repository:
         self.execute(query)
         return node_link_id
 
+    def update_node_link(self, update_link: NodeLink, to_update_id: int) -> None:
+        self.check_node_link_exists_by_id(to_update_id)
+
+        sql_col_eq_values = ", ".join(
+            [
+                f"{colname}='{value}'"
+                for colname, value in update_link.toNameDict().items()
+                if value is not None
+            ]
+        )
+
+        query = f"""
+        UPDATE nodeLinks
+        SET {sql_col_eq_values}
+        WHERE node_link_id = {to_update_id}
+        """
+        self.execute(query)
+
     def delete_node_link(self, node_link_id: int) -> None:
         """
         Each link is unique only when all fields are the same, so all fields are used

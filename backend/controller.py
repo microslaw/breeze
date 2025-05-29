@@ -34,7 +34,7 @@ class Controller:
 
         @self.flask_server.errorhandler(BadRequestException)
         def server_error(err: BadRequestException):
-            return err.toJson(), 400
+            return str(err), 400
 
         @self.flask_server.route("/nodeTypes", methods=["GET"])
         def get_all_node_types():
@@ -64,8 +64,8 @@ class Controller:
         @self.flask_server.route("/nodeInstances/<node_instance_id>", methods=["PATCH"])
         def patch_node_instance(node_instance_id):
 
-            if "node_instance_id" in request.json:
-                raise BadRequestException("Field node_link_id cannot be patched")
+            if "node_id" in request.json:
+                raise BadRequestException("Field node_id cannot be patched")
 
             node_instance_update = NodeInstance.fromNameDict(request.json)
             self.repository.update_node_instance(node_instance_update, node_instance_id)

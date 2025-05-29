@@ -260,10 +260,6 @@ class Repository:
         )
         return [NodeLink.fromNameDict(linkRow) for linkRow in linkRows]
 
-    def get_all_links(self) -> list:
-        linkRows = self.fetchall(f"SELECT * FROM nodeLinks", named=True)
-        return [NodeLink.fromNameDict(linkRow) for linkRow in linkRows]
-
     def get_links_by_destination_node_id(self, node_id: int) -> list[NodeLink]:
         self.check_node_instance_exists(node_id)
         linkRows = self.fetchall(
@@ -271,8 +267,21 @@ class Repository:
         )
         return [NodeLink.fromNameDict(linkRow) for linkRow in linkRows]
 
-    def get_all_links(self) -> list[NodeLink]:
-        linkRows = self.fetchall(f"SELECT * FROM nodeLinks", named=True)
+    def get_all_links(
+        self, origin_node_id=None, destination_node_id=None
+    ) -> list[NodeLink]:
+        # TODO: Simplify this query
+        query = f"SELECT * FROM nodeLinks "
+        if origin_node_id is not None:
+            query += f"WHERE origin_node_id = {origin_node_id} "
+        if destination_node_id is not None:
+            if origin_node_id is not None:
+                query += "AND "
+            else:
+                query += "WHERE "
+            query += f"destination_node_id = {destination_node_id} "
+
+        linkRows = self.fetchall(query, named=True)
         return [NodeLink.fromNameDict(linkRow) for linkRow in linkRows]
 
     def check_node_link_exists(self, link: NodeLink, raise_on: bool = False) -> None:

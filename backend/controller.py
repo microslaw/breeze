@@ -65,9 +65,14 @@ class Controller:
         @self.flask_server.route("/nodeLinks", methods=["GET"])
         def get_all_node_links():
             """
-            Returns all links
+            Returns all links. Has option to filter by origin or destination node
             """
-            node_links = self.repository.get_all_links()
+
+            node_links = self.repository.get_all_links(
+                origin_node_id=request.args.get("origin_node_id"),
+                destination_node_id=request.args.get("destination_node_id"),
+            )
+
             return [link.toNameDict() for link in node_links]
 
         @self.flask_server.route("/nodeLinks", methods=["POST"])

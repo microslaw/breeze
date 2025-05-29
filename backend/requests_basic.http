@@ -41,6 +41,15 @@ GET http://127.0.0.1:5000/nodeLinks/3
 ### Get all node links
 GET http://127.0.0.1:5000/nodeLinks
 
+### Get node links with specific origin
+GET http://127.0.0.1:5000/nodeLinks?origin_node_id=0
+
+### Get node links with specific destination
+GET http://127.0.0.1:5000/nodeLinks?destination_node_id=2
+
+### Get node links with specific origin and  destination
+GET http://127.0.0.1:5000/nodeLinks?origin_node_id=2&destination_node_id=3
+
 ### Delete node
 DELETE http://127.0.0.1:5000/nodeInstances/1
 

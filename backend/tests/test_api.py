@@ -323,3 +323,58 @@ def test_delete_node_link():
         response = client.get("/nodeLinks/1")
         assert response.data == b"Node link with node_link_id=1 not found"
         assert response.status_code == 404
+
+
+def test_get_node_links_filtered_by_origin():
+    controller = initialize_server()
+
+    with controller.test_client() as client:
+        response = client.get("/nodeLinks?origin_node_id=0")
+        assert response.json == [
+            {
+                "destination_node_id": 2,
+                "destination_node_input": "a",
+                "node_link_id": 0,
+                "origin_node_id": 0,
+                "origin_node_output": None,
+            },
+        ]
+
+
+def test_get_node_links_filtered_by_destination():
+    controller = initialize_server()
+
+    with controller.test_client() as client:
+        response = client.get("/nodeLinks?destination_node_id=2")
+        assert response.json == [
+            {
+                "destination_node_id": 2,
+                "destination_node_input": "a",
+                "node_link_id": 0,
+                "origin_node_id": 0,
+                "origin_node_output": None,
+            },
+            {
+                "destination_node_id": 2,
+                "destination_node_input": "b",
+                "node_link_id": 1,
+                "origin_node_id": 1,
+                "origin_node_output": None,
+            },
+        ]
+
+
+def test_get_node_links_filtered_by_origin_and_destination():
+    controller = initialize_server()
+
+    with controller.test_client() as client:
+        response = client.get("/nodeLinks?origin_node_id=2&destination_node_id=3")
+        assert response.json == [
+            {
+                "destination_node_id": 3,
+                "destination_node_input": "sd_limit",
+                "node_link_id": 2,
+                "origin_node_id": 2,
+                "origin_node_output": None,
+            },
+        ]

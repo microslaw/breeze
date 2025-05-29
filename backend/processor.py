@@ -137,7 +137,7 @@ class ProcessingException(Exception):
         self.cancelled_nodes = cancelled_nodes
 
         super().__init__(
-            f"During processing of node {node_instance.toJSON()} an exception occured:\n\n{self.traceback_str}"
+            f"During processing of node {node_instance.toNameDict()} an exception occured:\n\n{self.traceback_str}"
         )
 
     def prune_traceback(traceback: list[str]) -> str:
@@ -152,7 +152,7 @@ class ProcessingException(Exception):
 
     def toJson(self):
         return {
-            "origin": self.origin.toJSON(),
+            "origin": self.origin.toNameDict(),
             "traceback_str": self.traceback_str,
             "cancelled_nodes": self.cancelled_nodes,
             "input_args": {

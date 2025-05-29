@@ -88,6 +88,7 @@ def test_get_all_node_instances():
             "position_x": 100,
             "position_y": 100,
             "overwrite_kwargs": {},
+            "instance_name": "n0",
         },
         {
             "node_id": 1,
@@ -95,6 +96,7 @@ def test_get_all_node_instances():
             "position_x": 100,
             "position_y": 300,
             "overwrite_kwargs": {},
+            "instance_name": "n1",
         },
         {
             "node_id": 2,
@@ -102,6 +104,7 @@ def test_get_all_node_instances():
             "position_x": 400,
             "position_y": 200,
             "overwrite_kwargs": {},
+            "instance_name": "n2",
         },
         {
             "node_id": 3,
@@ -109,6 +112,7 @@ def test_get_all_node_instances():
             "position_x": 700,
             "position_y": 200,
             "overwrite_kwargs": {},
+            "instance_name": "n3",
         },
     ]
     assert response.status_code == 200
@@ -126,6 +130,7 @@ def test_get_node_instance():
             "position_x": 100,
             "position_y": 100,
             "overwrite_kwargs": {},
+            "instance_name": "n0",
         }
         assert response.status_code == 200
 
@@ -159,6 +164,7 @@ def test_create_node_instance():
                 "position_x": 100,
                 "position_y": 100,
                 "overwrite_kwargs": {},
+                "instance_name": "n0",
             },
             {
                 "node_id": 1,
@@ -166,6 +172,7 @@ def test_create_node_instance():
                 "position_x": 100,
                 "position_y": 300,
                 "overwrite_kwargs": {},
+                "instance_name": "n1",
             },
             {
                 "node_id": 2,
@@ -173,6 +180,7 @@ def test_create_node_instance():
                 "position_x": 400,
                 "position_y": 200,
                 "overwrite_kwargs": {},
+                "instance_name": "n2",
             },
             {
                 "node_id": 3,
@@ -180,6 +188,7 @@ def test_create_node_instance():
                 "position_x": 700,
                 "position_y": 200,
                 "overwrite_kwargs": {},
+                "instance_name": "n3",
             },
             {
                 "node_id": 4,
@@ -187,6 +196,7 @@ def test_create_node_instance():
                 "position_x": 100,
                 "position_y": 100,
                 "overwrite_kwargs": {},
+                "instance_name": None,
             },
         ]
         assert response.status_code == 200
@@ -209,6 +219,7 @@ def test_delete_node_instance():
                 "position_x": 100,
                 "position_y": 100,
                 "overwrite_kwargs": {},
+                "instance_name": "n0",
             },
             {
                 "node_id": 1,
@@ -216,6 +227,7 @@ def test_delete_node_instance():
                 "position_x": 100,
                 "position_y": 300,
                 "overwrite_kwargs": {},
+                "instance_name": "n1",
             },
             {
                 "node_id": 3,
@@ -223,6 +235,7 @@ def test_delete_node_instance():
                 "position_x": 700,
                 "position_y": 200,
                 "overwrite_kwargs": {},
+                "instance_name": "n3",
             },
         ]
         assert response.status_code == 200

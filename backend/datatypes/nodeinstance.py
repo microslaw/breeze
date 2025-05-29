@@ -8,13 +8,20 @@ class NodeInstance:
     # omiting uuid, for simplicity of api calls and testing
 
     def __init__(
-        self, node_id, node_type, position_x, position_y, overwrite_kwargs=None
+        self,
+        node_id,
+        node_type,
+        position_x,
+        position_y,
+        overwrite_kwargs=None,
+        instance_name=None,
     ):
         self.node_id = node_id
         self.node_type = node_type
         self.position_x = position_x
         self.position_y = position_y
         self.overwrite_kwargs = overwrite_kwargs if overwrite_kwargs is not None else {}
+        self.instance_name = instance_name
 
     def toNameDict(self) -> dict[str, object]:
         return {
@@ -26,6 +33,7 @@ class NodeInstance:
                 arg_name: format_for_display(value)
                 for arg_name, value in self.overwrite_kwargs.items()
             },
+            "instance_name": self.instance_name,
         }
 
     def fromNameDict(nameDict: dict[str, object]) -> Self:
@@ -44,4 +52,5 @@ class NodeInstance:
             position_x=nameDict.get("position_x"),
             position_y=nameDict.get("position_y"),
             overwrite_kwargs=overwrite_kwargs,
+            instance_name=nameDict.get("instance_name"),
         )

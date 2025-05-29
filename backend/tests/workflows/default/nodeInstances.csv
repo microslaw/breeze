@@ -1,5 +1,5 @@
-node_id,node_type,position_x,position_y
-0,add_int,100,100
-1,add_int,100,300
-2,add_int,400,200
-3,remove_outliers,700,200
+node_id,node_type,position_x,position_y,instance_name
+0,add_int,100,100,n0
+1,add_int,100,300,n1
+2,add_int,400,200,n2
+3,remove_outliers,700,200,n3

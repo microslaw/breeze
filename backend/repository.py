@@ -191,7 +191,8 @@ class Repository:
                 node_id INTEGER PRIMARY KEY,
                 node_type TEXT NOT NULL,
                 position_x INTEGER NOT NULL,
-                position_y INTEGER NOT NULL
+                position_y INTEGER NOT NULL,
+                instance_name TEXT
                 )"""
         )
 
@@ -238,8 +239,19 @@ class Repository:
         Returns id of new node instance
         """
         node_id = self.get_new_node_instance_id()
+
+        nulled_instance_name = (
+            f"'{node_instance.instance_name}'"
+            if node_instance.instance_name is not None
+            else "NULL"
+        )
         self.execute(
-            f"INSERT INTO nodeInstances VALUES ({node_id}, '{node_instance.node_type}', {node_instance.position_x}, {node_instance.position_y})"
+            f"""INSERT INTO nodeInstances VALUES (
+                {node_id},
+                '{node_instance.node_type}',
+                {node_instance.position_x},
+                {node_instance.position_y},
+                {nulled_instance_name})"""
         )
         return node_id
 

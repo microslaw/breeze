@@ -1,3 +1,6 @@
+from typing import Self
+
+
 class NodeLink:
 
     # omiting uuid, for simplicity of api calls and testing
@@ -19,7 +22,7 @@ class NodeLink:
         self.destination_node_id = destination_node_id
         self.destination_node_input = destination_node_input
 
-    def toJSON(self):
+    def toNameDict(self) -> dict[str, object]:
         return {
             "origin_node_id": self.origin_node_id,
             "origin_node_output": self.origin_node_output,
@@ -27,10 +30,10 @@ class NodeLink:
             "destination_node_input": self.destination_node_input,
         }
 
-    def fromJSON(json):
+    def fromNamedDict(nameDict: dict[str, object]) -> Self:
         return NodeLink(
-            origin_node_id=json["origin_node_id"],
-            origin_node_output=json["origin_node_output"],
-            destination_node_id=json["destination_node_id"],
-            destination_node_input=json.get("destination_node_input", None),
+            origin_node_id=nameDict["origin_node_id"],
+            origin_node_output=nameDict["origin_node_output"],
+            destination_node_id=nameDict["destination_node_id"],
+            destination_node_input=nameDict.get("destination_node_input"),
         )

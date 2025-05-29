@@ -77,8 +77,9 @@ class Controller:
         @self.flask_server.route("/nodeLinks", methods=["POST"])
         def create_node_link():
             node_link = NodeLink.fromNamedDict(request.json)
-            self.repository.create_node_link(node_link)
-            return "OK", 200
+            node_link_id = self.repository.create_node_link(node_link)
+            response = {"node_link_id": node_link_id}
+            return response, 200
 
         @self.flask_server.route("/nodeLinks", methods=["DELETE"])
         def delete_node_link():

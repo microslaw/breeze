@@ -175,6 +175,7 @@ class Repository:
         self.execute("DROP TABLE IF EXISTS nodeLinks")
         self.execute(
             """CREATE TABLE nodeLinks (
+                node_link_id INTEGER NOT NULL,
                 origin_node_id INTEGER NOT NULL,
                 origin_node_output TEXT,
                 destination_node_id INTEGER NOT NULL,
@@ -302,19 +303,30 @@ class Repository:
                     f"Node link {link.toNameDict()} already exists"
                 )
 
+    def get_new_node_link_id(self) -> int:
+        new_id = self.fetchone("SELECT MAX(node_link_id) FROM nodeLinks")[0]
+        if new_id is None:
+            new_id = 0
+        else:
+            new_id += 1
+        return new_id
+
     def create_node_link(self, link: NodeLink) -> None:
         self.check_node_link_exists(link, raise_on=True)
         self.check_node_instance_exists(link.origin_node_id)
         self.check_node_instance_exists(link.destination_node_id)
+
+        node_link_id = self.get_new_node_link_id()
 
         origin_node_output = (
             link.origin_node_output if link.origin_node_output is not None else "NULL"
         )
         query = f"""
             INSERT INTO nodeLinks
-                VALUES ({link.origin_node_id}, {origin_node_output}, {link.destination_node_id}, '{link.destination_node_input}')
+                VALUES ({node_link_id}, {link.origin_node_id}, {origin_node_output}, {link.destination_node_id}, '{link.destination_node_input}')
         """
         self.execute(query)
+        return node_link_id
 
     def delete_node_link(self, link: NodeLink) -> None:
         """

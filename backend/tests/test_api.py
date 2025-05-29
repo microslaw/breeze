@@ -85,29 +85,29 @@ def test_get_all_node_instances():
         {
             "node_id": 0,
             "node_type": "add_int",
-            "position_x" : 100,
-            "position_y" : 100,
+            "position_x": 100,
+            "position_y": 100,
             "overwrite_kwargs": {},
         },
         {
             "node_id": 1,
             "node_type": "add_int",
-            "position_x" : 100,
-            "position_y" : 300,
+            "position_x": 100,
+            "position_y": 300,
             "overwrite_kwargs": {},
         },
         {
             "node_id": 2,
             "node_type": "add_int",
-            "position_x" : 400,
-            "position_y" : 200,
+            "position_x": 400,
+            "position_y": 200,
             "overwrite_kwargs": {},
         },
         {
             "node_id": 3,
             "node_type": "remove_outliers",
-            "position_x" : 700,
-            "position_y" : 200,
+            "position_x": 700,
+            "position_y": 200,
             "overwrite_kwargs": {},
         },
     ]
@@ -123,8 +123,8 @@ def test_get_node_instance():
         assert response.json == {
             "node_id": 0,
             "node_type": "add_int",
-            "position_x" : 100,
-            "position_y" : 100,
+            "position_x": 100,
+            "position_y": 100,
             "overwrite_kwargs": {},
         }
         assert response.status_code == 200
@@ -146,11 +146,7 @@ def test_create_node_instance():
     with controller.test_client() as client:
         response = client.post(
             "/nodeInstances",
-            json={
-                "node_type": "add_int",
-                "position_x" : 100,
-                "position_y" : 100
-            },
+            json={"node_type": "add_int", "position_x": 100, "position_y": 100},
         )
         assert response.json == {"node_id": 4}
         assert response.status_code == 200
@@ -160,36 +156,36 @@ def test_create_node_instance():
             {
                 "node_id": 0,
                 "node_type": "add_int",
-                "position_x" : 100,
-                "position_y" : 100,
+                "position_x": 100,
+                "position_y": 100,
                 "overwrite_kwargs": {},
             },
             {
                 "node_id": 1,
                 "node_type": "add_int",
-                "position_x" : 100,
-                "position_y" : 300,
+                "position_x": 100,
+                "position_y": 300,
                 "overwrite_kwargs": {},
             },
             {
                 "node_id": 2,
                 "node_type": "add_int",
-                "position_x" : 400,
-                "position_y" : 200,
+                "position_x": 400,
+                "position_y": 200,
                 "overwrite_kwargs": {},
             },
             {
                 "node_id": 3,
                 "node_type": "remove_outliers",
-                "position_x" : 700,
-                "position_y" : 200,
+                "position_x": 700,
+                "position_y": 200,
                 "overwrite_kwargs": {},
             },
             {
                 "node_id": 4,
                 "node_type": "add_int",
-                "position_x" : 100,
-                "position_y" : 100,
+                "position_x": 100,
+                "position_y": 100,
                 "overwrite_kwargs": {},
             },
         ]
@@ -210,22 +206,22 @@ def test_delete_node_instance():
             {
                 "node_id": 0,
                 "node_type": "add_int",
-                "position_x" : 100,
-                "position_y" : 100,
+                "position_x": 100,
+                "position_y": 100,
                 "overwrite_kwargs": {},
             },
             {
                 "node_id": 1,
                 "node_type": "add_int",
-                "position_x" : 100,
-                "position_y" : 300,
+                "position_x": 100,
+                "position_y": 300,
                 "overwrite_kwargs": {},
             },
             {
                 "node_id": 3,
                 "node_type": "remove_outliers",
-                "position_x" : 700,
-                "position_y" : 200,
+                "position_x": 700,
+                "position_y": 200,
                 "overwrite_kwargs": {},
             },
         ]
@@ -244,18 +240,21 @@ def test_get_all_node_links():
             {
                 "destination_node_id": 2,
                 "destination_node_input": "a",
+                "node_link_id": 0,
                 "origin_node_id": 0,
                 "origin_node_output": None,
             },
             {
                 "destination_node_id": 2,
                 "destination_node_input": "b",
+                "node_link_id": 1,
                 "origin_node_id": 1,
                 "origin_node_output": None,
             },
             {
                 "destination_node_id": 3,
                 "destination_node_input": "sd_limit",
+                "node_link_id": 2,
                 "origin_node_id": 2,
                 "origin_node_output": None,
             },
@@ -271,6 +270,7 @@ def test_get_node_link():
             {
                 "origin_node_id": 0,
                 "destination_node_input": "a",
+                "node_link_id": 0,
                 "destination_node_id": 2,
                 "origin_node_output": None,
             }
@@ -300,7 +300,7 @@ def test_create_node_link():
                 "destination_node_input": "a",
             },
         )
-        assert response.data == b"OK"
+        assert response.json == {"node_link_id": 3}
         assert response.status_code == 200
 
         response = client.get("nodeLinks/0")
@@ -308,12 +308,14 @@ def test_create_node_link():
             {
                 "origin_node_id": 0,
                 "origin_node_output": None,
+                "node_link_id": 0,
                 "destination_node_id": 2,
                 "destination_node_input": "a",
             },
             {
                 "origin_node_id": 0,
                 "origin_node_output": None,
+                "node_link_id": 3,
                 "destination_node_id": 3,
                 "destination_node_input": "a",
             },
@@ -323,7 +325,6 @@ def test_create_node_link():
 
 def test_delete_node_link():
     controller = initialize_server()
-
     with controller.test_client() as client:
         response = client.delete(
             "/nodeLinks",

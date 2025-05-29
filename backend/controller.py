@@ -61,6 +61,17 @@ class Controller:
             response = {"node_id": node_id}
             return response, 200
 
+        @self.flask_server.route("/nodeInstances/<node_instance_id>", methods=["PATCH"])
+        def patch_node_instance(node_instance_id):
+
+            if "node_instance_id" in request.json:
+                raise BadRequestException("Field node_link_id cannot be patched")
+
+            node_instance_update = NodeInstance.fromNameDict(request.json)
+            self.repository.update_node_instance(node_instance_update, node_instance_id)
+
+            return "OK", 200
+
         @self.flask_server.route("/nodeInstances/<node_id>", methods=["DELETE"])
         def delete_node_instance(node_id):
             self.repository.delete_node_instance(node_id)

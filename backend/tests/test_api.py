@@ -202,6 +202,33 @@ def test_create_node_instance():
         assert response.status_code == 200
 
 
+def test_update_node_instance():
+    controller = initialize_server()
+
+    with controller.test_client() as client:
+        response = client.patch(
+            "/nodeInstances/0",
+            json={
+                "instance_name": "a1",
+                "position_x": 101,
+                "position_y": 150,
+            },
+        )
+        assert response.data == b"OK"
+        assert response.status_code == 200
+
+        response = client.get("nodeInstances/0")
+        assert response.json == {
+            "instance_name": "a1",
+            "node_id": 0,
+            "node_type": "add_int",
+            "overwrite_kwargs": {},
+            "position_x": 101,
+            "position_y": 150,
+        }
+        assert response.status_code == 200
+
+
 def test_delete_node_instance():
     controller = initialize_server()
 

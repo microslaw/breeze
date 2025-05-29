@@ -75,3 +75,17 @@ Content-Type: application/json
     "position_y": 1
 
 }
+
+### Get specific node
+GET http://127.0.0.1:5000/nodeInstances/0
+
+### Patch specific node instance
+PATCH  http://127.0.0.1:5000/nodeInstances/0
+Content-Type: application/json
+
+{
+    "instance_name": "a1",
+    "position_x": 101,
+    "position_y": 150
+
+}

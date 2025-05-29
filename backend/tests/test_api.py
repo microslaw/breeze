@@ -266,15 +266,14 @@ def test_get_node_link():
 
     with controller.test_client() as client:
         response = client.get("/nodeLinks/0")
-        assert response.json == [
-            {
-                "origin_node_id": 0,
-                "destination_node_input": "a",
-                "node_link_id": 0,
-                "destination_node_id": 2,
-                "origin_node_output": None,
-            }
-        ]
+        assert response.json == {
+            "origin_node_id": 0,
+            "destination_node_input": "a",
+            "node_link_id": 0,
+            "destination_node_id": 2,
+            "origin_node_output": None,
+        }
+
         assert response.status_code == 200
 
 
@@ -283,7 +282,7 @@ def test_get_missing_node_link():
 
     with controller.test_client() as client:
         response = client.get("/nodeLinks/10")
-        assert response.data == b"Node instance with node_id=10 not found"
+        assert response.data == b"Node link with node_link_id=10 not found"
         assert response.status_code == 404
 
 
@@ -303,41 +302,24 @@ def test_create_node_link():
         assert response.json == {"node_link_id": 3}
         assert response.status_code == 200
 
-        response = client.get("nodeLinks/0")
-        assert response.json == [
-            {
-                "origin_node_id": 0,
-                "origin_node_output": None,
-                "node_link_id": 0,
-                "destination_node_id": 2,
-                "destination_node_input": "a",
-            },
-            {
-                "origin_node_id": 0,
-                "origin_node_output": None,
-                "node_link_id": 3,
-                "destination_node_id": 3,
-                "destination_node_input": "a",
-            },
-        ]
+        response = client.get("nodeLinks/3")
+        assert response.json == {
+            "origin_node_id": 0,
+            "origin_node_output": None,
+            "node_link_id": 3,
+            "destination_node_id": 3,
+            "destination_node_input": "a",
+        }
         assert response.status_code == 200
 
 
 def test_delete_node_link():
     controller = initialize_server()
     with controller.test_client() as client:
-        response = client.delete(
-            "/nodeLinks",
-            json={
-                "origin_node_id": 1,
-                "origin_node_output": None,
-                "destination_node_id": 2,
-                "destination_node_input": "b",
-            },
-        )
+        response = client.delete("/nodeLinks/1")
         assert response.data == b"OK"
         assert response.status_code == 200
 
         response = client.get("/nodeLinks/1")
-        assert response.json == []
-        assert response.status_code == 200
+        assert response.data == b"Node link with node_link_id=1 not found"
+        assert response.status_code == 404

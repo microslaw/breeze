@@ -249,7 +249,7 @@ class Repository:
             node_id
         ) + self.get_links_by_destination_node_id(node_id)
         for link in linksToDelete:
-            self.delete_node_link(link)
+            self.delete_node_link(link.node_link_id)
 
         self.execute(f"DELETE FROM nodeInstances WHERE node_id = {node_id}")
 
@@ -258,29 +258,22 @@ class Repository:
         linkRows = self.fetchall(
             f"SELECT * FROM nodeLinks WHERE origin_node_id = {node_id}", named=True
         )
-        return [NodeLink.fromNamedDict(linkRow) for linkRow in linkRows]
-
-    def get_links_by_destination_node_id(self, node_id: int) -> list:
-        self.check_node_instance_exists(node_id)
-        linkRows = self.fetchall(
-            f"SELECT * FROM nodeLinks WHERE destination_node_id = {node_id}", named=True
-        )
-        return [NodeLink.fromNamedDict(linkRow) for linkRow in linkRows]
+        return [NodeLink.fromNameDict(linkRow) for linkRow in linkRows]
 
     def get_all_links(self) -> list:
         linkRows = self.fetchall(f"SELECT * FROM nodeLinks", named=True)
-        return [NodeLink.fromNamedDict(linkRow) for linkRow in linkRows]
+        return [NodeLink.fromNameDict(linkRow) for linkRow in linkRows]
 
     def get_links_by_destination_node_id(self, node_id: int) -> list[NodeLink]:
         self.check_node_instance_exists(node_id)
         linkRows = self.fetchall(
             f"SELECT * FROM nodeLinks WHERE destination_node_id = {node_id}", named=True
         )
-        return [NodeLink.fromNamedDict(linkRow) for linkRow in linkRows]
+        return [NodeLink.fromNameDict(linkRow) for linkRow in linkRows]
 
     def get_all_links(self) -> list[NodeLink]:
         linkRows = self.fetchall(f"SELECT * FROM nodeLinks", named=True)
-        return [NodeLink.fromNamedDict(linkRow) for linkRow in linkRows]
+        return [NodeLink.fromNameDict(linkRow) for linkRow in linkRows]
 
     def check_node_link_exists(self, link: NodeLink, raise_on: bool = False) -> None:
         select_one_query = f"""
@@ -302,6 +295,32 @@ class Repository:
                 raise ObjectAlreadyInDBException(
                     f"Node link {link.toNameDict()} already exists"
                 )
+
+    def check_node_link_exists_by_id(
+        self, node_link_id, raise_on: bool = False
+    ) -> None:
+        query = f"""
+            SELECT * FROM nodeLinks
+                WHERE node_link_id = {node_link_id}
+            """
+        if self.fetchone(query) is None:
+            if raise_on == False:
+                raise ObjectNotInDBException(
+                    f"Node link with node_link_id={node_link_id} not found"
+                )
+        else:
+            if raise_on == True:
+                raise ObjectAlreadyInDBException(
+                    f"Node link with node_link_id={node_link_id} already exists"
+                )
+
+    def get_node_link(self, node_link_id: int) -> NodeLink:
+        self.check_node_link_exists_by_id(node_link_id)
+        node_row = self.fetchone(
+            f"SELECT * FROM nodeLinks WHERE node_link_id = {node_link_id}", named=True
+        )
+        instance = NodeLink.fromNameDict(node_row)
+        return instance
 
     def get_new_node_link_id(self) -> int:
         new_id = self.fetchone("SELECT MAX(node_link_id) FROM nodeLinks")[0]
@@ -328,22 +347,16 @@ class Repository:
         self.execute(query)
         return node_link_id
 
-    def delete_node_link(self, link: NodeLink) -> None:
+    def delete_node_link(self, node_link_id: int) -> None:
         """
         Each link is unique only when all fields are the same, so all fields are used
         """
-        self.check_node_link_exists(link)
+        self.check_node_link_exists_by_id(node_link_id)
         query = f"""
             DELETE FROM nodeLinks
-                WHERE origin_node_id = {link.origin_node_id}
-                AND destination_node_id = {link.destination_node_id}
-                AND destination_node_input = '{link.destination_node_input}'
+                WHERE node_link_id = {node_link_id}
             """
 
-        if link.origin_node_output is not None:
-            query += f" AND origin_node_output = '{link.origin_node_output}'"
-        else:
-            query += f" AND origin_node_output IS NULL"
         self.execute(query)
 
     def check_node_type_exists(

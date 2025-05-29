@@ -26,7 +26,7 @@ class NodeLink:
             "destination_node_input": self.destination_node_input,
         }
 
-    def fromNamedDict(nameDict: dict[str, object]) -> Self:
+    def fromNameDict(nameDict: dict[str, object]) -> Self:
         return NodeLink(
             node_link_id=nameDict.get("node_link_id"),
             origin_node_id=nameDict["origin_node_id"],

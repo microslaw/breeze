@@ -35,6 +35,18 @@ Content-Type: application/json
     "destination_node_id": 3,
     "destination_node_input": "a"
 }
+
+### Patch added link
+PATCH http://127.0.0.1:5000/nodeLinks/3
+Content-Type: application/json
+
+{
+    "origin_node_id": 0,
+    "origin_node_output": null,
+    "destination_node_id": 2,
+    "destination_node_input": "asfjkl"
+}
+
 ### Get added link
 GET http://127.0.0.1:5000/nodeLinks/3
 
@@ -61,5 +73,19 @@ Content-Type: application/json
     "node_type": "add_int",
     "position_x": 1,
     "position_y": 1
+
+}
+
+### Get specific node
+GET http://127.0.0.1:5000/nodeInstances/0
+
+### Patch specific node instance
+PATCH  http://127.0.0.1:5000/nodeInstances/0
+Content-Type: application/json
+
+{
+    "instance_name": "a1",
+    "position_x": 101,
+    "position_y": 150
 
 }

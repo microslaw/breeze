@@ -202,6 +202,56 @@ def test_create_node_instance():
         assert response.status_code == 200
 
 
+def test_update_node_instance():
+    controller = initialize_server()
+
+    with controller.test_client() as client:
+        response = client.patch(
+            "/nodeInstances/0",
+            json={
+                "instance_name": "a1",
+                "position_x": 101,
+                "position_y": 150,
+            },
+        )
+        assert response.data == b"OK"
+        assert response.status_code == 200
+
+        response = client.get("nodeInstances/0")
+        assert response.json == {
+            "instance_name": "a1",
+            "node_id": 0,
+            "node_type": "add_int",
+            "overwrite_kwargs": {},
+            "position_x": 101,
+            "position_y": 150,
+        }
+        assert response.status_code == 200
+
+
+def test_invalid_args_update_node_instance():
+    controller = initialize_server()
+
+    with controller.test_client() as client:
+        response = client.patch(
+            "/nodeInstances/0",
+            json={
+                "node_id": 0,
+            },
+        )
+        assert response.data == b"Field node_id cannot be patched"
+        assert response.status_code == 400
+
+
+def test_invalid_instance_update_node_instance():
+    controller = initialize_server()
+
+    with controller.test_client() as client:
+        response = client.get("nodeInstances/10")
+        assert response.data == b"Node instance with node_id=10 not found"
+        assert response.status_code == 404
+
+
 def test_delete_node_instance():
     controller = initialize_server()
 
@@ -324,6 +374,55 @@ def test_create_node_link():
             "destination_node_input": "a",
         }
         assert response.status_code == 200
+
+
+def test_update_node_link():
+    controller = initialize_server()
+
+    with controller.test_client() as client:
+        response = client.patch(
+            "/nodeLinks/0",
+            json={
+                "destination_node_id": 3,
+                "destination_node_input": "b",
+                "origin_node_id": 0,
+            },
+        )
+        assert response.data == b"OK"
+        assert response.status_code == 200
+
+        response = client.get("nodeLinks/0")
+        assert response.json == {
+            "origin_node_id": 0,
+            "origin_node_output": None,
+            "node_link_id": 0,
+            "destination_node_id": 3,
+            "destination_node_input": "b",
+        }
+        assert response.status_code == 200
+
+def test_invalid_args_update_node_links():
+    controller = initialize_server()
+
+    with controller.test_client() as client:
+        response = client.patch(
+            "/nodeLinks/0",
+            json={
+                "node_link_id": 0,
+            },
+        )
+        assert response.data == b"Field node_link_id cannot be patched"
+        assert response.status_code == 400
+
+
+def test_invalid_link_update_node_links():
+    controller = initialize_server()
+
+    with controller.test_client() as client:
+        response = client.get("nodeLinks/10")
+        assert response.data == b"Node link with node_link_id=10 not found"
+        assert response.status_code == 404
+
 
 
 def test_delete_node_link():

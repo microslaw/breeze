@@ -255,6 +255,24 @@ class Repository:
         )
         return node_id
 
+    def update_node_instance(self, instance: NodeLink, to_update_id: int) -> None:
+        self.check_node_instance_exists(to_update_id)
+
+        sql_col_eq_values = ", ".join(
+            [
+                f"{colname}='{value}'"
+                for colname, value in instance.toNameDict().items()
+                if value is not None and colname != "overwrite_kwargs"
+            ]
+        )
+
+        query = f"""
+        UPDATE nodeInstances
+        SET {sql_col_eq_values}
+        WHERE node_id = {to_update_id}
+        """
+        self.execute(query)
+
     def delete_node_instance(self, node_id: int) -> None:
 
         linksToDelete = self.get_links_by_origin_node_id(
@@ -367,6 +385,24 @@ class Repository:
         """
         self.execute(query)
         return node_link_id
+
+    def update_node_link(self, update_link: NodeLink, to_update_id: int) -> None:
+        self.check_node_link_exists_by_id(to_update_id)
+
+        sql_col_eq_values = ", ".join(
+            [
+                f"{colname}='{value}'"
+                for colname, value in update_link.toNameDict().items()
+                if value is not None
+            ]
+        )
+
+        query = f"""
+        UPDATE nodeLinks
+        SET {sql_col_eq_values}
+        WHERE node_link_id = {to_update_id}
+        """
+        self.execute(query)
 
     def delete_node_link(self, node_link_id: int) -> None:
         """

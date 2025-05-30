@@ -110,6 +110,7 @@ def test_processing_exception():
                 "position_x": 0,
                 "position_y": 0,
                 "overwrite_kwargs": {},
+                "instance_name": None,
             },
             "traceback_str": "Traceback (most recent call last):\n"
             f'  File "{backend.prefabs.testing.processing.__file__}", '

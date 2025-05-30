@@ -44,9 +44,7 @@ def test_get_default_arg():
             "default_args": {"digits": "2"},
             "name": "round_float",
             "return_type": None,
-            "tags":[
-                "testing"
-            ]
+            "tags": ["testing"],
         }
         assert response.status_code == 200
 
@@ -69,6 +67,7 @@ def test_put_kwarg():
             "position_x": 0,
             "position_y": 0,
             "overwrite_kwargs": {"a": "3.1415"},
+            "instance_name": None,
         }
 
 
@@ -94,6 +93,7 @@ def test_put_overwriting_kwarg():
             "overwrite_kwargs": {
                 "digits": "1",
             },
+            "instance_name": None,
         }
 
 
@@ -188,7 +188,8 @@ def test_custom_format_from_input():
         assert response.status_code == 200
         assert response.data == b"OK"
 
-
     assert app.repository.does_kwarg_exist(node_id=3, kwarg_name="instance")
     instance = app.repository.read_kwarg(parent_node_id=3, kwarg_name="instance")
-    assert instance.describe() == backend.prefabs.testing.kwargs.MyClass("name").describe()
+    assert (
+        instance.describe() == backend.prefabs.testing.kwargs.MyClass("name").describe()
+    )

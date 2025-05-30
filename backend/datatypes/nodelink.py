@@ -3,20 +3,15 @@ from typing import Self
 
 class NodeLink:
 
-    # omiting uuid, for simplicity of api calls and testing
-    origin_node_id: int = None
-    # origin node may have only single input, in that case this field should be None
-    origin_node_output: str = None
-    destination_node_id: int = None
-    destination_node_input: str = None
-
     def __init__(
         self,
+        node_link_id,
         origin_node_id,
         origin_node_output,
         destination_node_id,
         destination_node_input,
     ):
+        self.node_link_id = node_link_id
         self.origin_node_id = origin_node_id
         self.origin_node_output = origin_node_output
         self.destination_node_id = destination_node_id
@@ -24,14 +19,16 @@ class NodeLink:
 
     def toNameDict(self) -> dict[str, object]:
         return {
+            "node_link_id": self.node_link_id,
             "origin_node_id": self.origin_node_id,
             "origin_node_output": self.origin_node_output,
             "destination_node_id": self.destination_node_id,
             "destination_node_input": self.destination_node_input,
         }
 
-    def fromNamedDict(nameDict: dict[str, object]) -> Self:
+    def fromNameDict(nameDict: dict[str, object]) -> Self:
         return NodeLink(
+            node_link_id=nameDict.get("node_link_id"),
             origin_node_id=nameDict["origin_node_id"],
             origin_node_output=nameDict["origin_node_output"],
             destination_node_id=nameDict["destination_node_id"],

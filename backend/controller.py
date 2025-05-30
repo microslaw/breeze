@@ -58,32 +58,33 @@ class Controller:
             self.repository.delete_node_instance(node_id)
             return "OK", 200
 
-        @self.flask_server.route("/nodeLinks/<node_id>", methods=["GET"])
-        def get_node_link(node_id):
-            """
-            Returns all links originating from the node with the given id
-            """
-            node_links = self.repository.get_links_by_origin_node_id(node_id)
-            return [link.toNameDict() for link in node_links]
+        @self.flask_server.route("/nodeLinks/<node_link_id>", methods=["GET"])
+        def get_node_link(node_link_id):
+            return self.repository.get_node_link(node_link_id).toNameDict()
 
         @self.flask_server.route("/nodeLinks", methods=["GET"])
         def get_all_node_links():
             """
-            Returns all links
+            Returns all links. Has option to filter by origin or destination node
             """
-            node_links = self.repository.get_all_links()
+
+            node_links = self.repository.get_all_links(
+                origin_node_id=request.args.get("origin_node_id"),
+                destination_node_id=request.args.get("destination_node_id"),
+            )
+
             return [link.toNameDict() for link in node_links]
 
         @self.flask_server.route("/nodeLinks", methods=["POST"])
         def create_node_link():
-            node_link = NodeLink.fromNamedDict(request.json)
-            self.repository.create_node_link(node_link)
-            return "OK", 200
+            node_link = NodeLink.fromNameDict(request.json)
+            node_link_id = self.repository.create_node_link(node_link)
+            response = {"node_link_id": node_link_id}
+            return response, 200
 
-        @self.flask_server.route("/nodeLinks", methods=["DELETE"])
-        def delete_node_link():
-            node_link = NodeLink.fromNamedDict(request.json)
-            self.repository.delete_node_link(node_link)
+        @self.flask_server.route("/nodeLinks/<node_link_id>", methods=["DELETE"])
+        def delete_node_link(node_link_id):
+            self.repository.delete_node_link(node_link_id)
             return "OK", 200
 
         @self.flask_server.route("/queueProcessing", methods=["POST"])

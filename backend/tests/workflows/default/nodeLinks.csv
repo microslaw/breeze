@@ -1,4 +1,4 @@
-origin_node_id,origin_node_output,destination_node_id,destination_node_input
-0,None,2,a
-1,None,2,b
-2,None,3,sd_limit
+node_link_id,origin_node_id,origin_node_output,destination_node_id,destination_node_input
+0,0,None,2,a
+1,1,None,2,b
+2,2,None,3,sd_limit

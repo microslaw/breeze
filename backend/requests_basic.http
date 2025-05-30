@@ -16,44 +16,39 @@ GET http://127.0.0.1:5000/nodeInstances/1
 ### Get specific nonexistent node
 GET http://127.0.0.1:5000/nodeInstances/100
 
-### Get links of a node
+### Get specific link
 GET http://127.0.0.1:5000/nodeLinks/1
 
-### Remove link between 1 and 3
-DELETE http://127.0.0.1:5000/nodeLinks
-Content-Type: application/json
+### Remove a specific link
+DELETE http://127.0.0.1:5000/nodeLinks/1
 
-{
-    "origin_node_id": 1,
-    "origin_node_output": null,
-    "destination_node_id": 2,
-    "destination_node_input": "b"
-}
-
-### Remove link between 10 and 3
-DELETE http://127.0.0.1:5000/nodeLinks
-Content-Type: application/json
-
-{
-    "origin_node_id": 10,
-    "origin_node_output": null,
-    "destination_node_id": 3,
-    "destination_node_input": "a"
-}
+### Remove nonexistant link
+DELETE http://127.0.0.1:5000/nodeLinks/10
 
 ### Add link between 1 and 3
 POST http://127.0.0.1:5000/nodeLinks
 Content-Type: application/json
 
 {
-    "origin_node_id": 1,
+    "origin_node_id": 0,
     "origin_node_output": null,
     "destination_node_id": 3,
     "destination_node_input": "a"
 }
+### Get added link
+GET http://127.0.0.1:5000/nodeLinks/3
 
 ### Get all node links
 GET http://127.0.0.1:5000/nodeLinks
+
+### Get node links with specific origin
+GET http://127.0.0.1:5000/nodeLinks?origin_node_id=0
+
+### Get node links with specific destination
+GET http://127.0.0.1:5000/nodeLinks?destination_node_id=2
+
+### Get node links with specific origin and  destination
+GET http://127.0.0.1:5000/nodeLinks?origin_node_id=2&destination_node_id=3
 
 ### Delete node
 DELETE http://127.0.0.1:5000/nodeInstances/1
@@ -64,7 +59,7 @@ Content-Type: application/json
 
 {
     "node_type": "add_int",
-    "position_x": 1, 
+    "position_x": 1,
     "position_y": 1
 
 }

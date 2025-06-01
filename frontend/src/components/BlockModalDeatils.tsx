@@ -44,33 +44,33 @@ const BlockModalDetails = ({
       <Modal.Header>
         <Modal.Title>{block.name}</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className={styles.modalBody}>
         <Card className={styles.card}>
           <Card.Header>Processing Result</Card.Header>
           <Card.Body>
             <Card.Text>
-              {processingResult
-                ? processingResult
-                : "No processing result available"}
+              {processingResult ?? "No processing result available"}
             </Card.Text>
           </Card.Body>
         </Card>
-        <Table bordered hover>
-          <thead>
-            <tr>
-              <th>Field</th>
-              <th>Value</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Object.entries(block).map(([key, value]) => (
-              <tr key={key}>
-                <td>{key}</td>
-                <td>{String(value)}</td>
+        <div className={styles.tableWrapper}>
+          <Table hover responsive>
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Value</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {Object.entries(block).map(([key, value]) => (
+                <tr key={key}>
+                  <td>{key}</td>
+                  <td>{String(value)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>

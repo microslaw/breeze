@@ -1,3 +1,14 @@
 .card {
+  border-radius: 8px;
   margin-bottom: 16px;
+}
+
+.modalBody {
+  padding: 1rem;
+}
+
+.tableWrapper {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #cccccc;
 }

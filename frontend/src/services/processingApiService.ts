@@ -40,7 +40,6 @@ export async function getProcessingQueue(): Promise<any[]> {
       method: "get",
       url: "http://127.0.0.1:5000/queueProcessing",
     });
-    console.log("Processing queue:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching processing queue:", error);

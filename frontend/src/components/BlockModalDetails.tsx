@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Modal, Button, Table, Card } from "react-bootstrap";
 import { BlockI } from "../models/block.model";
 import {
+  getProcessingQueue,
   getProcessingResultByNodeId,
   runProcessingJob,
 } from "../services/processingApiService";
 import styles from "./BlockModalDetails.module.css";
 
-interface BlockModalDeatilsProps {
+interface BlockModalDetailsProps {
   show: boolean;
   block: BlockI;
   handleClose: () => void;
@@ -19,7 +20,7 @@ const BlockModalDetails = ({
   block,
   handleClose,
   handleDelete,
-}: BlockModalDeatilsProps) => {
+}: BlockModalDetailsProps) => {
   // TODO put processing result into some kind of structure
   const [processingResult, setProcessingResult] = useState<any>(null);
 
@@ -29,7 +30,15 @@ const BlockModalDetails = ({
 
   const handleRunJob = () => {
     runProcessingJob(block.id).then((result) => {
-      console.log("Processing job result:", result);
+      console.log("Processing job started:", result);
+      let count = 0;
+      const intervalId = setInterval(() => {
+        getLastProcessingResult();
+        count++;
+        if (count >= 3) {
+          clearInterval(intervalId);
+        }
+      }, 1000);
     });
   };
 

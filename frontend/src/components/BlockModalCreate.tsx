@@ -53,7 +53,7 @@ const BlockModalCreate = ({
       setBlocks([...blocks, block]);
       setBlock({
         name: "",
-        type: "default",
+        type: "",
         id: -1,
         x: 0,
         y: 0,

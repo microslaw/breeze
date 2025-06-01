@@ -2,6 +2,15 @@ import { BlockI } from "../models/block.model";
 import { LinkI } from "../models/link.model";
 import { updateNode } from "../services/mainApiService";
 
+// Generic interactions
+export const handleMouseEnter = (e: any) => {
+  e.target.getStage().container().style.cursor = "pointer";
+};
+
+export const handleMouseLeave = (e: any) => {
+  e.target.getStage().container().style.cursor = "default";
+};
+
 // Block interactions
 export const handleDragBlockStart = (
   block: BlockI,

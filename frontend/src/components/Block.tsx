@@ -1,6 +1,10 @@
 import { Rect, Text, Group } from "react-konva";
 import { BlockI } from "../models/block.model";
 import { useState } from "react";
+import {
+  handleMouseEnter,
+  handleMouseLeave,
+} from "../functions/handleDefaultShapeInteractions";
 
 interface BlockProps {
   block: BlockI;
@@ -21,14 +25,6 @@ const Block = ({
 
   const handleDragMove = (e: any) => {
     setNamePosition({ x: e.target.x(), y: e.target.y() });
-  };
-
-  const handleMouseEnter = (e: any) => {
-    e.target.getStage().container().style.cursor = "pointer";
-  };
-
-  const handleMouseLeave = (e: any) => {
-    e.target.getStage().container().style.cursor = "default";
   };
 
   return (

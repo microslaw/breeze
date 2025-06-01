@@ -1,6 +1,10 @@
 import React from "react";
 import { Arrow } from "react-konva";
 import { LinkI } from "../models/link.model";
+import {
+  handleMouseEnter,
+  handleMouseLeave,
+} from "../functions/handleDefaultShapeInteractions";
 
 interface LinkProps {
   link: LinkI;
@@ -18,6 +22,8 @@ const Link: React.FC<LinkProps> = ({ link, handleDoubleClick }) => {
       strokeWidth={2}
       pointerLength={10}
       pointerWidth={10}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       onDblClick={() => handleDoubleClick(link)}
     />
   );

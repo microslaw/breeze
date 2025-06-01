@@ -21,6 +21,7 @@ const Menu = ({ blocks, setBlocks }: MenuProps) => {
   const [isBlockModalCreateVisible, setIsBlockModalCreateVisible] =
     useState<boolean>(false);
 
+  // Comented out functions are used for testing purposes do not remove them !!!
   return (
     <div className={styles.menu}>
       {/* Button section for testing purposes only */}

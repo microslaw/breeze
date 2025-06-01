@@ -16,10 +16,10 @@ export const handleMouseLeave = (e: any) => {
 export const handleDragBlockStart = (
   block: BlockI,
   blocks: BlockI[],
-  setItems: React.Dispatch<React.SetStateAction<any[]>>
+  setBlocks: React.Dispatch<React.SetStateAction<any[]>>
 ) => {
   const id = block.id;
-  setItems(
+  setBlocks(
     blocks.map((element) => ({
       ...element,
       isDragging: element.id === id,
@@ -31,11 +31,11 @@ export const handleDragBlockEnd = (
   e: any,
   block: BlockI,
   blocks: BlockI[],
-  setItems: React.Dispatch<React.SetStateAction<any[]>>,
+  setBlocks: React.Dispatch<React.SetStateAction<any[]>>,
   links: LinkI[],
   setLinks: React.Dispatch<React.SetStateAction<any[]>>
 ) => {
-  setItems(
+  setBlocks(
     blocks.map((element) => {
       if (element.id === block.id) {
         element.isDragging = false;
@@ -43,9 +43,7 @@ export const handleDragBlockEnd = (
         element.y = e.target.y();
         updateNode(
           mapBlockToPartialBlockForApiPatchRequestPositionUpdate(element)
-        ).then((response) => {
-          console.log("updated node position on backend", response);
-        });
+        );
       }
       return element;
     })

@@ -77,11 +77,18 @@ function App() {
     setBlocks((prevBlocks) =>
       prevBlocks.filter((block) => block.id !== selectedBlock.id)
     );
+    setLinks((prevLinks) =>
+      prevLinks.filter(
+        (link) =>
+          link.originNodeId !== selectedBlock.id &&
+          link.destinationNodeId !== selectedBlock.id
+      )
+    );
     handleCloseBlockDetails();
   };
 
   const handleDeleteLink = (linkId: number) => {
-    console.error("Delete link not implemented yet");
+    console.info("Delete link not implemented yet");
   };
 
   return (

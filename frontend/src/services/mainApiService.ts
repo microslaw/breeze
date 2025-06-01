@@ -41,7 +41,7 @@ export async function deleteNodeById(id: number) {
   }
 }
 
-export async function createNode(block: BlockI) {
+export async function createNode(block: BlockI): Promise<{ node_id: number }> {
   const node = mapBlockToApiPostRequest(block);
   try {
     const response = await axios({

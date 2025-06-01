@@ -8,6 +8,7 @@ import {
 } from "./services/mainApiService";
 import { useEffect, useState } from "react";
 import BlockModalDetails from "./components/BlockModalDeatils";
+import LinkModalDetails from "./components/LinkModalDetails";
 import { LinkI } from "./models/link.model";
 import assignLinksPositionByBlocksPosition from "./functions/assignLinksPositionByBlocksPosition";
 
@@ -30,6 +31,9 @@ function App() {
   const [isBlockModalDeatilsVisible, setIsBlockModalDeatilsVisible] =
     useState<boolean>(false);
 
+  const [isLinkModalDeatilsVisible, setIsLinkModalDeatilsVisible] =
+    useState<boolean>(false);
+
   const [selectedBlock, setSelectedBlock] = useState<BlockI>({
     id: Math.floor(Math.random() * 1000000),
     name: "",
@@ -39,13 +43,33 @@ function App() {
     isDragging: false,
   });
 
+  const [selectedLink, setSelectedLink] = useState<LinkI>({
+    destinationNodeId: 0,
+    destinationNodeInput: "",
+    originNodeId: 0,
+    originNodeOutput: "",
+    startX: 0,
+    startY: 0,
+    endX: 0,
+    endY: 0,
+  });
+
   const handleBlockDoubleClick = (block: BlockI) => {
     setSelectedBlock(block);
     setIsBlockModalDeatilsVisible(true);
   };
 
+  const handleLinkDoubleClick = (link: LinkI) => {
+    setSelectedLink(link);
+    setIsLinkModalDeatilsVisible(true);
+  };
+
   const handleCloseBlockDetails = () => {
     setIsBlockModalDeatilsVisible(false);
+  };
+
+  const handleCloseLinkDetails = () => {
+    setIsLinkModalDeatilsVisible(false);
   };
 
   const handleDeleteBlock = (blockId: number) => {
@@ -53,7 +77,18 @@ function App() {
     setBlocks((prevBlocks) =>
       prevBlocks.filter((block) => block.id !== selectedBlock.id)
     );
+    setLinks((prevLinks) =>
+      prevLinks.filter(
+        (link) =>
+          link.originNodeId !== selectedBlock.id &&
+          link.destinationNodeId !== selectedBlock.id
+      )
+    );
     handleCloseBlockDetails();
+  };
+
+  const handleDeleteLink = (linkId: number) => {
+    console.info("Delete link not implemented yet");
   };
 
   return (
@@ -66,12 +101,19 @@ function App() {
         links={links}
         setLinks={setLinks}
         handleBlockDoubleClick={(block) => handleBlockDoubleClick(block)}
+        handleLinkDoubleClick={(link) => handleLinkDoubleClick(link)}
       />
       <BlockModalDetails
         block={selectedBlock}
         show={isBlockModalDeatilsVisible}
         handleClose={() => handleCloseBlockDetails()}
         handleDelete={(blockId) => handleDeleteBlock(blockId)}
+      />
+      <LinkModalDetails
+        link={selectedLink}
+        show={isLinkModalDeatilsVisible}
+        handleClose={() => handleCloseLinkDetails()}
+        handleDelete={(linkId) => handleDeleteLink(linkId)}
       />
     </div>
   );

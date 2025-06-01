@@ -35,7 +35,7 @@ function App() {
     useState<boolean>(false);
 
   const [selectedBlock, setSelectedBlock] = useState<BlockI>({
-    id: Math.floor(Math.random() * 1000000),
+    id: -1,
     name: "",
     type: "default",
     x: 0,

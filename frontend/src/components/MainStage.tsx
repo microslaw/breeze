@@ -10,6 +10,7 @@ interface MainStageProps {
   links: LinkI[];
   setLinks: React.Dispatch<React.SetStateAction<LinkI[]>>;
   handleBlockDoubleClick: (block: BlockI) => void;
+  handleLinkDoubleClick: (link: LinkI) => void;
 }
 
 const MainStage = ({
@@ -18,6 +19,7 @@ const MainStage = ({
   links,
   setLinks,
   handleBlockDoubleClick,
+  handleLinkDoubleClick,
 }: MainStageProps) => {
   return (
     <Stage
@@ -31,6 +33,7 @@ const MainStage = ({
         links={links}
         setLinks={setLinks}
         handleBlockDoubleClick={(block) => handleBlockDoubleClick(block)}
+        handleLinkDoubleClick={(link) => handleLinkDoubleClick(link)}
       />
     </Stage>
   );

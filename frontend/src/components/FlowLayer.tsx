@@ -15,6 +15,7 @@ interface FlowLayerProps {
   links: LinkI[];
   setLinks: React.Dispatch<React.SetStateAction<LinkI[]>>;
   handleBlockDoubleClick: (block: BlockI) => void;
+  handleLinkDoubleClick: (link: LinkI) => void;
 }
 
 const FlowLayer = ({
@@ -23,6 +24,7 @@ const FlowLayer = ({
   links,
   setLinks,
   handleBlockDoubleClick,
+  handleLinkDoubleClick,
 }: FlowLayerProps) => {
   return (
     <Layer>
@@ -38,7 +40,11 @@ const FlowLayer = ({
         />
       ))}
       {links.map((link, index) => (
-        <Link key={index} link={link} />
+        <Link
+          key={index}
+          link={link}
+          handleDoubleClick={handleLinkDoubleClick}
+        />
       ))}
     </Layer>
   );

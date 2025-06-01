@@ -6,9 +6,10 @@ interface LinkProps {
   link: LinkI;
   color?: string;
   strokeWidth?: number;
+  handleDoubleClick: (link: LinkI) => void;
 }
 
-const Link: React.FC<LinkProps> = ({ link }) => {
+const Link: React.FC<LinkProps> = ({ link, handleDoubleClick }) => {
   return (
     <Arrow
       points={[link.startX, link.startY, link.endX, link.endY]}
@@ -17,6 +18,7 @@ const Link: React.FC<LinkProps> = ({ link }) => {
       strokeWidth={2}
       pointerLength={10}
       pointerWidth={10}
+      onDblClick={() => handleDoubleClick(link)}
     />
   );
 };

@@ -1,6 +1,7 @@
 import { BlockI } from "../models/block.model";
 import { LinkI } from "../models/link.model";
 import { updateNode } from "../services/mainApiService";
+import { mapBlockToPartialBlockForApiPatchRequestPositionUpdate } from "./apiMappers/blockApiMapper";
 
 // Generic interactions
 export const handleMouseEnter = (e: any) => {
@@ -40,7 +41,9 @@ export const handleDragBlockEnd = (
         element.isDragging = false;
         element.x = e.target.x();
         element.y = e.target.y();
-        updateNode(element).then((response) => {
+        updateNode(
+          mapBlockToPartialBlockForApiPatchRequestPositionUpdate(element)
+        ).then((response) => {
           console.log("updated node position on backend", response);
         });
       }

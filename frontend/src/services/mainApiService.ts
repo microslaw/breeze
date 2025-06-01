@@ -2,11 +2,13 @@ import axios from "axios";
 import {
   mapApiResponseToBlocks,
   mapBlockToApiPostRequest,
+  mapPartialBlockToApiPatchRequest,
 } from "../functions/apiMappers/blockApiMapper";
-import { BlockI } from "../models/block.model";
+import { BlockI, PartialBlockI } from "../models/block.model";
 import mapApiResponseToLinks from "../functions/apiMappers/linkApiMapper";
 import { LinkI } from "../models/link.model";
 
+// TODO assign response types to the functions
 export async function getAllNodes(): Promise<BlockI[]> {
   try {
     const response = await axios({
@@ -27,11 +29,16 @@ export async function getAllNodes(): Promise<BlockI[]> {
 }
 
 export async function deleteNodeById(id: number) {
-  const response = await axios({
-    method: "delete",
-    url: "http://127.0.0.1:5000/nodeInstances/" + id,
-  });
-  return response.data;
+  try {
+    const response = await axios({
+      method: "delete",
+      url: "http://127.0.0.1:5000/nodeInstances/" + id,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting node:", error);
+    throw error;
+  }
 }
 
 export async function createNode(block: BlockI) {
@@ -52,10 +59,22 @@ export async function createNode(block: BlockI) {
   }
 }
 
-// TODO implement non primitive handling of the response
-export async function updateNode(block: BlockI) {
-  const node = mapBlockToApiPostRequest(block);
-  // TODO when backend ready send request to update node
+export async function updateNode(block: PartialBlockI) {
+  const node = mapPartialBlockToApiPatchRequest(block);
+  try {
+    const response = await axios({
+      method: "patch",
+      url: "http://127.0.0.1:5000/nodeInstances/" + node.id,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: node.attributes,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error updating node:", error);
+    throw error;
+  }
 }
 
 // TODO implement non primitive handling of the response
@@ -67,7 +86,6 @@ export async function getNodeById(id: number) {
   return response.data;
 }
 
-// TODO implement non primitive handling of the response
 export async function getAllLinks(): Promise<LinkI[]> {
   try {
     const response = await axios({

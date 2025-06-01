@@ -16,11 +16,7 @@ export default function assignLinksPositionByBlocksPosition(
       link.endX = targetBlock.x;
       link.endY = targetBlock.y + 65;
     } else {
-      console.log(
-        sourceBlock,
-        targetBlock,
-        "sourceBlock or targetBlock not found"
-      );
+      throw new Error(`Source or target block not found for link: ${link}`);
     }
   });
 }

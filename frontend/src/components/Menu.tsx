@@ -12,6 +12,7 @@ import {
   createNode,
 } from "../services/mainApiService";
 import { getProcessingQueue } from "../services/processingApiService";
+import QueueModalDetails from "./QueueModalDetails";
 
 interface MenuProps {
   blocks: BlockI[];
@@ -22,6 +23,9 @@ const Menu = ({ blocks, setBlocks }: MenuProps) => {
   const [isBlockModalCreateVisible, setIsBlockModalCreateVisible] =
     useState<boolean>(false);
 
+  const [isQueueModalDeatilsVisible, setIsQueueModalDeatilsVisible] =
+    useState<boolean>(false);
+
   return (
     <div className={styles.menu}>
       {/* Button section for testing purposes only */}
@@ -29,8 +33,8 @@ const Menu = ({ blocks, setBlocks }: MenuProps) => {
         <Button onClick={() => setIsBlockModalCreateVisible(true)}>
           Add new block
         </Button>
-        <Button onClick={() => getProcessingQueue()}>
-          Get current porcessing queue
+        <Button onClick={() => setIsQueueModalDeatilsVisible(true)}>
+          View processing queue
         </Button>
         {/* Comented out functions are used for testing purposes do not remove
         them !!! */}
@@ -53,6 +57,10 @@ const Menu = ({ blocks, setBlocks }: MenuProps) => {
         blocks={blocks}
         setBlocks={setBlocks}
       ></BlockModalCreate>
+      <QueueModalDetails
+        show={isQueueModalDeatilsVisible}
+        handleClose={() => setIsQueueModalDeatilsVisible(false)}
+      ></QueueModalDetails>
     </div>
   );
 };

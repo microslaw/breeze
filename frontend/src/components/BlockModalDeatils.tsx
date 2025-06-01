@@ -1,6 +1,11 @@
-import React, { useState } from "react";
-import { Modal, Button, Table } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Modal, Button, Table, Card } from "react-bootstrap";
 import { BlockI } from "../models/block.model";
+import {
+  getProcessingResultByNodeId,
+  runProcessingJob,
+} from "../services/processingApiService";
+import styles from "./BlockModalDetails.module.css";
 
 interface BlockModalDeatilsProps {
   show: boolean;
@@ -15,8 +20,23 @@ const BlockModalDetails = ({
   handleClose,
   handleDelete,
 }: BlockModalDeatilsProps) => {
+  // TODO put processing result into some kind of structure
+  const [processingResult, setProcessingResult] = useState<any>(null);
+
+  useEffect(() => {
+    if (show) getLastProcessingResult();
+  }, [show, block.id]);
+
   const handleRunJob = () => {
-    console.info("Running job is not yet supported!");
+    runProcessingJob(block.id).then((result) => {
+      console.log("Processing job result:", result);
+    });
+  };
+
+  const getLastProcessingResult = () => {
+    getProcessingResultByNodeId(block.id).then((result) => {
+      setProcessingResult(result);
+    });
   };
 
   return (
@@ -25,7 +45,17 @@ const BlockModalDetails = ({
         <Modal.Title>{block.name}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Table hover bordered>
+        <Card className={styles.card}>
+          <Card.Header>Processing Result</Card.Header>
+          <Card.Body>
+            <Card.Text>
+              {processingResult
+                ? processingResult
+                : "No processing result available"}
+            </Card.Text>
+          </Card.Body>
+        </Card>
+        <Table bordered hover>
           <thead>
             <tr>
               <th>Field</th>

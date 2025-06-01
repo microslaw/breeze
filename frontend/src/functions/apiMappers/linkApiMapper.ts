@@ -1,8 +1,6 @@
 import { LinkI } from "../../models/link.model";
 
 export default function mapApiResponseToLinks(apiResponse: any[]): LinkI[] {
-  console.log("Mapping API response to links:", apiResponse);
-  // console.log("Mapping API response to links:", apiResponse);
   return apiResponse.map((link) => ({
     destinationNodeId: link.destination_node_id,
     destinationNodeInput: link.destination_node_input,

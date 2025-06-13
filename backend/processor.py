@@ -7,7 +7,6 @@ import traceback
 
 
 class Processor:
-
     def __init__(self, repository: Repository):
         self.processing_queue = deque()
         self.repository = repository
@@ -78,8 +77,68 @@ class Processor:
 
         self.processing_daemon.join(None)
 
-    def get_kwargs(self, processed_node_instance: NodeInstance):
+    def combine_kwargs(self, default_kwargs, overwrite_kwargs, prerequisite_kwargs):
+        return default_kwargs | overwrite_kwargs | prerequisite_kwargs
 
+    def get_kwargs_details(self, processed_node_instance: NodeInstance):
+        """
+        Similar get_kwargs, but provides more detail for frontend display
+        """
+        processed_node_type = self.repository.get_node_type(
+            processed_node_instance.node_type
+        )
+        prerequisite_links = self.repository.get_links_by_destination_node_id(
+            processed_node_instance.node_id
+        )
+
+        default_kwargs = {
+            arg_name: None for arg_name in processed_node_type.get_arg_names()
+        } | processed_node_type.get_default_args()
+
+        overwrite_kwargs = processed_node_instance.overwrite_kwargs
+
+        prerequisite_kwargs = {
+            link.destination_node_input: self.repository.read_output(
+                link.origin_node_id, link.origin_node_output
+            )
+            for link in prerequisite_links
+            if self.repository.does_output_exist(
+                link.origin_node_id, link.origin_node_output
+            )
+        }
+
+        default_kwarg_types = processed_node_type.get_arg_types()
+
+        default_kwargs = {
+            arg_name: {
+                "value": value,
+                "arg_source": "default",
+                "datatype": default_kwarg_types.get(arg_name, type(None)),
+            }
+            for arg_name, value in default_kwargs.items()
+        }
+        overwrite_kwargs = {
+            arg_name: {
+                "value": value,
+                "arg_source": "overwrite",
+                "datatype": type(value),
+            }
+            for arg_name, value in overwrite_kwargs.items()
+        }
+        prerequisite_kwargs = {
+            arg_name: {
+                "value": value,
+                "arg_source": "prerequisite",
+                "datatype": type(value),
+            }
+            for arg_name, value in prerequisite_kwargs.items()
+        }
+
+        return self.combine_kwargs(
+            default_kwargs, overwrite_kwargs, prerequisite_kwargs
+        )
+
+    def get_kwargs(self, processed_node_instance: NodeInstance):
         prerequisite_links = self.repository.get_links_by_destination_node_id(
             processed_node_instance.node_id
         )
@@ -97,7 +156,9 @@ class Processor:
 
         overwrite_kwargs = processed_node_instance.overwrite_kwargs
 
-        return default_kwargs | overwrite_kwargs | prerequisite_kwargs
+        return self.combine_kwargs(
+            default_kwargs, overwrite_kwargs, prerequisite_kwargs
+        )
 
     def process(self, node_id):
         processed_node_instance = self.repository.get_node_instance(node_id)

@@ -45,3 +45,5 @@ def show(x):
 add_input_format(str, lambda x: x.decode("utf-8"))
 add_input_format(float, lambda x: float(x.decode("utf-8")))
 add_input_format(int, lambda x: int(x.decode("utf-8")))
+add_display_format(type, lambda x: x.__name__)
+add_display_format(type(None), lambda _: None)

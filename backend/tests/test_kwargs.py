@@ -245,3 +245,25 @@ def test_custom_format_from_input():
     assert (
         instance.describe() == backend.prefabs.testing.kwargs.MyClass("name").describe()
     )
+
+
+def test_final_kwargs():
+    app = initalize_app()
+
+    with app.controller.test_client() as client:
+        response = client.get("/nodeInstances/2/finalKwargs", data=b"name")
+        assert response.json == [
+            {
+                "arg_name": "to_round",
+                "arg_source": "default",
+                "datatype": "float",
+                "value": None,
+            },
+            {
+                "arg_name": "digits",
+                "arg_source": "default",
+                "datatype": "int",
+                "value": "2",
+            },
+        ]
+        assert response.status_code == 200

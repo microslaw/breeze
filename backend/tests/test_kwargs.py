@@ -120,6 +120,58 @@ def test_put_kwargname_missing_node():
         assert response.data == b"Node instance with node_id=100 not found"
 
 
+def test_get_all_node_instances():
+    app = initalize_app()
+
+    app.repository.write_kwarg(1.0, 0, "a")
+    app.repository.write_kwarg(2.0, 0, "b")
+    app.repository.write_kwarg(2.0, 1, "b")
+
+    with app.controller.test_client() as client:
+        response = client.get("/nodeInstances")
+
+    assert response.json == [
+        {
+            "instance_name": None,
+            "node_id": 0,
+            "node_type": "add_float",
+            "overwrite_kwargs": {
+                "a": "1.0",
+                "b": "2.0",
+            },
+            "position_x": 0,
+            "position_y": 0,
+        },
+        {
+            "instance_name": None,
+            "node_id": 1,
+            "node_type": "add_float",
+            "overwrite_kwargs": {
+                "b": "2.0",
+            },
+            "position_x": 0,
+            "position_y": 0,
+        },
+        {
+            "instance_name": None,
+            "node_id": 2,
+            "node_type": "round_float",
+            "overwrite_kwargs": {},
+            "position_x": 0,
+            "position_y": 0,
+        },
+        {
+            "instance_name": None,
+            "node_id": 3,
+            "node_type": "describe_myclass",
+            "overwrite_kwargs": {},
+            "position_x": 0,
+            "position_y": 0,
+        },
+    ]
+    assert response.status_code == 200
+
+
 def test_get_kwargs_overwriting_only():
     app = initalize_app()
 
@@ -193,3 +245,25 @@ def test_custom_format_from_input():
     assert (
         instance.describe() == backend.prefabs.testing.kwargs.MyClass("name").describe()
     )
+
+
+def test_final_kwargs():
+    app = initalize_app()
+
+    with app.controller.test_client() as client:
+        response = client.get("/nodeInstances/2/finalKwargs", data=b"name")
+        assert response.json == [
+            {
+                "arg_name": "to_round",
+                "arg_source": "default",
+                "datatype": "float",
+                "value": None,
+            },
+            {
+                "arg_name": "digits",
+                "arg_source": "default",
+                "datatype": "int",
+                "value": "2",
+            },
+        ]
+        assert response.status_code == 200

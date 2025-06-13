@@ -63,7 +63,6 @@ class Controller:
 
         @self.flask_server.route("/nodeInstances/<node_instance_id>", methods=["PATCH"])
         def patch_node_instance(node_instance_id):
-
             if "node_id" in request.json:
                 raise BadRequestException("Field node_id cannot be patched")
 
@@ -103,7 +102,6 @@ class Controller:
 
         @self.flask_server.route("/nodeLinks/<node_link_id>", methods=["PATCH"])
         def patch_node_link(node_link_id):
-
             if "node_link_id" in request.json:
                 raise BadRequestException("Field node_link_id cannot be patched")
 
@@ -130,6 +128,25 @@ class Controller:
         @self.flask_server.route("/processingResult/<node_id>", methods=["GET"])
         def get_processing_result(node_id):
             return format_for_display(self.repository.read_output(node_id))
+
+        @self.flask_server.route(
+            "/nodeInstances/<node_id>/finalKwargs", methods=["GET"]
+        )
+        def get_final_kwargs(node_id):
+            final_kwargs = processor.get_kwargs_details(
+                repository.get_node_instance(node_id)
+            )
+
+            formated_kwargs = [
+                {
+                    "arg_name": key,
+                    "value": format_for_display(values["value"]),
+                    "arg_source": values["arg_source"],
+                    "datatype": format_for_display(values["datatype"]),
+                }
+                for key, values in final_kwargs.items()
+            ]
+            return formated_kwargs
 
         @self.flask_server.route(
             "/nodeInstances/<node_id>/kwargs/<kwarg_name>", methods=["GET"]

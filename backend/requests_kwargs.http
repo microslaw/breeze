@@ -8,10 +8,21 @@ GET http://127.0.0.1:5000/nodeTypes/round_float
 ### Get node instance
 GET http://127.0.0.1:5000/nodeInstances/2
 
+### Get all node instances
+GET http://127.0.0.1:5000/nodeInstances
+
+
+### Set overwrite_kwarg
+PUT http://127.0.0.1:5000/nodeInstances/0/kwargs/a
+Content-Type: text/plain
+
+1
+
 ### Set overwrite_kwarg
 PUT http://127.0.0.1:5000/nodeInstances/2/kwargs/digits
 Content-Type: text/plain
 
 3
 
-
+### Get final kwargs
+GET http://127.0.0.1:5000/nodeInstances/2/finalKwargs

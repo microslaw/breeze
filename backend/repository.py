@@ -198,8 +198,13 @@ class Repository:
 
     def get_all_node_instances(self) -> list[NodeInstance]:
         rows = self.fetchall("SELECT * FROM nodeInstances", named=True)
-        return [NodeInstance.fromNameDict(row) for row in rows]
 
+        node_instances = []
+        for row in rows:
+            node_instance: NodeInstance = NodeInstance.fromNameDict(row)
+            node_instance.overwrite_kwargs = self.read_instance_kwargs(node_instance.node_id)
+            node_instances.append(node_instance)
+        return node_instances
     def check_node_instance_exists(self, node_id: int, raise_on=False) -> None:
         if (
             self.fetchone(

@@ -1,3 +1,5 @@
+import { KwargI } from "./kwarg.model";
+
 export interface BlockI {
   id: number;
   name: string;
@@ -5,6 +7,7 @@ export interface BlockI {
   x: number;
   y: number;
   isDragging: boolean;
+  kwargs: KwargI[];
 }
 
 // Used only for updating the block using patch request

@@ -41,6 +41,7 @@ function App() {
     x: 0,
     y: 0,
     isDragging: false,
+    kwargs: [],
   });
 
   const [selectedLink, setSelectedLink] = useState<LinkI>({

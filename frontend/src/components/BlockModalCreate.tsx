@@ -23,6 +23,7 @@ const BlockModalCreate = ({
     x: 0,
     y: 0,
     isDragging: false,
+    kwargs: [],
   });
 
   const [blockTypes, setBlockTypes] = useState<string[]>([]);
@@ -58,6 +59,7 @@ const BlockModalCreate = ({
         x: 0,
         y: 0,
         isDragging: false,
+        kwargs: [],
       });
     });
     handleClose();

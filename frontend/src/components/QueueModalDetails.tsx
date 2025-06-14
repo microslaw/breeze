@@ -17,7 +17,7 @@ const QueueModalDetails = ({ show, handleClose }: BlockModalDetailsProps) => {
   }
 
   useEffect(() => {
-    let interval = null;
+    let interval: number | null = null;
     if (show) {
       updateProcessingQueue();
       interval = setInterval(updateProcessingQueue, 3000);

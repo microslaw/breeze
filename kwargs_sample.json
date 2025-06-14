@@ -1,0 +1,15 @@
+{
+  "node_id": "1",
+  "kwargs": [
+    {
+      "key": "elko",
+      "value": "123",
+      "type": "int"
+    },
+    {
+      "key": "elkoelko",
+      "value": "123.123",
+      "type": "float"
+    }
+  ]
+}

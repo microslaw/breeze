@@ -11,4 +11,10 @@
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid #cccccc;
+  margin-bottom: 16px;
+}
+
+.emptyTag {
+  color: #b0b0b0;
+  font-style: italic;
 }

@@ -9,6 +9,7 @@ export function mapApiResponseToBlocks(apiResponse: any[]): BlockI[] {
     x: node.position_x,
     y: node.position_y,
     isDragging: false,
+    kwargs: [],
   }));
 }
 

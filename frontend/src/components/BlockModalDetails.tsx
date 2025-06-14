@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Modal, Button, Table, Card } from "react-bootstrap";
 import { BlockI } from "../models/block.model";
 import {
-  getProcessingQueue,
   getProcessingResultByNodeId,
   runProcessingJob,
 } from "../services/processingApiService";
 import styles from "./BlockModalDetails.module.css";
+import { getKwargsByNodeId } from "../services/kwargsApiService";
 
 interface BlockModalDetailsProps {
   show: boolean;
@@ -25,7 +25,10 @@ const BlockModalDetails = ({
   const [processingResult, setProcessingResult] = useState<any>(null);
 
   useEffect(() => {
-    if (show) getLastProcessingResult();
+    if (!show) return;
+    getLastProcessingResult();
+    // TODO make kwargs get loaded every time the modal is opened
+    getKwargs();
   }, [show, block.id]);
 
   const handleRunJob = () => {
@@ -45,6 +48,12 @@ const BlockModalDetails = ({
   const getLastProcessingResult = () => {
     getProcessingResultByNodeId(block.id).then((result) => {
       setProcessingResult(result);
+    });
+  };
+
+  const getKwargs = () => {
+    getKwargsByNodeId(block.id).then((kwargs) => {
+      block.kwargs = kwargs;
     });
   };
 
@@ -71,10 +80,36 @@ const BlockModalDetails = ({
               </tr>
             </thead>
             <tbody>
-              {Object.entries(block).map(([key, value]) => (
-                <tr key={key}>
-                  <td>{key}</td>
-                  <td>{String(value)}</td>
+              {Object.entries(block)
+                .filter(([key]) => key !== "kwargs" && key !== "isDragging")
+                .map(([key, value]) => (
+                  <tr key={key}>
+                    <td>{key}</td>
+                    <td>{String(value)}</td>
+                  </tr>
+                ))}
+            </tbody>
+          </Table>
+        </div>
+        <div className={styles.tableWrapper}>
+          <Table hover responsive>
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Value</th>
+                <th>Type</th>
+                <th>Source</th>
+              </tr>
+            </thead>
+            <tbody>
+              {block.kwargs.map((kwarg, index) => (
+                <tr key={index}>
+                  <td>{kwarg.key}</td>
+                  <td>
+                    {kwarg.value || <i className={styles.emptyTag}>Empty</i>}
+                  </td>
+                  <td>{kwarg.type}</td>
+                  <td>{kwarg.source}</td>
                 </tr>
               ))}
             </tbody>

@@ -1,10 +1,7 @@
-from breeze import BreezeApp, NodeType
+from breeze import BreezeApp, prefabs
+
+prefabs.testing.load_default()
 
 br = BreezeApp()
-
-# TODO remove once nodeSet imports are implemented
-import backend.prefabs.testing.kwargs
-
-br.repository.load_workflow("backend/tests/workflows/kwargs")
-
+br.repository.load_workflow("backend/tests/workflows/default")
 br.start()

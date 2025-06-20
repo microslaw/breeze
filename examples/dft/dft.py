@@ -1,4 +1,4 @@
-from breeze import formatting
+
 from breeze import BreezeApp, prefabs, NodeType, formatting
 import numpy as np
 
@@ -7,9 +7,11 @@ prefabs.load_plotly()
 
 N = 10_000
 
+
+
 @NodeType(tags=["numpy"])
 def create_sin_wave(freq:float) -> np.ndarray:
-    return np.sin(np.arange(0, 20, step=20 / N) * 2 * np.pi)
+    return np.sin(np.arange(0, 20, step=20 / N) * 2 * np.pi * freq)
 
 @NodeType
 def add(a:object, b:object) -> object:
@@ -44,9 +46,5 @@ def numpy_abs(arr:np.ndarray) -> np.ndarray:
 formatting.add_display_format(np.ndarray, lambda x: f"np.ndarray(shape={x.shape}, dtype={x.dtype})")
 
 br = BreezeApp()
-br.repository.load_workflow("examples/dft/workflow")
-br.repository.write_kwarg(1,0,"freq")
-br.repository.write_kwarg(2,1,"freq")
-br.repository.write_kwarg(3,2,"freq")
-
+br.repository.load_workflow("backend/examples/dft/workflow")
 br.start()

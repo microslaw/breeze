@@ -1,0 +1,38 @@
+### queue processing
+POST http://127.0.0.1:5000/queueProcessing
+Content-Type: application/json
+
+{
+    "node_id":3
+}
+
+### queue processing
+POST http://127.0.0.1:5000/queueProcessing
+Content-Type: application/json
+
+{
+    "node_id":4
+}
+
+### queue processing
+POST http://127.0.0.1:5000/queueProcessing
+Content-Type: application/json
+
+{
+    "node_id":5
+}
+
+
+### queue processing
+POST http://127.0.0.1:5000/queueProcessing
+Content-Type: application/json
+
+{
+    "node_id":13
+}
+
+### Get processing result
+GET http://127.0.0.1:5000/processingResult/13
+
+### check processing queue
+GET  http://127.0.0.1:5000/queueProcessing

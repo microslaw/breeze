@@ -11,7 +11,6 @@ def read_csv(file: str):
 
 @NodeType(tags=["pandas"])
 def select_columns(df: pd.DataFrame, colnames: list[str]) -> pd.DataFrame:
-    df.head()
     return df[colnames]
 
 

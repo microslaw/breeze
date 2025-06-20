@@ -13,7 +13,7 @@ export async function getProcessingResultByNodeId(
   } catch (error) {
     // TODO handle error after changing the backend (404 => 204 when no processing result)
     // console.log("Error fetching processing :", error);
-    // throw error;
+    throw error;
   }
 }
 

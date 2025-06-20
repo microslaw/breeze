@@ -106,6 +106,7 @@ function App() {
       />
       <BlockModalDetails
         block={selectedBlock}
+        setBlock={setSelectedBlock}
         show={isBlockModalDetailsVisible}
         handleClose={() => handleCloseBlockDetails()}
         handleDelete={(blockId) => handleDeleteBlock(blockId)}

@@ -40,9 +40,14 @@ const BlockModalDetails = ({
   const [errorMsg, setErrorMsg] = useState<string>("");
 
   useEffect(() => {
-    if (!show) return;
-    getLastProcessingResult();
-    getKwargs();
+    if (!show) {
+      setProcessingResult(null);
+      setFocusedKwargValue({ key: "", value: "", type: "", source: "" });
+      setErrorMsg("");
+    } else {
+      getLastProcessingResult();
+      getKwargs();
+    }
   }, [show, block.id]);
 
   useEffect(() => {
@@ -59,7 +64,7 @@ const BlockModalDetails = ({
       const intervalId = setInterval(() => {
         getLastProcessingResult();
         count++;
-        if (count >= 3) {
+        if (count >= 3 || show === false) {
           clearInterval(intervalId);
         }
       }, 1000);
@@ -67,6 +72,7 @@ const BlockModalDetails = ({
   };
 
   const getLastProcessingResult = () => {
+    console.log("block modal block id:", block.id);
     getProcessingResultByNodeId(block.id)
       .then((result) => {
         setProcessingResult(result);

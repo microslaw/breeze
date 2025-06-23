@@ -1,6 +1,7 @@
 from backend.datatypes import NodeType
 from backend.formatting import add_display_format
 
+
 @NodeType(tags=["testing"])
 def add_int(a: int, b: int) -> int:
     return a + b

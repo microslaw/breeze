@@ -3,7 +3,6 @@ from backend.formatting import format_for_display
 
 
 class NodeType:
-
     all_udn: list[Self] = []
 
     # Prefferable way of doing that (see below) will be made possible in python 3.14 (see pep 749)

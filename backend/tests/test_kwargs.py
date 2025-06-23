@@ -281,4 +281,3 @@ def test_read_instance_kwargs():
     app.repository.write_kwarg(15.0, 1, "b")
 
     assert app.repository.read_instance_kwargs(0) == {"a": 10.5, "b": 20.0}
-

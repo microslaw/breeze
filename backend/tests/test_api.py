@@ -33,7 +33,6 @@ def test_get_node_type():
     controller = initialize_server()
 
     with controller.test_client() as client:
-
         response = client.get("/nodeTypes/add_int")
         assert response.json == {
             "name": "add_int",
@@ -58,7 +57,6 @@ def test_get_undecorated_node_type():
         return x * 2
 
     with controller.test_client() as client:
-
         response = client.get("/nodeTypes/multiply_int")
         assert response.json == {
             "name": "multiply_int",
@@ -256,7 +254,6 @@ def test_delete_node_instance():
     controller = initialize_server()
 
     with controller.test_client() as client:
-
         response = client.delete("/nodeInstances/2")
         assert response.data == b"OK"
         assert response.status_code == 200
@@ -401,6 +398,7 @@ def test_update_node_link():
         }
         assert response.status_code == 200
 
+
 def test_invalid_args_update_node_links():
     controller = initialize_server()
 
@@ -422,7 +420,6 @@ def test_invalid_link_update_node_links():
         response = client.get("nodeLinks/10")
         assert response.data == b"Node link with node_link_id=10 not found"
         assert response.status_code == 404
-
 
 
 def test_delete_node_link():

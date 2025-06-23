@@ -2,7 +2,6 @@ from typing import Self
 
 
 class NodeLink:
-
     def __init__(
         self,
         node_link_id,

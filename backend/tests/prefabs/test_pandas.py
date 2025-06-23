@@ -108,18 +108,16 @@ def test_select_columns():
 def test_groupby_agg():
     app = initalize_app()
     with app.controller.test_client() as client:
-        response = client.put(
-            "/nodeInstances/2/kwargs/group_colnames", data=b"variety"
-        )
+        response = client.put("/nodeInstances/2/kwargs/group_colnames", data=b"variety")
         assert response.data == b"OK"
         assert response.status_code == 200
 
         response = client.put(
-            "/nodeInstances/2/kwargs/agg_dict", data=b"petal.length:mean,petal.width:max"
+            "/nodeInstances/2/kwargs/agg_dict",
+            data=b"petal.length:mean,petal.width:max",
         )
         assert response.data == b"OK"
         assert response.status_code == 200
-
 
         response = client.get("/queueProcessing")
     app.processor.update_processing_schedule(2)
@@ -148,6 +146,7 @@ def test_filter_by_value_eq():
     df: pd.DataFrame = app.repository.read_output(3)
     assert all(df["variety"] == "Setosa")
     assert len(df) == 50
+
 
 def test_filter_by_value_less_than():
     app = initalize_app()

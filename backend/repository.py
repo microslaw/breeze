@@ -19,6 +19,7 @@ class ObjectAlreadyInDBException(Exception):
 KWARG_FILE_ENDING = "kwarg"
 OUTPUT_FILE_ENDING = "output"
 
+
 class Repository:
     def __init__(self, db_name="db.sqlite3", db_folder_path="backend/data"):
         self.db_name = db_name
@@ -111,8 +112,7 @@ class Repository:
         instance_kwarg_names = [
             argname
             for this_node_id, argname, type in file_tuples
-            if int(this_node_id) == instance_id
-            and type == KWARG_FILE_ENDING
+            if int(this_node_id) == instance_id and type == KWARG_FILE_ENDING
         ]
 
         return {

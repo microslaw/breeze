@@ -17,7 +17,7 @@ def select_columns(df: pd.DataFrame, colnames: list[str]) -> pd.DataFrame:
 
 @NodeType(tags=["pandas"])
 def groupby_agg(df: pd.DataFrame, group_colnames: list[str], agg_dict: dict[str, str]):
-    return df.groupby(group_colnames,as_index=False).agg(agg_dict)
+    return df.groupby(group_colnames, as_index=False).agg(agg_dict)
 
 
 @NodeType(tags=["pandas"])

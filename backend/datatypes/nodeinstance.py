@@ -4,7 +4,6 @@ from typing import Self
 
 # intermediate object for node instances
 class NodeInstance:
-
     # omiting uuid, for simplicity of api calls and testing
 
     def __init__(
@@ -37,7 +36,6 @@ class NodeInstance:
         }
 
     def fromNameDict(nameDict: dict[str, object]) -> Self:
-
         if "overwrite_kwargs" in nameDict:
             overwrite_kwargs = {
                 arg_name: format_from_input(value)

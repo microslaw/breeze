@@ -6,6 +6,7 @@ input_format_map = {}
 
 # TODO implement formatting exception
 
+
 def add_display_format(type: type, format_function: callable):
     display_format_map[type] = format_function
 
@@ -19,7 +20,7 @@ def format_for_display(obj: object) -> object:
         return display_format_map[type(obj)](obj)
 
     if type(obj) is GenericAlias:
-         obj_str = str(obj)
+        obj_str = str(obj)
     else:
         obj_str = obj.__str__()
 

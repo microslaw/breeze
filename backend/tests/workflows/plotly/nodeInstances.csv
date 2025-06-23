@@ -1,0 +1,5 @@
+node_id,node_type,position_x,position_y,instance_name
+0,read_csv,100,100,n0
+1,histogram,200,100,n1
+2,scatterplot,200,200,n2
+3,scatterplot_3d,200,300,n3

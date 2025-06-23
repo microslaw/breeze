@@ -1,0 +1,32 @@
+### Set overwrite_kwarg
+PUT http://127.0.0.1:5000/nodeInstances/0/kwargs/file
+Content-Type: text/plain
+
+backend/prefabs/data/iris.csv
+
+### Set overwrite_kwarg
+PUT http://127.0.0.1:5000/nodeInstances/1/kwargs/x
+Content-Type: text/plain
+
+sepal.length
+
+### Set overwrite_kwarg
+PUT http://127.0.0.1:5000/nodeInstances/1/kwargs/color
+Content-Type: text/plain
+
+variety
+
+### Run processing
+POST http://127.0.0.1:5000/queueProcessing
+Content-Type: application/json
+
+{
+    "node_id":1
+}
+
+### Get processing result
+GET http://127.0.0.1:5000/processingResult/1
+
+### check processing queue
+GET  http://127.0.0.1:5000/queueProcessing
+

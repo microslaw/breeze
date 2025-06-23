@@ -11,6 +11,8 @@ import {
   getLinksByOriginNode,
   createNode,
 } from "../services/mainApiService";
+import { getProcessingQueue } from "../services/processingApiService";
+import QueueModalDetails from "./QueueModalDetails";
 
 interface MenuProps {
   blocks: BlockI[];
@@ -21,7 +23,9 @@ const Menu = ({ blocks, setBlocks }: MenuProps) => {
   const [isBlockModalCreateVisible, setIsBlockModalCreateVisible] =
     useState<boolean>(false);
 
-  // Comented out functions are used for testing purposes do not remove them !!!
+  const [isQueueModalDeatilsVisible, setIsQueueModalDeatilsVisible] =
+    useState<boolean>(false);
+
   return (
     <div className={styles.menu}>
       {/* Button section for testing purposes only */}
@@ -29,6 +33,11 @@ const Menu = ({ blocks, setBlocks }: MenuProps) => {
         <Button onClick={() => setIsBlockModalCreateVisible(true)}>
           Add new block
         </Button>
+        <Button onClick={() => setIsQueueModalDeatilsVisible(true)}>
+          View processing queue
+        </Button>
+        {/* Comented out functions are used for testing purposes do not remove
+        them !!! */}
         {/* <Button onClick={() => console.log(blocks)}>Log list of blocks</Button>
         <Button onClick={() => getNodeTypes()}>Get node types from API</Button>
         <Button onClick={() => getAllNodes()}>
@@ -39,8 +48,8 @@ const Menu = ({ blocks, setBlocks }: MenuProps) => {
         </Button>
         <Button onClick={() => getLinksByOriginNode(1)}>
         Get node links by origin ID from API
-        </Button> */}
-        <Button onClick={() => getAllLinks()}>Get node links from API</Button>
+        </Button>
+        <Button onClick={() => getAllLinks()}>Get node links from API</Button> */}
       </span>
       <BlockModalCreate
         show={isBlockModalCreateVisible}
@@ -48,6 +57,10 @@ const Menu = ({ blocks, setBlocks }: MenuProps) => {
         blocks={blocks}
         setBlocks={setBlocks}
       ></BlockModalCreate>
+      <QueueModalDetails
+        show={isQueueModalDeatilsVisible}
+        handleClose={() => setIsQueueModalDeatilsVisible(false)}
+      ></QueueModalDetails>
     </div>
   );
 };

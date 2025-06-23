@@ -7,7 +7,7 @@ import {
   getAllNodes,
 } from "./services/mainApiService";
 import { useEffect, useState } from "react";
-import BlockModalDetails from "./components/BlockModalDeatils";
+import BlockModalDetails from "./components/BlockModalDetails";
 import LinkModalDetails from "./components/LinkModalDetails";
 import { LinkI } from "./models/link.model";
 import assignLinksPositionByBlocksPosition from "./functions/assignLinksPositionByBlocksPosition";
@@ -28,19 +28,20 @@ function App() {
     fetchAppState();
   }, []);
 
-  const [isBlockModalDeatilsVisible, setIsBlockModalDeatilsVisible] =
+  const [isBlockModalDetailsVisible, setIsBlockModalDetailsVisible] =
     useState<boolean>(false);
 
   const [isLinkModalDeatilsVisible, setIsLinkModalDeatilsVisible] =
     useState<boolean>(false);
 
   const [selectedBlock, setSelectedBlock] = useState<BlockI>({
-    id: Math.floor(Math.random() * 1000000),
+    id: -1,
     name: "",
     type: "default",
     x: 0,
     y: 0,
     isDragging: false,
+    kwargs: [],
   });
 
   const [selectedLink, setSelectedLink] = useState<LinkI>({
@@ -56,7 +57,7 @@ function App() {
 
   const handleBlockDoubleClick = (block: BlockI) => {
     setSelectedBlock(block);
-    setIsBlockModalDeatilsVisible(true);
+    setIsBlockModalDetailsVisible(true);
   };
 
   const handleLinkDoubleClick = (link: LinkI) => {
@@ -65,7 +66,7 @@ function App() {
   };
 
   const handleCloseBlockDetails = () => {
-    setIsBlockModalDeatilsVisible(false);
+    setIsBlockModalDetailsVisible(false);
   };
 
   const handleCloseLinkDetails = () => {
@@ -105,7 +106,8 @@ function App() {
       />
       <BlockModalDetails
         block={selectedBlock}
-        show={isBlockModalDeatilsVisible}
+        setBlock={setSelectedBlock}
+        show={isBlockModalDetailsVisible}
         handleClose={() => handleCloseBlockDetails()}
         handleDelete={(blockId) => handleDeleteBlock(blockId)}
       />

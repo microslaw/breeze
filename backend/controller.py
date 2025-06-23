@@ -30,6 +30,7 @@ class Controller:
 
         @self.flask_server.errorhandler(ProcessingException)
         def server_error(err: ProcessingException):
+            self.processor.reset_processing_queue()
             return err.toJson(), 422
 
         @self.flask_server.errorhandler(BadRequestException)

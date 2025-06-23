@@ -23,7 +23,6 @@ def format_for_display(obj: object) -> object:
     else:
         obj_str = obj.__str__()
 
-    print(type(obj))
     if len(obj_str) > 100:
         obj_str = obj_str[:100] + "..."
 

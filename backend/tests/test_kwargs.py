@@ -267,3 +267,18 @@ def test_final_kwargs():
             },
         ]
         assert response.status_code == 200
+
+
+def test_read_instance_kwargs():
+    app = initalize_app()
+
+    app.repository.write_kwarg(10.5, 0, "a")
+    app.repository.write_kwarg(20.0, 0, "b")
+
+    app.repository.write_output(30.5, 0)
+
+    app.repository.write_kwarg(5.0, 1, "a")
+    app.repository.write_kwarg(15.0, 1, "b")
+
+    assert app.repository.read_instance_kwargs(0) == {"a": 10.5, "b": 20.0}
+

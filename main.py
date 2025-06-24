@@ -1,9 +1,9 @@
 from breeze import BreezeApp, prefabs
 
-prefabs.testing.load_kwargs()
+prefabs.load_pandas()
 
 br = BreezeApp()
 
-br.repository.load_workflow("backend/tests/workflows/kwargs")
+br.repository.load_workflow("backend/tests/workflows/pandas")
 
 br.start()

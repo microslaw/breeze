@@ -1,5 +1,5 @@
 from backend.formatting import format_for_display, format_from_input
-from typing import Self
+from typing import Self, Optional
 
 
 # intermediate object for node instances
@@ -8,19 +8,21 @@ class NodeInstance:
 
     def __init__(
         self,
-        node_id,
+        node_id: int,
         node_type,
-        position_x,
-        position_y,
-        overwrite_kwargs=None,
-        instance_name=None,
+        position_x:int,
+        position_y:int,
+        overwrite_kwargs: Optional[dict[str, object]] = None,
+        instance_name: Optional[str] = None,
     ):
-        self.node_id = node_id
+        self.node_id: int = node_id
         self.node_type = node_type
-        self.position_x = position_x
-        self.position_y = position_y
-        self.overwrite_kwargs = overwrite_kwargs if overwrite_kwargs is not None else {}
-        self.instance_name = instance_name
+        self.position_x: int = position_x
+        self.position_y: int = position_y
+        self.overwrite_kwargs: dict[str, object] = (
+            overwrite_kwargs if overwrite_kwargs is not None else {}
+        )
+        self.instance_name: str = instance_name if instance_name is not None else ""
 
     def toNameDict(self) -> dict[str, object]:
         return {
@@ -35,7 +37,7 @@ class NodeInstance:
             "instance_name": self.instance_name,
         }
 
-    def fromNameDict(nameDict: dict[str, object]) -> Self:
+    def fromNameDict(nameDict: dict[str, object]) -> "NodeInstance":
         if "overwrite_kwargs" in nameDict:
             overwrite_kwargs = {
                 arg_name: format_from_input(value)

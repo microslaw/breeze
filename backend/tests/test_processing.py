@@ -30,7 +30,7 @@ def initalize_api_server() -> Controller:
 
 def test_initialization():
     processor = initialize_processor()
-    assert processor.repository.get_all_node_types() == [
+    assert processor.repository.get_all_node_type_names() == [
         "add_int",
         "const_1",
         "const_2",

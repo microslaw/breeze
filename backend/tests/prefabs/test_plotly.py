@@ -20,7 +20,7 @@ def initalize_app() -> BreezeApp:
 
 def test_initialization():
     app = initalize_app()
-    assert app.repository.get_all_node_types() == [
+    assert app.repository.get_all_node_type_names() == [
         "histogram",
         "scatterplot",
         "scatterplot_3d",

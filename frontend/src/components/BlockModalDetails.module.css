@@ -73,10 +73,3 @@
 .processingResult tr:last-child td {
   border-bottom: none;
 }
-
-.processingResult thead th {
-  position: sticky;
-  top: 0;
-  background-color: #f8f9fa;
-  z-index: 10;
-}

@@ -16,8 +16,10 @@ class ObjectAlreadyInDBException(Exception):
     pass
 
 
-class Repository:
+KWARG_FILE_ENDING = "kwarg"
+OUTPUT_FILE_ENDING = "output"
 
+class Repository:
     def __init__(self, db_name="db.sqlite3", db_folder_path="backend/data"):
         self.db_name = db_name
         self.db_folder_path = db_folder_path
@@ -25,9 +27,9 @@ class Repository:
 
     def get_output_path(self, node_id: int, output_name: str):
         if output_name is None:
-            object_name = f"{node_id}-output"
+            object_name = f"{node_id}--{OUTPUT_FILE_ENDING}"
         else:
-            object_name = f"{node_id}-{output_name}-output"
+            object_name = f"{node_id}-{output_name}-{OUTPUT_FILE_ENDING}"
         return f"{self.db_folder_path}/objects/{object_name}"
 
     def write_output(
@@ -36,7 +38,6 @@ class Repository:
         producer_node_id: int,
         producer_node_output: str = None,
     ) -> None:
-
         with open(
             self.get_output_path(producer_node_id, producer_node_output), "wb"
         ) as f:
@@ -63,7 +64,9 @@ class Repository:
             return pickle.load(f)
 
     def get_kwarg_path(self, node_id, kwarg_name):
-        return f"{self.db_folder_path}/objects/{node_id}-{kwarg_name}-kwarg"
+        return (
+            f"{self.db_folder_path}/objects/{node_id}-{kwarg_name}-{KWARG_FILE_ENDING}"
+        )
 
     def does_kwarg_exist(self, node_id: int, kwarg_name: str) -> bool:
         return os.path.isfile(self.get_kwarg_path(node_id, kwarg_name))
@@ -88,7 +91,7 @@ class Repository:
         node_type_name = self.get_node_instance_type_name(parent_node_id)
         self.check_node_kwarg_exists(node_type_name, kwarg_name)
 
-        full_path = f"{self.db_folder_path}/objects/{parent_node_id}-{kwarg_name}-kwarg"
+        full_path = f"{self.db_folder_path}/objects/{parent_node_id}-{kwarg_name}-{KWARG_FILE_ENDING}"
         if not self.does_kwarg_exist(parent_node_id, kwarg_name):
             raise ObjectNotInDBException(
                 f"Kwarg {kwarg_name} of node with node_id={parent_node_id} not found"
@@ -100,14 +103,16 @@ class Repository:
     def read_instance_kwargs(self, instance_id: int):
         self.check_node_instance_exists(instance_id)
 
-        object_paths = os.listdir(f"{self.db_folder_path}/objects")
+        filenames = os.listdir(f"{self.db_folder_path}/objects")
         # e.g. object_path: 3-colname-kwarg
         # object_path.split("-")[0] == 3 <instance_id> and object_path.split("-")[1] == colname <kwarg_name>
 
+        file_tuples = [filename.split("-") for filename in filenames]
         instance_kwarg_names = [
-            filename.split("-")[1]
-            for filename in object_paths
-            if int(filename.split("-")[0]) == instance_id
+            argname
+            for this_node_id, argname, type in file_tuples
+            if int(this_node_id) == instance_id
+            and type == KWARG_FILE_ENDING
         ]
 
         return {
@@ -202,9 +207,12 @@ class Repository:
         node_instances = []
         for row in rows:
             node_instance: NodeInstance = NodeInstance.fromNameDict(row)
-            node_instance.overwrite_kwargs = self.read_instance_kwargs(node_instance.node_id)
+            node_instance.overwrite_kwargs = self.read_instance_kwargs(
+                node_instance.node_id
+            )
             node_instances.append(node_instance)
         return node_instances
+
     def check_node_instance_exists(self, node_id: int, raise_on=False) -> None:
         if (
             self.fetchone(
@@ -279,7 +287,6 @@ class Repository:
         self.execute(query)
 
     def delete_node_instance(self, node_id: int) -> None:
-
         linksToDelete = self.get_links_by_origin_node_id(
             node_id
         ) + self.get_links_by_destination_node_id(node_id)
@@ -434,7 +441,6 @@ class Repository:
                 )
 
     def check_node_kwarg_exists(self, node_type_name: str, kwarg_name: str):
-
         node_type = self.get_node_type(node_type_name)
         if kwarg_name not in node_type.get_arg_names():
             raise ObjectNotInDBException(

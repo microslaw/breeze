@@ -27,14 +27,17 @@ const FlowLayer = ({
   handleBlockDoubleClick,
   handleLinkDoubleClick,
 }: FlowLayerProps) => {
+  // TODO change the comunication with child block to do not duplicate same parameters
   return (
     <Layer>
       {blocks.map((block) => (
         <Block
           key={block.id}
           block={block}
-          onDragStart={(e) => handleDragBlockStart(block, blocks, setBlocks)}
-          onDragEnd={(e) =>
+          onDragBlockStart={(e) =>
+            handleDragBlockStart(block, blocks, setBlocks)
+          }
+          onDragBlockEnd={(e) =>
             handleDragBlockEnd(e, block, blocks, setBlocks, links, setLinks)
           }
           onClick={(e) => handleBlockSingleClick(block, setBlocks)}

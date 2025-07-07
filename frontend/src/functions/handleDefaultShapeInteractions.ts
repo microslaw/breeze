@@ -18,11 +18,11 @@ export const handleDragBlockStart = (
   blocks: BlockI[],
   setBlocks: React.Dispatch<React.SetStateAction<any[]>>
 ) => {
-  const id = block.id;
+  if (block.isSelected) return;
   setBlocks(
     blocks.map((element) => ({
       ...element,
-      isDragging: element.id === id,
+      isDragging: element.id === block.id,
     }))
   );
 };

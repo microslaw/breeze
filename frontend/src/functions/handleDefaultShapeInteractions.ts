@@ -63,3 +63,15 @@ export const handleDragBlockEnd = (
     })
   );
 };
+
+export const handleBlockSingleClick = (
+  block: BlockI,
+  setBlocks: React.Dispatch<React.SetStateAction<any[]>>
+) => {
+  setBlocks((prevBlocks) =>
+    prevBlocks.map((b) => ({
+      ...b,
+      isSelected: b.id === block.id ? !b.isSelected : false,
+    }))
+  );
+};

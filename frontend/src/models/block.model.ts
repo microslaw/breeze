@@ -7,6 +7,7 @@ export interface BlockI {
   x: number;
   y: number;
   isDragging: boolean;
+  isSelected: boolean;
   kwargs: KwargI[];
 }
 

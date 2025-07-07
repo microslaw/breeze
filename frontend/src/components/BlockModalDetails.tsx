@@ -154,22 +154,27 @@ const BlockModalDetails = ({
         )}
         <Card className={styles.card}>
           <Card.Header>Processing Result</Card.Header>
-          <Card.Body>
-            <Card.Text>
-              {processingResult ? (
-                isHtmlContent(processingResult) ? (
-                  <div
-                    className={styles.processingResult}
-                    dangerouslySetInnerHTML={{ __html: processingResult }}
-                  />
-                ) : (
-                  processingResult
-                )
-              ) : (
-                "No processing result available"
-              )}
-            </Card.Text>
-          </Card.Body>
+          {processingResult ? (
+            isHtmlContent(processingResult) ? (
+              <Card.Body>
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    const newWindow = window.open("", "_blank");
+                    if (newWindow) {
+                      newWindow.document.writeln(processingResult);
+                    }
+                  }}
+                >
+                  Open Result in New Window
+                </Button>
+              </Card.Body>
+            ) : (
+              <Card.Text>{processingResult}</Card.Text>
+            )
+          ) : (
+            <Card.Text>No processing result available</Card.Text>
+          )}
         </Card>
         <div className={styles.tableWrapper}>
           <Table hover responsive>

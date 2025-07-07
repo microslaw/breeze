@@ -5,6 +5,7 @@ import { BlockI } from "../models/block.model";
 import {
   handleDragBlockStart,
   handleDragBlockEnd,
+  handleBlockSingleClick,
 } from "../functions/handleDefaultShapeInteractions";
 import { LinkI } from "../models/link.model";
 import Link from "./Link";
@@ -36,6 +37,7 @@ const FlowLayer = ({
           onDragEnd={(e) =>
             handleDragBlockEnd(e, block, blocks, setBlocks, links, setLinks)
           }
+          onClick={(e) => handleBlockSingleClick(block, setBlocks)}
           handleDoubleClick={(block) => handleBlockDoubleClick(block)}
         />
       ))}

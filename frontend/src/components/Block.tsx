@@ -4,12 +4,14 @@ import { useState } from "react";
 import {
   handleMouseEnter,
   handleMouseLeave,
+  handleBlockSingleClick,
 } from "../functions/handleDefaultShapeInteractions";
 
 interface BlockProps {
   block: BlockI;
   onDragStart: (e: any) => void;
   onDragEnd: (e: any) => void;
+  onClick: (e: any) => void;
   handleDoubleClick: (block: BlockI) => void;
 }
 const RECTANGLE_WIDTH = 200;
@@ -19,6 +21,7 @@ const Block = ({
   block,
   onDragStart,
   onDragEnd,
+  onClick,
   handleDoubleClick,
 }: BlockProps) => {
   const [namePosition, setNamePosition] = useState({ x: block.x, y: block.y });
@@ -42,6 +45,7 @@ const Block = ({
         shadowColor="black"
         shadowBlur={10}
         shadowOpacity={0.6}
+        stroke={block.isSelected ? "blue" : ""}
         shadowOffsetX={block.isDragging ? 10 : 5}
         shadowOffsetY={block.isDragging ? 10 : 5}
         scaleX={block.isDragging ? 1.2 : 1}
@@ -51,6 +55,7 @@ const Block = ({
         onDragMove={handleDragMove}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        onClick={onClick}
         onDblClick={() => handleDoubleClick(block)}
       />
       <Text

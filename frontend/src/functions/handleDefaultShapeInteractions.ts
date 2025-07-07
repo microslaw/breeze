@@ -75,3 +75,14 @@ export const handleBlockSingleClick = (
     }))
   );
 };
+
+/// Link interactions
+export const handleDragLinkStart = (
+  link: LinkI,
+  setLink: React.Dispatch<React.SetStateAction<LinkI>>
+) => {};
+
+export const handleDragLinkEnd = (
+  link: LinkI,
+  setLink: React.Dispatch<React.SetStateAction<LinkI>>
+) => {};

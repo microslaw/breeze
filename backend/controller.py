@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, send_file
 from flask_cors import CORS
 from backend.datatypes import NodeInstance, NodeLink
 from backend.repository import Repository
@@ -165,6 +165,16 @@ class Controller:
                 format_from_input(request.data, arg_type), node_id, kwarg_name
             )
             return "OK", 200
+
+        @self.flask_server.route("/blob/", methods=["GET"])
+        def get_blob():
+            return send_file("tests/workflows/etiWalpaper.png", "png"), 200
+
+        @self.flask_server.route("/blob/", methods=["GET"])
+        def get_blob():
+            with open("backend/tests/workflows/etiWalpaper.png", "rb") as wfile:
+                data = wfile.read()
+            return data, 200
 
     def test_client(self, **kwargs):
         return self.flask_server.test_client(**kwargs)

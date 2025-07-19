@@ -4,10 +4,10 @@ from typing import Callable, Optional, Any
 
 
 class NodeType:
-    all_udn: list[Self] = []
+    all_udn: dict[str, Self] = {}
 
     # Prefferable way of doing that (see below) will be made possible in python 3.14 (see pep 749)
-    # all_udn: list[NodeType] = []
+    # all_udn: dict[str, NodeType] = {}
 
     # This constuctor may be used in two ways:
     # @NodeType or @NodeType(args)
@@ -20,11 +20,18 @@ class NodeType:
     ):
         self.func: Callable[[Any], Any] = __func
         self.tags = tags
-        NodeType.all_udn.append(self)
+
+        if self.func is not None:
+            # TODO: Replace with ObjectAlreadyInDBException
+            if self.get_name() in NodeType.all_udn:
+                raise ValueError(
+                    f"NodeType with name '{self.get_name()}' already exists"
+                )
+            NodeType.all_udn[self.get_name()] = self
 
     @classmethod
     def clear_udns(cls):
-        cls.all_udn = []
+        cls.all_udn = {}
 
     def wrapper(self, *args, **kwargs):
         if self.func is not None:
@@ -33,6 +40,7 @@ class NodeType:
 
     def ending_constructor(self, __func: Callable[[Any], Any]):
         self.func = __func
+        NodeType.all_udn[self.get_name()] = self
         return self
 
     __call__ = wrapper
@@ -91,4 +99,3 @@ class NodeType:
             "return_type": return_type,
             "tags": self.tags,
         }
-

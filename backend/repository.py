@@ -475,7 +475,7 @@ class Repository:
             )
 
     def get_all_node_type_names(self) -> list[str]:
-        return [node_type.get_name() for node_type in NodeType.all_udn]
+        return list(NodeType.all_udn.keys())
 
     def get_node_instance_type_name(self, node_id: int) -> str:
         self.check_node_instance_exists(node_id)
@@ -486,9 +486,7 @@ class Repository:
 
     def get_node_type_from_name(self, node_type_name: str) -> NodeType:
         self.check_node_type_exists(node_type_name)
-        for node_type in NodeType.all_udn:
-            if node_type.get_name() == node_type_name:
-                return node_type
+        return NodeType.all_udn[node_type_name]
 
     def get_arg_type(self, node_type_name: str, arg_name: str):
         self.check_node_kwarg_exists(node_type_name, arg_name)

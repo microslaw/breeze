@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, testing
 from flask_cors import CORS
 from backend.datatypes import NodeInstance, NodeLink
 from backend.repository import Repository
@@ -6,6 +6,7 @@ from backend.repository import ObjectAlreadyInDBException
 from backend.repository import ObjectNotInDBException
 from backend.processor import Processor, ProcessingException
 from backend.formatting import format_for_display, format_from_input
+from typing import Any
 
 
 class BadRequestException(Exception):
@@ -21,11 +22,11 @@ class Controller:
         self.processor = processor
 
         @self.flask_server.errorhandler(ObjectNotInDBException)
-        def server_error(err):
+        def server_error(err: ObjectNotInDBException):
             return str(err), 404
 
         @self.flask_server.errorhandler(ObjectAlreadyInDBException)
-        def server_error(err):
+        def server_error(err: ObjectAlreadyInDBException):
             return str(err), 409
 
         @self.flask_server.errorhandler(ProcessingException)
@@ -39,11 +40,11 @@ class Controller:
 
         @self.flask_server.route("/nodeTypes", methods=["GET"])
         def get_all_node_types():
-            return self.repository.get_all_node_types()
+            return self.repository.get_all_node_type_names()
 
         @self.flask_server.route("/nodeTypes/<node_type_name>", methods=["GET"])
-        def get_node_type(node_type_name):
-            return self.repository.get_node_type(node_type_name).toJSON()
+        def get_node_type(node_type_name: str):
+            return self.repository.get_node_type_from_name(node_type_name).toJSON()
 
         @self.flask_server.route("/nodeInstances", methods=["GET"])
         def get_all_node_instances():
@@ -52,7 +53,7 @@ class Controller:
             ]
 
         @self.flask_server.route("/nodeInstances/<node_id>", methods=["GET"])
-        def get_node_instance(node_id):
+        def get_node_instance(node_id: int):
             return self.repository.get_node_instance(node_id).toNameDict()
 
         @self.flask_server.route("/nodeInstances", methods=["POST"])
@@ -63,7 +64,7 @@ class Controller:
             return response, 200
 
         @self.flask_server.route("/nodeInstances/<node_instance_id>", methods=["PATCH"])
-        def patch_node_instance(node_instance_id):
+        def patch_node_instance(node_instance_id: int):
             if "node_id" in request.json:
                 raise BadRequestException("Field node_id cannot be patched")
 
@@ -73,12 +74,12 @@ class Controller:
             return "OK", 200
 
         @self.flask_server.route("/nodeInstances/<node_id>", methods=["DELETE"])
-        def delete_node_instance(node_id):
+        def delete_node_instance(node_id: int):
             self.repository.delete_node_instance(node_id)
             return "OK", 200
 
         @self.flask_server.route("/nodeLinks/<node_link_id>", methods=["GET"])
-        def get_node_link(node_link_id):
+        def get_node_link(node_link_id: int):
             return self.repository.get_node_link(node_link_id).toNameDict()
 
         @self.flask_server.route("/nodeLinks", methods=["GET"])
@@ -102,7 +103,7 @@ class Controller:
             return response, 200
 
         @self.flask_server.route("/nodeLinks/<node_link_id>", methods=["PATCH"])
-        def patch_node_link(node_link_id):
+        def patch_node_link(node_link_id: int):
             if "node_link_id" in request.json:
                 raise BadRequestException("Field node_link_id cannot be patched")
 
@@ -112,7 +113,7 @@ class Controller:
             return "OK", 200
 
         @self.flask_server.route("/nodeLinks/<node_link_id>", methods=["DELETE"])
-        def delete_node_link(node_link_id):
+        def delete_node_link(node_link_id: int):
             self.repository.delete_node_link(node_link_id)
             return "OK", 200
 
@@ -127,13 +128,13 @@ class Controller:
             return self.processor.get_processing_schedule()
 
         @self.flask_server.route("/processingResult/<node_id>", methods=["GET"])
-        def get_processing_result(node_id):
+        def get_processing_result(node_id: int):
             return format_for_display(self.repository.read_output(node_id))
 
         @self.flask_server.route(
             "/nodeInstances/<node_id>/finalKwargs", methods=["GET"]
         )
-        def get_final_kwargs(node_id):
+        def get_final_kwargs(node_id: int):
             final_kwargs = processor.get_kwargs_details(
                 repository.get_node_instance(node_id)
             )
@@ -152,13 +153,13 @@ class Controller:
         @self.flask_server.route(
             "/nodeInstances/<node_id>/kwargs/<kwarg_name>", methods=["GET"]
         )
-        def get_kwarg(node_id, kwarg_name):
+        def get_kwarg(node_id: int, kwarg_name: str):
             return format_for_display(repository.read_kwarg(node_id, kwarg_name))
 
         @self.flask_server.route(
             "/nodeInstances/<node_id>/kwargs/<kwarg_name>", methods=["PUT"]
         )
-        def put_node_kwarg(node_id, kwarg_name):
+        def put_node_kwarg(node_id: int, kwarg_name: str):
             node_type_name = repository.get_node_instance_type_name(node_id)
             arg_type = repository.get_arg_type(node_type_name, kwarg_name)
             repository.write_kwarg(
@@ -166,8 +167,8 @@ class Controller:
             )
             return "OK", 200
 
-    def test_client(self, **kwargs):
+    def test_client(self, **kwargs: Any) -> testing.FlaskClient:
         return self.flask_server.test_client(**kwargs)
 
-    def run(self, **kwargs):
+    def run(self, **kwargs: Any):
         return self.flask_server.run(**kwargs)

@@ -1,21 +1,22 @@
-from backend.datatypes import NodeInstance, NodeLink
+from backend.datatypes import NodeInstance
 from backend.repository import Repository
 from backend.formatting import format_for_display
 from collections import deque
 import threading
 import traceback
+from typing import Optional
 
 
 class Processor:
     def __init__(self, repository: Repository):
-        self.processing_queue = deque()
+        self.processing_queue: deque[int] = deque()
         self.repository = repository
         self.running = False
         self.cached_exception = None
         self.processing_daemon = None
 
-    def get_all_prerequisite_node_ids(self, node_id: str) -> list[int]:
-        queue_appendix = []
+    def get_all_prerequisite_node_ids(self, node_id: int) -> list[int]:
+        queue_appendix: list[int] = []
         to_add = [node_id]
 
         while len(to_add) > 0:
@@ -71,21 +72,26 @@ class Processor:
         self.processing_queue = deque()
         self.cached_exception = None
 
-    def wait_till_finished(self, timeout=None):
+    def wait_till_finished(self, timeout: Optional[float] = None):
         if self.processing_daemon is None:
             return
 
-        self.processing_daemon.join(None)
+        self.processing_daemon.join(timeout)
 
-    def combine_kwargs(self, default_kwargs, overwrite_kwargs, prerequisite_kwargs):
+    def combine_kwargs(
+        self,
+        default_kwargs: dict[str, object],
+        overwrite_kwargs: dict[str, object],
+        prerequisite_kwargs: dict[str, object],
+    ) -> dict[str, object]:
         return default_kwargs | overwrite_kwargs | prerequisite_kwargs
 
     def get_kwargs_details(self, processed_node_instance: NodeInstance):
         """
         Similar get_kwargs, but provides more detail for frontend display
         """
-        processed_node_type = self.repository.get_node_type(
-            processed_node_instance.node_type
+        processed_node_type = self.repository.get_node_type_from_name(
+            processed_node_instance.node_type_name
         )
         prerequisite_links = self.repository.get_links_by_destination_node_id(
             processed_node_instance.node_id
@@ -109,7 +115,7 @@ class Processor:
 
         default_kwarg_types = processed_node_type.get_arg_types()
 
-        default_kwargs = {
+        default_kwargs: dict[str, object] = {
             arg_name: {
                 "value": value,
                 "arg_source": "default",
@@ -117,7 +123,7 @@ class Processor:
             }
             for arg_name, value in default_kwargs.items()
         }
-        overwrite_kwargs = {
+        overwrite_kwargs: dict[str, object] = {
             arg_name: {
                 "value": value,
                 "arg_source": "overwrite",
@@ -125,7 +131,7 @@ class Processor:
             }
             for arg_name, value in overwrite_kwargs.items()
         }
-        prerequisite_kwargs = {
+        prerequisite_kwargs: dict[str, object] = {
             arg_name: {
                 "value": value,
                 "arg_source": "prerequisite",
@@ -149,8 +155,8 @@ class Processor:
             for link in prerequisite_links
         }
 
-        processed_node_type = self.repository.get_node_type(
-            processed_node_instance.node_type
+        processed_node_type = self.repository.get_node_type_from_name(
+            processed_node_instance.node_type_name
         )
         default_kwargs = processed_node_type.get_default_args()
 
@@ -160,10 +166,10 @@ class Processor:
             default_kwargs, overwrite_kwargs, prerequisite_kwargs
         )
 
-    def process(self, node_id):
+    def process(self, node_id: int):
         processed_node_instance = self.repository.get_node_instance(node_id)
-        processed_node_type = self.repository.get_node_type(
-            processed_node_instance.node_type
+        processed_node_type = self.repository.get_node_type_from_name(
+            processed_node_instance.node_type_name
         )
 
         kwargs = self.get_kwargs(processed_node_instance)
@@ -187,7 +193,7 @@ class ProcessingException(Exception):
         self,
         e: Exception,
         node_instance: NodeInstance,
-        traceback: str,
+        traceback: list[str],
         input_args: dict[str, object],
         cancelled_nodes: list[int],
     ):
@@ -201,6 +207,7 @@ class ProcessingException(Exception):
             f"During processing of node {node_instance.toNameDict()} an exception occured:\n\n{self.traceback_str}"
         )
 
+    @staticmethod
     def prune_traceback(traceback: list[str]) -> str:
         """
         Removes part of the trace caused by the breeze library
@@ -211,7 +218,7 @@ class ProcessingException(Exception):
 
         return pruned_traceback
 
-    def toJson(self):
+    def toJson(self) -> dict[str, object]:
         return {
             "origin": self.origin.toNameDict(),
             "traceback_str": self.traceback_str,

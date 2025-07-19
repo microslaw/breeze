@@ -1,20 +1,20 @@
-from typing import Self
+from typing import Optional
 
 
 class NodeLink:
     def __init__(
         self,
-        node_link_id,
-        origin_node_id,
-        origin_node_output,
-        destination_node_id,
-        destination_node_input,
+        node_link_id: int,
+        origin_node_id: int,
+        origin_node_output: Optional[str],
+        destination_node_id: int,
+        destination_node_input: str,
     ):
-        self.node_link_id = node_link_id
-        self.origin_node_id = origin_node_id
-        self.origin_node_output = origin_node_output
-        self.destination_node_id = destination_node_id
-        self.destination_node_input = destination_node_input
+        self.node_link_id: int = node_link_id
+        self.origin_node_id: int = origin_node_id
+        self.origin_node_output: Optional[str] = origin_node_output
+        self.destination_node_id: int = destination_node_id
+        self.destination_node_input: str = destination_node_input
 
     def toNameDict(self) -> dict[str, object]:
         return {
@@ -25,7 +25,8 @@ class NodeLink:
             "destination_node_input": self.destination_node_input,
         }
 
-    def fromNameDict(nameDict: dict[str, object]) -> Self:
+    @staticmethod
+    def fromNameDict(nameDict: dict[str, object]) -> "NodeLink":
         return NodeLink(
             node_link_id=nameDict.get("node_link_id"),
             origin_node_id=nameDict.get("origin_node_id"),

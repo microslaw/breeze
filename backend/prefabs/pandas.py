@@ -1,11 +1,10 @@
 import pandas as pd
 from breeze import NodeType
 from backend.formatting import add_display_format, add_input_format
-import ast
 
 
 @NodeType(tags=["pandas", "import"])
-def read_csv(file: str):
+def read_csv(file: str) -> pd.DataFrame:
     return pd.read_csv(file)
 
 
@@ -16,7 +15,9 @@ def select_columns(df: pd.DataFrame, colnames: list[str]) -> pd.DataFrame:
 
 
 @NodeType(tags=["pandas"])
-def groupby_agg(df: pd.DataFrame, group_colnames: list[str], agg_dict: dict[str, str]):
+def groupby_agg(
+    df: pd.DataFrame, group_colnames: list[str], agg_dict: dict[str, str]
+) -> pd.DataFrame:
     return df.groupby(group_colnames, as_index=False).agg(agg_dict)
 
 

@@ -1,13 +1,11 @@
 from backend.datatypes import NodeType
 from importlib import reload
 from backend import Repository
-from backend import Processor, ProcessingException
+from backend import Processor
 from backend import Controller
-import backend.prefabs.testing.processing
 import backend.prefabs.testing.processing
 import threading
 import time
-from flask import Flask
 
 
 def initialize_processor() -> Processor:
@@ -30,7 +28,7 @@ def initalize_api_server() -> Controller:
 
 def test_initialization():
     processor = initialize_processor()
-    assert processor.repository.get_all_node_types() == [
+    assert processor.repository.get_all_node_type_names() == [
         "add_int",
         "const_1",
         "const_2",

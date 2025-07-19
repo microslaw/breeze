@@ -2,9 +2,6 @@ from backend.datatypes import NodeType
 from importlib import reload
 from backend import BreezeApp
 import backend.prefabs.testing.kwargs
-import threading
-import time
-from flask import Flask
 
 
 def initalize_app() -> BreezeApp:
@@ -19,7 +16,7 @@ def initalize_app() -> BreezeApp:
 
 def test_initialization():
     app = initalize_app()
-    assert app.repository.get_all_node_types() == [
+    assert app.repository.get_all_node_type_names() == [
         "add_float",
         "round_float",
         "describe_myclass",
@@ -175,13 +172,12 @@ def test_get_all_node_instances():
 def test_get_kwargs_overwriting_only():
     app = initalize_app()
 
-    with app.controller.test_client() as client:
-        app.repository.write_kwarg(1.0, 0, "a")
-        app.repository.write_kwarg(2.0, 0, "b")
+    app.repository.write_kwarg(1.0, 0, "a")
+    app.repository.write_kwarg(2.0, 0, "b")
 
-        kwargs = app.processor.get_kwargs(app.repository.get_node_instance(0))
+    kwargs = app.processor.get_kwargs(app.repository.get_node_instance(0))
 
-        assert kwargs == {"a": 1.0, "b": 2.0}
+    assert kwargs == {"a": 1.0, "b": 2.0}
 
 
 def test_kwarg_prerequisite_overwriting():
@@ -229,7 +225,7 @@ def test_kwargs_processing():
 
     output = app.repository.read_output(0)
     assert output == 3.0
-    assert type(output) == type(3.0)
+    assert type(output) is float
 
 
 def test_custom_format_from_input():

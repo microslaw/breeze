@@ -144,31 +144,43 @@ class Repository:
         cursor.connection.commit()
         cursor.connection.close()
 
-    def fetchall(
-        self, query: str, named: bool = False
-    ) -> list[dict[str, str]] | list[str]:
+    def fetchall(self, query: str) -> list[str]:
         cursor = self.get_cursor()
         fetched = cursor.execute(query).fetchall()
         cursor.connection.commit()
         cursor.connection.close()
 
-        if named:
-            colnames = [desc[0] for desc in cursor.description]
-            fetched = [
-                {name: val for name, val in zip(colnames, fetched_row)}
-                for fetched_row in fetched
-            ]
         return fetched
 
-    def fetchone(self, query: str, named: bool = False) -> dict[str, object] | Any:
+    def fetchall_named(self, query: str) -> list[dict[str, object]]:
+        cursor = self.get_cursor()
+        fetched = cursor.execute(query).fetchall()
+        cursor.connection.commit()
+        cursor.connection.close()
+
+        colnames = [desc[0] for desc in cursor.description]
+        fetched = [
+            {name: val for name, val in zip(colnames, fetched_row)}
+            for fetched_row in fetched
+        ]
+        return fetched
+
+    def fetchone(self, query: str) -> Any:
         cursor = self.get_cursor()
         fetched = cursor.execute(query).fetchone()
         cursor.connection.commit()
         cursor.connection.close()
 
-        if named:
-            colnames = [desc[0] for desc in cursor.description]
-            fetched = {name: val for name, val in zip(colnames, fetched)}
+        return fetched
+
+    def fetchone_named(self, query: str) -> dict[str, Any]:
+        cursor = self.get_cursor()
+        fetched = cursor.execute(query).fetchone()
+        cursor.connection.commit()
+        cursor.connection.close()
+
+        colnames = [desc[0] for desc in cursor.description]
+        fetched = {name: val for name, val in zip(colnames, fetched)}
 
         return fetched
 
@@ -209,9 +221,9 @@ class Repository:
         )
 
     def get_all_node_instances(self) -> list[NodeInstance]:
-        rows = self.fetchall("SELECT * FROM nodeInstances", named=True)
+        rows = self.fetchall_named("SELECT * FROM nodeInstances")
 
-        node_instances = []
+        node_instances: list[NodeInstance] = []
         for row in rows:
             node_instance = NodeInstance.fromNameDict(row)
             node_instance.overwrite_kwargs = self.read_instance_kwargs(
@@ -239,8 +251,8 @@ class Repository:
 
     def get_node_instance(self, node_id: int) -> NodeInstance:
         self.check_node_instance_exists(node_id)
-        node_row = self.fetchone(
-            f"SELECT * FROM nodeInstances WHERE node_id = {node_id}", named=True
+        node_row = self.fetchone_named(
+            f"SELECT * FROM nodeInstances WHERE node_id = {node_id}"
         )
         instance = NodeInstance.fromNameDict(node_row)
         instance.overwrite_kwargs = self.read_instance_kwargs(instance.node_id)
@@ -304,15 +316,15 @@ class Repository:
 
     def get_links_by_origin_node_id(self, node_id: int) -> list[NodeLink]:
         self.check_node_instance_exists(node_id)
-        linkRows = self.fetchall(
-            f"SELECT * FROM nodeLinks WHERE origin_node_id = {node_id}", named=True
+        linkRows = self.fetchall_named(
+            f"SELECT * FROM nodeLinks WHERE origin_node_id = {node_id}"
         )
         return [NodeLink.fromNameDict(linkRow) for linkRow in linkRows]
 
     def get_links_by_destination_node_id(self, node_id: int) -> list[NodeLink]:
         self.check_node_instance_exists(node_id)
-        linkRows = self.fetchall(
-            f"SELECT * FROM nodeLinks WHERE destination_node_id = {node_id}", named=True
+        linkRows = self.fetchall_named(
+            f"SELECT * FROM nodeLinks WHERE destination_node_id = {node_id}"
         )
         return [NodeLink.fromNameDict(linkRow) for linkRow in linkRows]
 
@@ -332,7 +344,7 @@ class Repository:
                 query += "WHERE "
             query += f"destination_node_id = {destination_node_id} "
 
-        linkRows = self.fetchall(query, named=True)
+        linkRows = self.fetchall_named(query)
         return [NodeLink.fromNameDict(linkRow) for linkRow in linkRows]
 
     def check_node_link_exists(self, link: NodeLink, raise_on: bool = False) -> None:
@@ -345,7 +357,7 @@ class Repository:
         if link.origin_node_output is not None:
             select_one_query += f" AND origin_node_output = '{link.origin_node_output}'"
         else:
-            select_one_query += f" AND origin_node_output IS NULL"
+            select_one_query += " AND origin_node_output IS NULL"
 
         if self.fetchone(select_one_query) is None:
             if raise_on == False:
@@ -376,8 +388,8 @@ class Repository:
 
     def get_node_link(self, node_link_id: int) -> NodeLink:
         self.check_node_link_exists_by_id(node_link_id)
-        node_row = self.fetchone(
-            f"SELECT * FROM nodeLinks WHERE node_link_id = {node_link_id}", named=True
+        node_row = self.fetchone_named(
+            f"SELECT * FROM nodeLinks WHERE node_link_id = {node_link_id}"
         )
         instance = NodeLink.fromNameDict(node_row)
         return instance
@@ -487,12 +499,11 @@ class Repository:
     def get_prerequisite_node_ids(self, node_id: int) -> list[int]:
         self.check_node_instance_exists(node_id)
 
-        node_rows = self.fetchall(
+        node_rows = self.fetchall_named(
             f"""SELECT node_id
             FROM nodeInstances
             JOIN nodeLinks ON origin_node_id = node_id
             WHERE destination_node_id = {node_id}""",
-            named=True,
         )
 
         return [node_row["node_id"] for node_row in node_rows]

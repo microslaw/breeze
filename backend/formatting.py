@@ -1,5 +1,5 @@
 from types import GenericAlias
-from typing import Optional, Callable, Any
+from typing import Optional, Callable, Any, TypeVar
 
 display_format_map: dict[type, Callable[[Any], Any]] = {}
 input_format_map: dict[type, Callable[[Any], Any]] = {}
@@ -7,12 +7,20 @@ input_format_map: dict[type, Callable[[Any], Any]] = {}
 # TODO implement formatting exception
 
 
-def add_display_format(type: type, format_function: Callable[[type], Any]):
-    display_format_map[type] = format_function
+T_display = TypeVar("T_display", bound=type)
 
 
-def add_input_format(type: type, format_function: Callable[[type], Any]):
-    input_format_map[type] = format_function
+def add_display_format(
+    object_type: T_display, format_function: Callable[[T_display], Any]
+):
+    display_format_map[object_type] = format_function
+
+
+T_input = TypeVar("T_input", bound=type)
+
+
+def add_input_format(input_type: T_input, format_function: Callable[[T_input], Any]):
+    input_format_map[input_type] = format_function
 
 
 def format_for_display(obj: object) -> object:

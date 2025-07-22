@@ -1,5 +1,6 @@
 import { BlockI } from "../models/block.model";
 import { LinkI } from "../models/link.model";
+import LinkCircleI from "../models/linkcircle.model";
 import { createLink, updateNode } from "../services/mainApiService";
 import { mapBlockToPartialBlockForApiPatchRequestPositionUpdate } from "./apiMappers/blockApiMapper";
 
@@ -80,7 +81,7 @@ export const handleBlockSingleClick = (
 export const handleDragCircleStart = (
   setLinkCircle: React.Dispatch<React.SetStateAction<LinkCircleI>>
 ) => {
-  setLinkCircle((prev) => ({ ...prev, isDragging: true }));
+  setLinkCircle((prev: LinkCircleI) => ({ ...prev, isDragging: true }));
 };
 
 export const handleDragCircleEnd = (
@@ -90,7 +91,7 @@ export const handleDragCircleEnd = (
   blocks: BlockI[],
   setBlocks: React.Dispatch<React.SetStateAction<BlockI[]>>
 ) => {
-  setLinkCircle((prev) => ({ ...prev, isDragging: false }));
+  setLinkCircle((prev: LinkCircleI) => ({ ...prev, isDragging: false }));
 
   const circleX = e.target.x();
   const circleY = e.target.y();

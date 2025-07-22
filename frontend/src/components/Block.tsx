@@ -12,6 +12,7 @@ import {
 } from "../functions/handleDefaultShapeInteractions";
 import { LinkI } from "../models/link.model";
 import Link from "./Link";
+import LinkCircleI from "../models/linkcircle.model";
 
 interface BlockProps {
   block: BlockI;

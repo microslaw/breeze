@@ -1,6 +1,6 @@
 import { BlockI } from "../models/block.model";
 import { LinkI } from "../models/link.model";
-import { updateNode } from "../services/mainApiService";
+import { createLink, updateNode } from "../services/mainApiService";
 import { mapBlockToPartialBlockForApiPatchRequestPositionUpdate } from "./apiMappers/blockApiMapper";
 
 // Generic interactions
@@ -76,13 +76,47 @@ export const handleBlockSingleClick = (
   );
 };
 
-/// Link interactions
-export const handleDragLinkStart = (
-  link: LinkI,
-  setLink: React.Dispatch<React.SetStateAction<LinkI>>
-) => {};
+/// Circle interactions
+export const handleDragCircleStart = (
+  setLinkCircle: React.Dispatch<React.SetStateAction<LinkCircleI>>
+) => {
+  setLinkCircle((prev) => ({ ...prev, isDragging: true }));
+};
 
-export const handleDragLinkEnd = (
-  link: LinkI,
-  setLink: React.Dispatch<React.SetStateAction<LinkI>>
-) => {};
+export const handleDragCircleEnd = (
+  e: any,
+  setLinkCircle: React.Dispatch<React.SetStateAction<LinkCircleI>>,
+  block: BlockI,
+  blocks: BlockI[],
+  setBlocks: React.Dispatch<React.SetStateAction<BlockI[]>>
+) => {
+  setLinkCircle((prev) => ({ ...prev, isDragging: false }));
+
+  const circleX = e.target.x();
+  const circleY = e.target.y();
+  const circleRadius = e.target.radius();
+
+  blocks.forEach((originBlock) => {
+    const blockWidth = 200;
+    const blockHeight = 130;
+
+    const isOverlapping =
+      circleX + circleRadius > originBlock.x &&
+      circleX - circleRadius < originBlock.x + blockWidth &&
+      circleY + circleRadius > originBlock.y &&
+      circleY - circleRadius < originBlock.y + blockHeight;
+
+    if (isOverlapping) {
+      createLink(block, originBlock).then((res) => {
+        console.log("Link created:", res);
+      });
+    }
+
+    setBlocks((prevBlocks) =>
+      prevBlocks.map((b) => ({
+        ...b,
+        isSelected: false,
+      }))
+    );
+  });
+};

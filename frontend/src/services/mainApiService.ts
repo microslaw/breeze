@@ -115,6 +115,28 @@ export async function getLinksByOriginNode(nodeId: number) {
 }
 
 // TODO implement non primitive handling of the response
+export async function createLink(
+  originBlock: BlockI,
+  destinationBlock: BlockI
+) {
+  console.log(originBlock, destinationBlock);
+  const response = await axios({
+    method: "post",
+    url: "http://127.0.0.1:5000/nodeLinks",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: {
+      origin_node_id: originBlock.id,
+      origin_node_output: null,
+      destination_node_id: destinationBlock.id,
+      destination_node_input: null,
+    },
+  });
+  return response.data;
+}
+
+// TODO implement non primitive handling of the response
 export async function getNodeTypes(): Promise<string[]> {
   try {
     const response = await axios({

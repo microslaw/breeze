@@ -1,6 +1,7 @@
 import { BlockI, PartialBlockI } from "../../models/block.model";
 
 export function mapApiResponseToBlocks(apiResponse: any[]): BlockI[] {
+  console.log("Mapping API response to blocks:", apiResponse);
   return apiResponse.map((node) => ({
     id: node.node_id,
     // Use instance_name if available, otherwise fallback to node_type

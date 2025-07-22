@@ -5,8 +5,8 @@ import {
   handleBlockSingleClick,
   handleDragBlockEnd,
   handleDragBlockStart,
-  handleDragLinkEnd,
-  handleDragLinkStart,
+  handleDragCircleEnd,
+  handleDragCircleStart,
   handleMouseEnter,
   handleMouseLeave,
 } from "../functions/handleDefaultShapeInteractions";
@@ -37,15 +37,10 @@ const Block = ({
     y: block.y,
   });
 
-  const [createdLink, setCreatedLink] = useState<LinkI>({
-    destinationNodeId: -1,
-    destinationNodeInput: "",
-    originNodeId: block.id,
-    originNodeOutput: "",
-    startX: dynamicPosition.x + RECTANGLE_WIDTH,
-    startY: dynamicPosition.y + RECTANGLE_HEIGHT / 2,
-    endX: dynamicPosition.x + RECTANGLE_WIDTH + 5,
-    endY: dynamicPosition.y + RECTANGLE_HEIGHT / 2,
+  const [linkCircle, setLinkCircle] = useState<LinkCircleI>({
+    isDragging: false,
+    x: block.x + RECTANGLE_WIDTH,
+    y: block.y + RECTANGLE_HEIGHT / 2,
   });
 
   const handleDragMove = (e: any) => {
@@ -93,14 +88,19 @@ const Block = ({
         offsetY={-RECTANGLE_HEIGHT / 10}
       />
       {block.isSelected && (
-        <Link
-          draggable={true}
-          key={block.id + "-link"}
-          link={createdLink}
-          handleDoubleClick={function (link: LinkI): void {}}
-          onDragStart={() => handleDragLinkStart(createdLink, setCreatedLink)}
-          onDragEnd={() => handleDragLinkEnd(createdLink, setCreatedLink)}
-          pointerSize={20}
+        <Circle
+          draggable
+          x={dynamicPosition.x + RECTANGLE_WIDTH}
+          y={dynamicPosition.y + RECTANGLE_HEIGHT / 2}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          onDragStart={() => handleDragCircleStart(setLinkCircle)}
+          onDragEnd={(e) => {
+            handleDragCircleEnd(e, setLinkCircle, block, blocks, setBlocks);
+          }}
+          radius={linkCircle.isDragging ? 14 : 10}
+          fill="red"
+          stroke={"black"}
         />
       )}
     </Group>

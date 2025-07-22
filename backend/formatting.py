@@ -1,5 +1,6 @@
 from types import GenericAlias
 from typing import Optional, Callable, Any, TypeVar
+from datetime import datetime
 
 display_format_map: dict[type, Callable[[Any], Any]] = {}
 input_format_map: dict[type, Callable[[Any], Any]] = {}
@@ -57,3 +58,4 @@ add_input_format(float, lambda x: float(x.decode("utf-8")))
 add_input_format(int, lambda x: int(x.decode("utf-8")))
 add_display_format(type, lambda x: x.__name__)
 add_display_format(type(None), lambda _: None)
+add_display_format(datetime, lambda x: x.strftime("%Y-%m-%d %H:%M:%S"))

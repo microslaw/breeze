@@ -6,6 +6,7 @@ from backend.datatypes import NodeType
 import os
 import shutil
 import pickle
+from datetime import datetime
 from typing import Optional, Any
 
 
@@ -68,6 +69,12 @@ class Repository:
             self.get_output_path(producer_node_id, producer_node_output), "rb"
         ) as f:
             return pickle.load(f)
+
+    def get_output_created_date(self, node_id: int) -> str:
+        self.check_node_instance_exists(node_id)
+        output_path = self.get_output_path(node_id, None)
+        float_date = os.path.getmtime(output_path)
+        return datetime.fromtimestamp(float_date)
 
     def get_kwarg_path(self, node_id: int, kwarg_name: str):
         return (

@@ -132,6 +132,22 @@ class Controller:
             return format_for_display(self.repository.read_output(node_id))
 
         @self.flask_server.route(
+            "/processingResult/<node_id>/metadata", methods=["GET"]
+        )
+        def get_processing_result_metadata(node_id: int):
+            if self.repository.does_output_exist(node_id):
+                output = self.repository.read_output(node_id)
+                return {
+                    "is_processed": True,
+                    "datatype": format_for_display(type(output)),
+                    "created_date": format_for_display(
+                        repository.get_output_created_date(node_id)
+                    ),
+                }
+            else:
+                return {"is_processed": False}
+
+        @self.flask_server.route(
             "/nodeInstances/<node_id>/finalKwargs", methods=["GET"]
         )
         def get_final_kwargs(node_id: int):

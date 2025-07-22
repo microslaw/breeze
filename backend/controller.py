@@ -22,20 +22,20 @@ class Controller:
         self.processor = processor
 
         @self.flask_server.errorhandler(ObjectNotInDBException)
-        def server_error(err: ObjectNotInDBException):
+        def server_error_not_in_db(err: ObjectNotInDBException):
             return str(err), 404
 
         @self.flask_server.errorhandler(ObjectAlreadyInDBException)
-        def server_error(err: ObjectAlreadyInDBException):
+        def server_error_already_in_db(err: ObjectAlreadyInDBException):
             return str(err), 409
 
         @self.flask_server.errorhandler(ProcessingException)
-        def server_error(err: ProcessingException):
+        def server_error_processing(err: ProcessingException):
             self.processor.reset_processing_queue()
             return err.toJson(), 422
 
         @self.flask_server.errorhandler(BadRequestException)
-        def server_error(err: BadRequestException):
+        def server_error_bad_request(err: BadRequestException):
             return str(err), 400
 
         @self.flask_server.route("/nodeTypes", methods=["GET"])

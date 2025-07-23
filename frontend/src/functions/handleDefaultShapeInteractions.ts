@@ -1,8 +1,13 @@
 import { BlockI } from "../models/block.model";
 import { LinkI } from "../models/link.model";
 import LinkCircleI from "../models/linkcircle.model";
-import { createLink, updateNode } from "../services/mainApiService";
+import {
+  createLink,
+  getAllLinks,
+  updateNode,
+} from "../services/mainApiService";
 import { mapBlockToPartialBlockForApiPatchRequestPositionUpdate } from "./apiMappers/blockApiMapper";
+import assignLinksPositionByBlocksPosition from "./assignLinksPositionByBlocksPosition";
 
 // Generic interactions
 export const handleMouseEnter = (e: any) => {
@@ -89,7 +94,9 @@ export const handleDragCircleEnd = (
   setLinkCircle: React.Dispatch<React.SetStateAction<LinkCircleI>>,
   block: BlockI,
   blocks: BlockI[],
-  setBlocks: React.Dispatch<React.SetStateAction<BlockI[]>>
+  setBlocks: React.Dispatch<React.SetStateAction<BlockI[]>>,
+  links: LinkI[],
+  setLinks: React.Dispatch<React.SetStateAction<LinkI[]>>
 ) => {
   setLinkCircle((prev: LinkCircleI) => ({ ...prev, isDragging: false }));
 
@@ -109,7 +116,10 @@ export const handleDragCircleEnd = (
 
     if (isOverlapping) {
       createLink(block, originBlock).then((res) => {
-        console.log("Link created:", res);
+        getAllLinks().then((links) => {
+          setLinks(links);
+          assignLinksPositionByBlocksPosition(blocks, links);
+        });
       });
     }
 

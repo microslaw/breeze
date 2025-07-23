@@ -97,7 +97,15 @@ const Block = ({
           onMouseLeave={handleMouseLeave}
           onDragStart={() => handleDragCircleStart(setLinkCircle)}
           onDragEnd={(e) => {
-            handleDragCircleEnd(e, setLinkCircle, block, blocks, setBlocks);
+            handleDragCircleEnd(
+              e,
+              setLinkCircle,
+              block,
+              blocks,
+              setBlocks,
+              links,
+              setLinks
+            );
           }}
           radius={linkCircle.isDragging ? 14 : 10}
           fill="red"

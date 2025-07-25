@@ -1,4 +1,3 @@
-from backend.datatypes import NodeType
 from backend.repository import Repository
 from backend.processor import Processor
 from backend.controller import Controller

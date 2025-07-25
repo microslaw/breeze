@@ -3,7 +3,6 @@ from importlib import reload
 from backend import BreezeApp
 import backend.prefabs.pandas
 import backend.prefabs.plotly
-import pandas as pd
 
 
 def initalize_app() -> BreezeApp:
@@ -20,7 +19,7 @@ def initalize_app() -> BreezeApp:
 
 def test_initialization():
     app = initalize_app()
-    assert app.repository.get_all_node_types() == [
+    assert app.repository.get_all_node_type_names() == [
         "histogram",
         "scatterplot",
         "scatterplot_3d",

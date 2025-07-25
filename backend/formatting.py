@@ -1,17 +1,26 @@
-import pandas as pd
 from types import GenericAlias
+from typing import Optional, Callable, Any, TypeVar
 
-display_format_map = {}
-input_format_map = {}
+display_format_map: dict[type, Callable[[Any], Any]] = {}
+input_format_map: dict[type, Callable[[Any], Any]] = {}
 
 # TODO implement formatting exception
 
-def add_display_format(type: type, format_function: callable):
-    display_format_map[type] = format_function
+
+T_display = TypeVar("T_display", bound=type)
 
 
-def add_input_format(type: type, format_function: callable):
-    input_format_map[type] = format_function
+def add_display_format(
+    object_type: T_display, format_function: Callable[[T_display], Any]
+):
+    display_format_map[object_type] = format_function
+
+
+T_input = TypeVar("T_input", bound=type)
+
+
+def add_input_format(input_type: T_input, format_function: Callable[[T_input], Any]):
+    input_format_map[input_type] = format_function
 
 
 def format_for_display(obj: object) -> object:
@@ -19,7 +28,7 @@ def format_for_display(obj: object) -> object:
         return display_format_map[type(obj)](obj)
 
     if type(obj) is GenericAlias:
-         obj_str = str(obj)
+        obj_str = str(obj)
     else:
         obj_str = obj.__str__()
 
@@ -29,17 +38,14 @@ def format_for_display(obj: object) -> object:
     return obj_str
 
 
-def format_from_input(obj: object, type: type = None) -> object:
-    if type is None:
-        return str(obj)
-
-    if type not in input_format_map:
+def format_from_input(obj: object, type: Optional[type] = None) -> object:
+    if type is None or type not in input_format_map:
         return str(obj)
 
     return input_format_map[type](obj)
 
 
-def show(x):
+def show(x: object):
     """Function intended for debugging formatting"""
     print(f"Formatting object of type {type(x)}  :")
     print(x)

@@ -129,8 +129,7 @@ export async function createLink(link: LinkI) {
       origin_node_id: link.originNodeId.toString(),
       origin_node_output: null,
       destination_node_id: link.destinationNodeId.toString(),
-      // TODO change to real node input when front ready
-      destination_node_input: null,
+      destination_node_input: link.destinationNodeInput || null,
     },
   })
     .then((response) => {

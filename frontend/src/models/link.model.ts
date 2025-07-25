@@ -1,3 +1,4 @@
+// TODO add node_id to model
 export interface LinkI {
   destinationNodeId: number;
   destinationNodeInput: string;

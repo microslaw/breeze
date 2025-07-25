@@ -20,6 +20,8 @@ interface BlockProps {
   setBlocks: React.Dispatch<React.SetStateAction<BlockI[]>>;
   links: LinkI[];
   setLinks: React.Dispatch<React.SetStateAction<LinkI[]>>;
+  setSelectedLink: React.Dispatch<React.SetStateAction<LinkI>>;
+  setIsLinkModalCreateVisible: React.Dispatch<React.SetStateAction<boolean>>;
   handleDoubleClick: (block: BlockI) => void;
 }
 const RECTANGLE_WIDTH = 200;
@@ -31,6 +33,8 @@ const Block = ({
   setBlocks,
   links,
   setLinks,
+  setSelectedLink,
+  setIsLinkModalCreateVisible,
   handleDoubleClick,
 }: BlockProps) => {
   const [dynamicPosition, setdynamicPosition] = useState({
@@ -104,7 +108,9 @@ const Block = ({
               blocks,
               setBlocks,
               links,
-              setLinks
+              setLinks,
+              setSelectedLink,
+              setIsLinkModalCreateVisible
             );
           }}
           radius={linkCircle.isDragging ? 14 : 10}

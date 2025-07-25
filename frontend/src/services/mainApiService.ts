@@ -116,11 +116,9 @@ export async function getLinksByOriginNode(nodeId: number) {
 }
 
 // TODO implement non primitive handling of the response
-export async function createLink(
-  originBlock: BlockI,
-  destinationBlock: BlockI
-) {
-  console.log(originBlock, destinationBlock);
+// TODO add function to map LinkI to data send to backend
+// for now we assume that node can have only one output
+export async function createLink(link: LinkI) {
   const response = await axios({
     method: "post",
     url: "http://127.0.0.1:5000/nodeLinks",
@@ -128,13 +126,20 @@ export async function createLink(
       "Content-Type": "application/json",
     },
     data: {
-      origin_node_id: originBlock.id,
+      origin_node_id: link.originNodeId.toString(),
       origin_node_output: null,
-      destination_node_id: destinationBlock.id,
+      destination_node_id: link.destinationNodeId.toString(),
+      // TODO change to real node input when front ready
       destination_node_input: null,
     },
-  });
-  return response.data;
+  })
+    .then((response) => {
+      console.log("Link created:", response.data);
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error creating link:", error);
+    });
 }
 
 // TODO implement non primitive handling of the response

@@ -96,7 +96,9 @@ export const handleDragCircleEnd = (
   blocks: BlockI[],
   setBlocks: React.Dispatch<React.SetStateAction<BlockI[]>>,
   links: LinkI[],
-  setLinks: React.Dispatch<React.SetStateAction<LinkI[]>>
+  setLinks: React.Dispatch<React.SetStateAction<LinkI[]>>,
+  setSelectedLink: React.Dispatch<React.SetStateAction<LinkI>>,
+  setIsLinkModalCreateVisible: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   setLinkCircle((prev: LinkCircleI) => ({ ...prev, isDragging: false }));
 
@@ -104,18 +106,31 @@ export const handleDragCircleEnd = (
   const circleY = e.target.y();
   const circleRadius = e.target.radius();
 
-  blocks.forEach((originBlock) => {
+  blocks.forEach((destBlock) => {
     const blockWidth = 200;
     const blockHeight = 130;
 
     const isOverlapping =
-      circleX + circleRadius > originBlock.x &&
-      circleX - circleRadius < originBlock.x + blockWidth &&
-      circleY + circleRadius > originBlock.y &&
-      circleY - circleRadius < originBlock.y + blockHeight;
+      circleX + circleRadius > destBlock.x &&
+      circleX - circleRadius < destBlock.x + blockWidth &&
+      circleY + circleRadius > destBlock.y &&
+      circleY - circleRadius < destBlock.y + blockHeight;
 
     if (isOverlapping) {
-      createLink(block, originBlock).then((res) => {
+      const newLink = {
+        originNodeId: block.id,
+        originNodeOutput: "",
+        destinationNodeId: destBlock.id,
+        destinationNodeInput: "",
+        startX: 0,
+        startY: 0,
+        endX: 0,
+        endY: 0,
+      };
+
+      setSelectedLink(newLink);
+      setIsLinkModalCreateVisible(true);
+      createLink(newLink).then((res) => {
         getAllLinks().then((links) => {
           setLinks(links);
           assignLinksPositionByBlocksPosition(blocks, links);

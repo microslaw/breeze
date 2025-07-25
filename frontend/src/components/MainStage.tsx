@@ -9,6 +9,8 @@ interface MainStageProps {
   setBlocks: React.Dispatch<React.SetStateAction<BlockI[]>>;
   links: LinkI[];
   setLinks: React.Dispatch<React.SetStateAction<LinkI[]>>;
+  setSelectedLink: React.Dispatch<React.SetStateAction<LinkI>>;
+  setIsLinkModalCreateVisible: React.Dispatch<React.SetStateAction<boolean>>;
   handleBlockDoubleClick: (block: BlockI) => void;
   handleLinkDoubleClick: (link: LinkI) => void;
 }
@@ -18,6 +20,8 @@ const MainStage = ({
   setBlocks,
   links,
   setLinks,
+  setSelectedLink,
+  setIsLinkModalCreateVisible,
   handleBlockDoubleClick,
   handleLinkDoubleClick,
 }: MainStageProps) => {
@@ -32,6 +36,8 @@ const MainStage = ({
         setBlocks={setBlocks}
         links={links}
         setLinks={setLinks}
+        setSelectedLink={setSelectedLink}
+        setIsLinkModalCreateVisible={setIsLinkModalCreateVisible}
         handleBlockDoubleClick={(block) => handleBlockDoubleClick(block)}
         handleLinkDoubleClick={(link) => handleLinkDoubleClick(link)}
       />

@@ -11,6 +11,7 @@ import BlockModalDetails from "./components/BlockModalDetails";
 import LinkModalDetails from "./components/LinkModalDetails";
 import { LinkI } from "./models/link.model";
 import assignLinksPositionByBlocksPosition from "./functions/assignLinksPositionByBlocksPosition";
+import LinkModalCreate from "./components/LinkModalCreate";
 
 function App() {
   const [blocks, setBlocks] = useState<BlockI[]>([]);
@@ -32,6 +33,9 @@ function App() {
     useState<boolean>(false);
 
   const [isLinkModalDeatilsVisible, setIsLinkModalDeatilsVisible] =
+    useState<boolean>(false);
+
+  const [isLinkModalCreateVisible, setIsLinkModalCreateVisible] =
     useState<boolean>(false);
 
   const [selectedBlock, setSelectedBlock] = useState<BlockI>({
@@ -102,6 +106,8 @@ function App() {
         setBlocks={setBlocks}
         links={links}
         setLinks={setLinks}
+        setSelectedLink={setSelectedLink}
+        setIsLinkModalCreateVisible={setIsLinkModalCreateVisible}
         handleBlockDoubleClick={(block) => handleBlockDoubleClick(block)}
         handleLinkDoubleClick={(link) => handleLinkDoubleClick(link)}
       />
@@ -117,6 +123,12 @@ function App() {
         show={isLinkModalDeatilsVisible}
         handleClose={() => handleCloseLinkDetails()}
         handleDelete={(linkId) => handleDeleteLink(linkId)}
+      />
+      {/* TODO use correct link for creation */}
+      <LinkModalCreate
+        show={isLinkModalCreateVisible}
+        handleClose={() => setIsLinkModalCreateVisible(false)}
+        link={selectedLink}
       />
     </div>
   );

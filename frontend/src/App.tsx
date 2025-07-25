@@ -127,8 +127,10 @@ function App() {
       {/* TODO use correct link for creation */}
       <LinkModalCreate
         show={isLinkModalCreateVisible}
-        handleClose={() => setIsLinkModalCreateVisible(false)}
+        blocks={blocks}
         link={selectedLink}
+        setLinks={setLinks}
+        handleClose={() => setIsLinkModalCreateVisible(false)}
       />
     </div>
   );

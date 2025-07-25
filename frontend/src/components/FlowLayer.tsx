@@ -32,6 +32,13 @@ const FlowLayer = ({
   return (
     <>
       <Layer>
+        {links.map((link, index) => (
+          <Link
+            key={index}
+            link={link}
+            handleDoubleClick={handleLinkDoubleClick}
+          />
+        ))}
         {blocks.map((block) => (
           <Block
             key={block.id}
@@ -43,13 +50,6 @@ const FlowLayer = ({
             setSelectedLink={setSelectedLink}
             setIsLinkModalCreateVisible={setIsLinkModalCreateVisible}
             handleDoubleClick={(block) => handleBlockDoubleClick(block)}
-          />
-        ))}
-        {links.map((link, index) => (
-          <Link
-            key={index}
-            link={link}
-            handleDoubleClick={handleLinkDoubleClick}
           />
         ))}
       </Layer>

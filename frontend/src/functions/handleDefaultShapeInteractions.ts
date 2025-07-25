@@ -130,12 +130,6 @@ export const handleDragCircleEnd = (
 
       setSelectedLink(newLink);
       setIsLinkModalCreateVisible(true);
-      createLink(newLink).then((res) => {
-        getAllLinks().then((links) => {
-          setLinks(links);
-          assignLinksPositionByBlocksPosition(blocks, links);
-        });
-      });
     }
 
     setBlocks((prevBlocks) =>

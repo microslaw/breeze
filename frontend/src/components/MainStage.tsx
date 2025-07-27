@@ -25,11 +25,26 @@ const MainStage = ({
   handleBlockDoubleClick,
   handleLinkDoubleClick,
 }: MainStageProps) => {
+  function handleClick(e: any) {
+    console.log("Stage clicked", e);
+  }
+
+  function handleRightClick(e: any) {
+    e.evt.preventDefault();
+    console.log("Stage right-clicked", e);
+  }
+
   return (
     <Stage
       width={window.innerWidth}
       height={window.innerHeight}
       draggable={true}
+      onClick={(e) => {
+        handleClick(e);
+      }}
+      onContextMenu={(e) => {
+        handleRightClick(e);
+      }}
     >
       <FlowLayer
         blocks={blocks}

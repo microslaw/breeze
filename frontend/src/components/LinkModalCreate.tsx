@@ -43,7 +43,6 @@ const LinkModalCreate = ({
 
   function handleConfirm() {
     link.destinationNodeInput = selectedKwarg || "";
-    console.log("Link confirmed:", link);
     createLink(link).then((res) => {
       getAllLinks().then((links) => {
         setLinks(links);

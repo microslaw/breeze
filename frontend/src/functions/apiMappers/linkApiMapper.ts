@@ -1,7 +1,8 @@
 import { LinkI } from "../../models/link.model";
 
-export default function mapApiResponseToLinks(apiResponse: any[]): LinkI[] {
+export function mapApiResponseToLinks(apiResponse: any[]): LinkI[] {
   return apiResponse.map((link) => ({
+    id: link.node_link_id,
     destinationNodeId: link.destination_node_id,
     destinationNodeInput: link.destination_node_input,
     originNodeId: link.origin_node_id,
@@ -11,4 +12,14 @@ export default function mapApiResponseToLinks(apiResponse: any[]): LinkI[] {
     endX: link.target_x || 0,
     endY: link.target_y || 100,
   }));
+}
+
+export function mapLinkToApiPostRequest(link: LinkI): any {
+  return {
+    origin_node_id: link.originNodeId.toString(),
+    // TODO change to node output picked by user when backend ready
+    origin_node_output: null,
+    destination_node_id: link.destinationNodeId.toString(),
+    destination_node_input: link.destinationNodeInput || null,
+  };
 }

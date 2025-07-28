@@ -50,6 +50,7 @@ function App() {
   });
 
   const [selectedLink, setSelectedLink] = useState<LinkI>({
+    id: -1,
     destinationNodeId: 0,
     destinationNodeInput: "",
     originNodeId: 0,
@@ -124,7 +125,6 @@ function App() {
         handleClose={() => handleCloseLinkDetails()}
         handleDelete={(linkId) => handleDeleteLink(linkId)}
       />
-      {/* TODO use correct link for creation */}
       <LinkModalCreate
         show={isLinkModalCreateVisible}
         blocks={blocks}

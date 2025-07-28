@@ -5,8 +5,11 @@ import {
   mapPartialBlockToApiPatchRequest,
 } from "../functions/apiMappers/blockApiMapper";
 import { BlockI, PartialBlockI } from "../models/block.model";
-import mapApiResponseToLinks from "../functions/apiMappers/linkApiMapper";
 import { LinkI } from "../models/link.model";
+import {
+  mapApiResponseToLinks,
+  mapLinkToApiPostRequest,
+} from "../functions/apiMappers/linkApiMapper";
 
 // TODO assign response types to the functions
 export async function getAllNodes(): Promise<BlockI[]> {
@@ -119,18 +122,14 @@ export async function getLinksByOriginNode(nodeId: number) {
 // TODO add function to map LinkI to data send to backend
 // for now we assume that node can have only one output
 export async function createLink(link: LinkI) {
+  const data = mapLinkToApiPostRequest(link);
   const response = await axios({
     method: "post",
     url: "http://127.0.0.1:5000/nodeLinks",
     headers: {
       "Content-Type": "application/json",
     },
-    data: {
-      origin_node_id: link.originNodeId.toString(),
-      origin_node_output: null,
-      destination_node_id: link.destinationNodeId.toString(),
-      destination_node_input: link.destinationNodeInput || null,
-    },
+    data: data,
   })
     .then((response) => {
       console.log("Link created:", response.data);

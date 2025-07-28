@@ -118,6 +118,7 @@ export const handleDragCircleEnd = (
 
     if (isOverlapping) {
       const newLink = {
+        id: -1,
         originNodeId: block.id,
         originNodeOutput: "",
         destinationNodeId: destBlock.id,

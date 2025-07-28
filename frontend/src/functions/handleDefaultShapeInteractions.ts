@@ -128,6 +128,9 @@ export const handleDragCircleEnd = (
         endX: 0,
         endY: 0,
       };
+      if (!validateLink(newLink, links)) {
+        return;
+      }
 
       setSelectedLink(newLink);
       setIsLinkModalCreateVisible(true);
@@ -141,3 +144,14 @@ export const handleDragCircleEnd = (
     );
   });
 };
+
+function validateLink(link: LinkI, links: LinkI[]): boolean {
+  const isValid =
+    link.originNodeId !== link.destinationNodeId &&
+    !links.some(
+      (existingLink) =>
+        existingLink.originNodeId === link.originNodeId &&
+        existingLink.destinationNodeId === link.destinationNodeId
+    );
+  return isValid;
+}

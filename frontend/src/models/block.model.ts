@@ -7,6 +7,8 @@ export interface BlockI {
   x: number;
   y: number;
   isDragging: boolean;
+  // Used to indicate the mode which allows user to add links to other blocks
+  isSelected: boolean;
   kwargs: KwargI[];
 }
 

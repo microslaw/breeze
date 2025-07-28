@@ -23,6 +23,7 @@ const BlockModalCreate = ({
     x: 0,
     y: 0,
     isDragging: false,
+    isSelected: false,
     kwargs: [],
   });
 
@@ -59,6 +60,7 @@ const BlockModalCreate = ({
         x: 0,
         y: 0,
         isDragging: false,
+        isSelected: false,
         kwargs: [],
       });
     });

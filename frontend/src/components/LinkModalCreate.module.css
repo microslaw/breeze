@@ -1,0 +1,32 @@
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalContent {
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalBody {
+  padding: 1rem;
+  overflow-y: auto;
+  flex: 1;
+  max-height: 80vh;
+}
+
+.tableWrapper {
+  border-radius: 8px;
+  border: 1px solid #cccccc;
+  margin-bottom: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.radioInputTableCell input {
+  transform: scale(2);
+  margin: 0.5rem;
+  cursor: pointer;
+}

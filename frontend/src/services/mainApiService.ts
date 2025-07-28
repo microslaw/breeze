@@ -5,8 +5,11 @@ import {
   mapPartialBlockToApiPatchRequest,
 } from "../functions/apiMappers/blockApiMapper";
 import { BlockI, PartialBlockI } from "../models/block.model";
-import mapApiResponseToLinks from "../functions/apiMappers/linkApiMapper";
 import { LinkI } from "../models/link.model";
+import {
+  mapApiResponseToLinks,
+  mapLinkToApiPostRequest,
+} from "../functions/apiMappers/linkApiMapper";
 
 // TODO assign response types to the functions
 export async function getAllNodes(): Promise<BlockI[]> {
@@ -98,6 +101,7 @@ export async function getAllLinks(): Promise<LinkI[]> {
     }
 
     const links: LinkI[] = mapApiResponseToLinks(response.data);
+    console.log("Links fetched from API:", links);
     return links;
   } catch (error) {
     console.error("Error fetching links:", error);
@@ -112,6 +116,28 @@ export async function getLinksByOriginNode(nodeId: number) {
     url: "http://127.0.0.1:5000/nodeLinks/" + nodeId,
   });
   return response.data;
+}
+
+// TODO implement non primitive handling of the response
+// TODO add function to map LinkI to data send to backend
+// for now we assume that node can have only one output
+export async function createLink(link: LinkI) {
+  const data = mapLinkToApiPostRequest(link);
+  const response = await axios({
+    method: "post",
+    url: "http://127.0.0.1:5000/nodeLinks",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    data: data,
+  })
+    .then((response) => {
+      console.log("Link created:", response.data);
+      return response.data;
+    })
+    .catch((error) => {
+      console.error("Error creating link:", error);
+    });
 }
 
 // TODO implement non primitive handling of the response

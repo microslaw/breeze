@@ -1,7 +1,13 @@
 import { BlockI } from "../models/block.model";
 import { LinkI } from "../models/link.model";
-import { updateNode } from "../services/mainApiService";
+import LinkCircleI from "../models/linkcircle.model";
+import {
+  createLink,
+  getAllLinks,
+  updateNode,
+} from "../services/mainApiService";
 import { mapBlockToPartialBlockForApiPatchRequestPositionUpdate } from "./apiMappers/blockApiMapper";
+import assignLinksPositionByBlocksPosition from "./assignLinksPositionByBlocksPosition";
 
 // Generic interactions
 export const handleMouseEnter = (e: any) => {
@@ -18,11 +24,11 @@ export const handleDragBlockStart = (
   blocks: BlockI[],
   setBlocks: React.Dispatch<React.SetStateAction<any[]>>
 ) => {
-  const id = block.id;
+  if (block.isSelected) return;
   setBlocks(
     blocks.map((element) => ({
       ...element,
-      isDragging: element.id === id,
+      isDragging: element.id === block.id,
     }))
   );
 };
@@ -62,4 +68,76 @@ export const handleDragBlockEnd = (
       return link;
     })
   );
+};
+
+export const handleBlockSingleClick = (
+  block: BlockI,
+  setBlocks: React.Dispatch<React.SetStateAction<any[]>>
+) => {
+  setBlocks((prevBlocks) =>
+    prevBlocks.map((b) => ({
+      ...b,
+      isSelected: b.id === block.id ? !b.isSelected : false,
+    }))
+  );
+};
+
+/// Circle interactions
+export const handleDragCircleStart = (
+  setLinkCircle: React.Dispatch<React.SetStateAction<LinkCircleI>>
+) => {
+  setLinkCircle((prev: LinkCircleI) => ({ ...prev, isDragging: true }));
+};
+
+export const handleDragCircleEnd = (
+  e: any,
+  setLinkCircle: React.Dispatch<React.SetStateAction<LinkCircleI>>,
+  block: BlockI,
+  blocks: BlockI[],
+  setBlocks: React.Dispatch<React.SetStateAction<BlockI[]>>,
+  links: LinkI[],
+  setLinks: React.Dispatch<React.SetStateAction<LinkI[]>>,
+  setSelectedLink: React.Dispatch<React.SetStateAction<LinkI>>,
+  setIsLinkModalCreateVisible: React.Dispatch<React.SetStateAction<boolean>>
+) => {
+  setLinkCircle((prev: LinkCircleI) => ({ ...prev, isDragging: false }));
+
+  const circleX = e.target.x();
+  const circleY = e.target.y();
+  const circleRadius = e.target.radius();
+
+  blocks.forEach((destBlock) => {
+    const blockWidth = 200;
+    const blockHeight = 130;
+
+    const isOverlapping =
+      circleX + circleRadius > destBlock.x &&
+      circleX - circleRadius < destBlock.x + blockWidth &&
+      circleY + circleRadius > destBlock.y &&
+      circleY - circleRadius < destBlock.y + blockHeight;
+
+    if (isOverlapping) {
+      const newLink = {
+        id: -1,
+        originNodeId: block.id,
+        originNodeOutput: "",
+        destinationNodeId: destBlock.id,
+        destinationNodeInput: "",
+        startX: 0,
+        startY: 0,
+        endX: 0,
+        endY: 0,
+      };
+
+      setSelectedLink(newLink);
+      setIsLinkModalCreateVisible(true);
+    }
+
+    setBlocks((prevBlocks) =>
+      prevBlocks.map((b) => ({
+        ...b,
+        isSelected: false,
+      }))
+    );
+  });
 };

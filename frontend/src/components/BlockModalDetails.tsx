@@ -39,6 +39,12 @@ const BlockModalDetails = ({
 
   const [errorMsg, setErrorMsg] = useState<string>("");
 
+  const isHtmlContent = (content: string): boolean => {
+    if (typeof content !== "string") return false;
+    const htmlRegex = /<[^>]*>/;
+    return htmlRegex.test(content);
+  };
+
   useEffect(() => {
     if (!show) {
       setProcessingResult(null);
@@ -76,6 +82,7 @@ const BlockModalDetails = ({
     getProcessingResultByNodeId(block.id)
       .then((result) => {
         setProcessingResult(result);
+        getKwargs();
       })
       .catch((error) => {
         setErrorMsg(`Processing for block '${block.name}' failed.`);
@@ -131,7 +138,13 @@ const BlockModalDetails = ({
   };
 
   return (
-    <Modal show={show}>
+    <Modal
+      show={show}
+      size="lg"
+      centered
+      className={styles.modal}
+      dialogClassName={styles.modalDialog}
+    >
       <Modal.Header>
         <Modal.Title>{block.name}</Modal.Title>
       </Modal.Header>
@@ -141,11 +154,27 @@ const BlockModalDetails = ({
         )}
         <Card className={styles.card}>
           <Card.Header>Processing Result</Card.Header>
-          <Card.Body>
-            <Card.Text>
-              {processingResult ?? "No processing result available"}
-            </Card.Text>
-          </Card.Body>
+          {processingResult ? (
+            isHtmlContent(processingResult) ? (
+              <Card.Body>
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    const newWindow = window.open("", "_blank");
+                    if (newWindow) {
+                      newWindow.document.writeln(processingResult);
+                    }
+                  }}
+                >
+                  Open Result in New Window
+                </Button>
+              </Card.Body>
+            ) : (
+              <Card.Text>{processingResult}</Card.Text>
+            )
+          ) : (
+            <Card.Text>No processing result available</Card.Text>
+          )}
         </Card>
         <div className={styles.tableWrapper}>
           <Table hover responsive>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import { Arrow } from "react-konva";
 import { LinkI } from "../models/link.model";
 import {
@@ -8,23 +8,38 @@ import {
 
 interface LinkProps {
   link: LinkI;
-  color?: string;
-  strokeWidth?: number;
   handleDoubleClick: (link: LinkI) => void;
+  pointerSize?: number;
+  onDragStart?: (e: any) => void;
+  onDragEnd?: (e: any) => void;
+  onDragMove?: (e: any) => void;
+  draggable?: boolean;
 }
 
-const Link: React.FC<LinkProps> = ({ link, handleDoubleClick }) => {
+const Link = ({
+  link,
+  handleDoubleClick,
+  pointerSize,
+  onDragStart,
+  onDragEnd,
+  onDragMove,
+  draggable,
+}: LinkProps) => {
   return (
     <Arrow
+      draggable={draggable || false}
       points={[link.startX, link.startY, link.endX, link.endY]}
       stroke="black"
       fill="black"
       strokeWidth={2}
-      pointerLength={10}
-      pointerWidth={10}
+      pointerLength={pointerSize || 10}
+      pointerWidth={pointerSize || 10}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onDblClick={() => handleDoubleClick(link)}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      onDragMove={onDragMove}
     />
   );
 };

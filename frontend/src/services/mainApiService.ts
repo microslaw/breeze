@@ -109,6 +109,19 @@ export async function getAllLinks(): Promise<LinkI[]> {
   }
 }
 
+export async function deleteLinkById(id: number) {
+  try {
+    const response = await axios({
+      method: "delete",
+      url: "http://127.0.0.1:5000/nodeLinks/" + id,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting link:", error);
+    throw error;
+  }
+}
+
 // TODO implement non primitive handling of the response
 export async function getLinksByOriginNode(nodeId: number) {
   const response = await axios({

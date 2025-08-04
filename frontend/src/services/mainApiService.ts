@@ -101,7 +101,6 @@ export async function getAllLinks(): Promise<LinkI[]> {
     }
 
     const links: LinkI[] = mapApiResponseToLinks(response.data);
-    console.log("Links fetched from API:", links);
     return links;
   } catch (error) {
     console.error("Error fetching links:", error);
@@ -145,7 +144,6 @@ export async function createLink(link: LinkI) {
     data: data,
   })
     .then((response) => {
-      console.log("Link created:", response.data);
       return response.data;
     })
     .catch((error) => {

@@ -36,6 +36,12 @@ const LinkModalCreate = ({
           fetchedKwargs
         );
         setOutputNodeKwargs(fetchedKwargs);
+        if (fetchedKwargs && fetchedKwargs.length > 0) {
+          const dfKwarg = fetchedKwargs.find((kwarg) => kwarg.key === "df");
+          setSelectedKwarg(dfKwarg ? dfKwarg.key : fetchedKwargs[0].key);
+        } else {
+          setSelectedKwarg(null);
+        }
       };
       fetchAppState();
     }

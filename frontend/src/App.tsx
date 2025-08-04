@@ -13,6 +13,7 @@ import LinkModalDetails from "./components/LinkModalDetails";
 import { LinkI } from "./models/link.model";
 import assignLinksPositionByBlocksPosition from "./functions/assignLinksPositionByBlocksPosition";
 import LinkModalCreate from "./components/LinkModalCreate";
+import Notification from "./components/Notification";
 
 function App() {
   const [blocks, setBlocks] = useState<BlockI[]>([]);
@@ -20,6 +21,7 @@ function App() {
 
   useEffect(() => {
     console.log("App mounted");
+    createNotification("Welcome to the app!", "success");
     const fetchAppState = async () => {
       const blocks = await getAllNodes();
       const links = await getAllLinks();
@@ -61,6 +63,18 @@ function App() {
     endX: 0,
     endY: 0,
   });
+
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error" | "info";
+  } | null>(null);
+
+  const createNotification = (
+    messageContent: string,
+    type: "success" | "error" | "info"
+  ) => {
+    setNotification({ message: messageContent, type });
+  };
 
   const handleBlockDoubleClick = (block: BlockI) => {
     setSelectedBlock(block);
@@ -135,6 +149,13 @@ function App() {
         setLinks={setLinks}
         handleClose={() => setIsLinkModalCreateVisible(false)}
       />
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
     </div>
   );
 }

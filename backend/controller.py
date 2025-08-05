@@ -5,7 +5,7 @@ from backend.repository import Repository
 from backend.repository import ObjectAlreadyInDBException
 from backend.repository import ObjectNotInDBException
 from backend.processor import Processor, ProcessingException
-from backend.formatting import format_for_display, format_from_input
+from backend.formatting import format_for_display, format_from_input, frontend_display_type
 from typing import Any
 
 
@@ -143,6 +143,7 @@ class Controller:
                     "created_date": format_for_display(
                         repository.get_output_created_date(node_id)
                     ),
+                    "frontend_type":frontend_display_type(output)
                 }
             else:
                 return {"is_processed": False}

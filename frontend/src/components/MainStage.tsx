@@ -26,12 +26,24 @@ const MainStage = ({
   handleLinkDoubleClick,
 }: MainStageProps) => {
   function handleClick(e: any) {
-    console.log("Stage clicked", e);
+    if (e.target !== e.target.getStage()) return;
+
+    // button == 0 means left click
+    if (e.evt.button === 0) {
+      setBlocks(
+        blocks.map((b) => ({
+          ...b,
+          isSelected: false,
+        }))
+      );
+      // button == 0 means right click
+    } else if (e.evt.button === 2) {
+      // TODO implement action on right click
+    }
   }
 
-  function handleRightClick(e: any) {
+  function handleDefaultContextMenu(e: any) {
     e.evt.preventDefault();
-    console.log("Stage right-clicked", e);
   }
 
   return (
@@ -43,7 +55,7 @@ const MainStage = ({
         handleClick(e);
       }}
       onContextMenu={(e) => {
-        handleRightClick(e);
+        handleDefaultContextMenu(e);
       }}
     >
       <FlowLayer

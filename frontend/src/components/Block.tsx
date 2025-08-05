@@ -66,7 +66,7 @@ const Block = ({
         shadowColor="black"
         shadowBlur={10}
         shadowOpacity={0.6}
-        draggable={!block.isSelected}
+        draggable
         stroke={block.isSelected ? "red" : ""}
         shadowOffsetX={block.isDragging ? 10 : 5}
         shadowOffsetY={block.isDragging ? 10 : 5}

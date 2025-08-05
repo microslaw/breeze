@@ -2,6 +2,7 @@ import Menu from "./components/Menu";
 import MainStage from "./components/MainStage";
 import { BlockI } from "./models/block.model";
 import {
+  deleteLinkById,
   deleteNodeById,
   getAllLinks,
   getAllNodes,
@@ -95,7 +96,9 @@ function App() {
   };
 
   const handleDeleteLink = (linkId: number) => {
-    console.info("Delete link not implemented yet");
+    deleteLinkById(linkId);
+    setLinks((prevLinks) => prevLinks.filter((link) => link.id !== linkId));
+    handleCloseLinkDetails();
   };
 
   return (

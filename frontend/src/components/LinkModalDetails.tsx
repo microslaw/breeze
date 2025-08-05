@@ -41,7 +41,7 @@ const LinkModalDetails = ({
         <Button variant="secondary" onClick={handleClose}>
           Close
         </Button>
-        <Button variant="danger" onClick={() => handleDelete(0)}>
+        <Button variant="danger" onClick={() => handleDelete(link.id)}>
           Delete
         </Button>
       </Modal.Footer>

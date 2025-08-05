@@ -178,9 +178,11 @@ def test_output_metadata():
     assert list(dict(metadata.json).keys()) == [
         "created_date",
         "datatype",
+        "frontend_type",
         "is_processed",
     ]
     assert metadata.json["datatype"] == "int"
+    assert metadata.json["frontend_type"] == "integer"
 
 
 def test_unprocessed_output_metadata():

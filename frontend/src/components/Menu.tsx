@@ -13,6 +13,8 @@ import {
 } from "../services/mainApiService";
 import { getProcessingQueue } from "../services/processingApiService";
 import QueueModalDetails from "./QueueModalDetails";
+import { getBlob } from "../services/blobService";
+import BlobModal from "./BlobModal";
 
 interface MenuProps {
   blocks: BlockI[];
@@ -26,6 +28,9 @@ const Menu = ({ blocks, setBlocks }: MenuProps) => {
   const [isQueueModalDeatilsVisible, setIsQueueModalDeatilsVisible] =
     useState<boolean>(false);
 
+  const [isBlobModalVisible, setIsBlobModalVisible] = useState<boolean>(false);
+  const [blobUrl, setBlobUrl] = useState<string>("");
+
   return (
     <div className={styles.menu}>
       {/* Button section for testing purposes only */}
@@ -36,12 +41,22 @@ const Menu = ({ blocks, setBlocks }: MenuProps) => {
         <Button onClick={() => setIsQueueModalDeatilsVisible(true)}>
           View processing queue
         </Button>
+        <Button
+          onClick={() =>
+            getBlob().then((url) => {
+              setBlobUrl(url);
+              setIsBlobModalVisible(true);
+            })
+          }
+        >
+          Get blob
+        </Button>
         {/* Comented out functions are used for testing purposes do not remove
         them !!! */}
         {/* <Button onClick={() => console.log(blocks)}>Log list of blocks</Button>
         <Button onClick={() => getNodeTypes()}>Get node types from API</Button>
         <Button onClick={() => getAllNodes()}>
-          Get node instances from API
+          Get node instances from API§
         </Button>
         <Button onClick={() => getNodeById(1)}>
           Get node instance by ID from API
@@ -61,6 +76,14 @@ const Menu = ({ blocks, setBlocks }: MenuProps) => {
         show={isQueueModalDeatilsVisible}
         handleClose={() => setIsQueueModalDeatilsVisible(false)}
       ></QueueModalDetails>
+      <BlobModal
+        blobUrl={blobUrl}
+        show={isBlobModalVisible}
+        handleClose={() => {
+          setBlobUrl("");
+          setIsBlobModalVisible(false);
+        }}
+      />
     </div>
   );
 };

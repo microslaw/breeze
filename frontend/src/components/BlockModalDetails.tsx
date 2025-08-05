@@ -138,13 +138,7 @@ const BlockModalDetails = ({
   };
 
   return (
-    <Modal
-      show={show}
-      size="lg"
-      centered
-      className={styles.modal}
-      dialogClassName={styles.modalDialog}
-    >
+    <Modal show={show} size="lg" centered className={styles.modal}>
       <Modal.Header>
         <Modal.Title>{block.name}</Modal.Title>
       </Modal.Header>

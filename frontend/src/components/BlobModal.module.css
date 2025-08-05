@@ -1,0 +1,17 @@
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card {
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.modalBody {
+  padding: 1rem;
+  overflow-y: auto;
+  flex: 1;
+  max-height: 80vh;
+}

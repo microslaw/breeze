@@ -5,7 +5,7 @@ from backend.repository import Repository
 from backend.repository import ObjectAlreadyInDBException
 from backend.repository import ObjectNotInDBException
 from backend.processor import Processor, ProcessingException
-from backend.formatting import format_for_display, format_from_input
+from backend.formatting import format_for_display, format_from_input, frontend_display_type
 from typing import Any
 
 
@@ -130,6 +130,23 @@ class Controller:
         @self.flask_server.route("/processingResult/<node_id>", methods=["GET"])
         def get_processing_result(node_id: int):
             return format_for_display(self.repository.read_output(node_id))
+
+        @self.flask_server.route(
+            "/processingResult/<node_id>/metadata", methods=["GET"]
+        )
+        def get_processing_result_metadata(node_id: int):
+            if self.repository.does_output_exist(node_id):
+                output = self.repository.read_output(node_id)
+                return {
+                    "is_processed": True,
+                    "datatype": format_for_display(type(output)),
+                    "created_date": format_for_display(
+                        repository.get_output_created_date(node_id)
+                    ),
+                    "frontend_type":frontend_display_type(output)
+                }
+            else:
+                return {"is_processed": False}
 
         @self.flask_server.route(
             "/nodeInstances/<node_id>/finalKwargs", methods=["GET"]

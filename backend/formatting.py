@@ -1,7 +1,20 @@
 from types import GenericAlias
 from typing import Optional, Callable, Any, TypeVar
+from datetime import datetime
+from enum import Enum
+
+
+class FrontendDisplayType(Enum):
+    image = "image"
+    html = "html"
+    plaintext = "plaintext"
+    json = "json"
+    integer = "integer"
+    decimal = "decimal"
+
 
 display_format_map: dict[type, Callable[[Any], Any]] = {}
+frontend_type_format_map: dict[type, FrontendDisplayType] = {}
 input_format_map: dict[type, Callable[[Any], Any]] = {}
 
 # TODO implement formatting exception
@@ -11,9 +24,12 @@ T_display = TypeVar("T_display", bound=type)
 
 
 def add_display_format(
-    object_type: T_display, format_function: Callable[[T_display], Any]
+    object_type: T_display,
+    format_function: Callable[[T_display], Any],
+    frontend_type: FrontendDisplayType = FrontendDisplayType.plaintext,
 ):
     display_format_map[object_type] = format_function
+    frontend_type_format_map[object_type] = frontend_type
 
 
 T_input = TypeVar("T_input", bound=type)
@@ -38,6 +54,10 @@ def format_for_display(obj: object) -> object:
     return obj_str
 
 
+def frontend_display_type(obj: object) -> str:
+    return frontend_type_format_map[type(obj)].name
+
+
 def format_from_input(obj: object, type: Optional[type] = None) -> object:
     if type is None or type not in input_format_map:
         return str(obj)
@@ -57,3 +77,5 @@ add_input_format(float, lambda x: float(x.decode("utf-8")))
 add_input_format(int, lambda x: int(x.decode("utf-8")))
 add_display_format(type, lambda x: x.__name__)
 add_display_format(type(None), lambda _: None)
+add_display_format(datetime, lambda x: x.strftime("%Y-%m-%d %H:%M:%S"))
+add_display_format(int, lambda x: str(x),FrontendDisplayType.integer)

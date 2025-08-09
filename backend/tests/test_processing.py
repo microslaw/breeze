@@ -6,6 +6,7 @@ from backend import Controller
 import backend.prefabs.testing.processing
 import threading
 import time
+from datetime import datetime
 
 
 def initialize_processor() -> Processor:
@@ -158,3 +159,37 @@ def test_excluding_processed_prerequisite():
     processor.repository.write_output(object=3, producer_node_id=2)
 
     assert processor.get_all_prerequisite_node_ids(node_id=4) == [3, 4]
+
+
+def test_output_metadata():
+    controller = initalize_api_server()
+    controller.processor.update_processing_schedule(4)
+    controller.processor.wait_till_finished()
+
+    with controller.test_client() as client:
+        metadata = client.get("/processingResult/4/metadata")
+
+    # should not raise
+    datetime.fromisoformat(metadata.json["created_date"])
+
+    assert metadata.status_code == 200
+    # date has to be ommited, it is pulled from os, so liblaries like
+    # freezegun won't work
+    assert list(dict(metadata.json).keys()) == [
+        "created_date",
+        "datatype",
+        "frontend_type",
+        "is_processed",
+    ]
+    assert metadata.json["datatype"] == "int"
+    assert metadata.json["frontend_type"] == "integer"
+
+
+def test_unprocessed_output_metadata():
+    controller = initalize_api_server()
+
+    with controller.test_client() as client:
+        metadata = client.get("/processingResult/4/metadata")
+
+    assert metadata.status_code == 200
+    assert metadata.json == {"is_processed": False}

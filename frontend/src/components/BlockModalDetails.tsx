@@ -3,6 +3,7 @@ import { Modal, Button, Table, Card } from "react-bootstrap";
 import { BlockI } from "../models/block.model";
 import {
   getProcessingResultByNodeId,
+  getProcessingResultMetadataByNodeId,
   runProcessingJob,
 } from "../services/processingApiService";
 import styles from "./BlockModalDetails.module.css";
@@ -11,6 +12,7 @@ import {
   updateKwargByNodeId,
 } from "../services/kwargsApiService";
 import { KwargI } from "../models/kwarg.model";
+import { ProcessingResultMetadataI } from "../models/processingresultmetadata.model";
 
 interface BlockModalDetailsProps {
   show: boolean;
@@ -27,8 +29,12 @@ const BlockModalDetails = ({
   handleClose,
   handleDelete,
 }: BlockModalDetailsProps) => {
-  // TODO put processing result into some kind of structure
   const [processingResult, setProcessingResult] = useState<any>(null);
+
+  const [processingResultMetadata, setProcessingResultMetadata] =
+    useState<ProcessingResultMetadataI>({
+      is_processed: false,
+    });
 
   const [focusedKwargValue, setFocusedKwargValue] = useState<KwargI>({
     key: "",
@@ -39,18 +45,14 @@ const BlockModalDetails = ({
 
   const [errorMsg, setErrorMsg] = useState<string>("");
 
-  const isHtmlContent = (content: string): boolean => {
-    if (typeof content !== "string") return false;
-    const htmlRegex = /<[^>]*>/;
-    return htmlRegex.test(content);
-  };
-
   useEffect(() => {
     if (!show) {
+      setProcessingResultMetadata({ is_processed: false });
       setProcessingResult(null);
       setFocusedKwargValue({ key: "", value: "", type: "", source: "" });
       setErrorMsg("");
     } else {
+      getProcessingResultMetadata();
       getLastProcessingResult();
       getKwargs();
     }
@@ -78,7 +80,6 @@ const BlockModalDetails = ({
   };
 
   const getLastProcessingResult = () => {
-    console.log("block modal block id:", block.id);
     getProcessingResultByNodeId(block.id)
       .then((result) => {
         setProcessingResult(result);
@@ -86,6 +87,19 @@ const BlockModalDetails = ({
       })
       .catch((error) => {
         setErrorMsg(`Processing for block '${block.name}' failed.`);
+        console.error("Error fetching processing result:", error);
+      });
+  };
+
+  const getProcessingResultMetadata = () => {
+    getProcessingResultMetadataByNodeId(block.id)
+      .then((result) => {
+        setProcessingResultMetadata(result);
+      })
+      .catch((error) => {
+        setErrorMsg(
+          `Getting processing result metadata for block '${block.name}' failed.`
+        );
         console.error("Error fetching processing result:", error);
       });
   };
@@ -154,8 +168,8 @@ const BlockModalDetails = ({
         )}
         <Card className={styles.card}>
           <Card.Header>Processing Result</Card.Header>
-          {processingResult ? (
-            isHtmlContent(processingResult) ? (
+          {processingResultMetadata.frontend_type ? (
+            processingResultMetadata.frontend_type === "html" || "plaintext" ? (
               <Card.Body>
                 <Button
                   variant="primary"

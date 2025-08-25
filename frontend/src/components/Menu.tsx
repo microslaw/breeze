@@ -11,7 +11,10 @@ import {
   getLinksByOriginNode,
   createNode,
 } from "../services/mainApiService";
-import { getProcessingQueue } from "../services/processingApiService";
+import {
+  getProcessingQueue,
+  getProcessingResultMetadataByNodeId,
+} from "../services/processingApiService";
 import QueueModalDetails from "./QueueModalDetails";
 
 interface MenuProps {
@@ -35,6 +38,9 @@ const Menu = ({ blocks, setBlocks }: MenuProps) => {
         </Button>
         <Button onClick={() => setIsQueueModalDeatilsVisible(true)}>
           View processing queue
+        </Button>
+        <Button onClick={() => getProcessingResultMetadataByNodeId(0)}>
+          Get processing metadata for node 0
         </Button>
         {/* Comented out functions are used for testing purposes do not remove
         them !!! */}

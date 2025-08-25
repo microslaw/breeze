@@ -53,16 +53,13 @@ const BlockModalDetails = ({
       setErrorMsg("");
     } else {
       getProcessingResultMetadataByNodeId(block.id).then((result) => {
-        console.log(result);
         setProcessingResultMetadata(result);
-        console.log(processingResultMetadata);
+        if (result.is_processed) {
+          getProcessingResultByNodeId(block.id).then((result) => {
+            setProcessingResult(result);
+          });
+        }
       });
-
-      if (processingResultMetadata.is_processed) {
-        getProcessingResultByNodeId(block.id).then((result) => {
-          setProcessingResult(result);
-        });
-      }
 
       getAndAssignKwargs();
     }
@@ -81,20 +78,18 @@ const BlockModalDetails = ({
       const intervalId = setInterval(() => {
         getProcessingResultMetadataByNodeId(block.id).then((result) => {
           setProcessingResultMetadata(result);
-          if (processingResultMetadata.is_processed) {
-            console.log("elkoelko");
+          if (result.is_processed) {
             getProcessingResultByNodeId(block.id).then((result) => {
               setProcessingResult(result);
+              count++;
+              if (
+                count >= 3 ||
+                processingResultMetadata.is_processed ||
+                show === false
+              ) {
+                clearInterval(intervalId);
+              }
             });
-          }
-
-          count++;
-          if (
-            count >= 3 ||
-            processingResultMetadata.is_processed ||
-            show === false
-          ) {
-            clearInterval(intervalId);
           }
         });
       }, 1000);

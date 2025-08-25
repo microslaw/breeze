@@ -52,9 +52,19 @@ const BlockModalDetails = ({
       setFocusedKwargValue({ key: "", value: "", type: "", source: "" });
       setErrorMsg("");
     } else {
-      getProcessingResultMetadata();
-      getLastProcessingResult();
-      getKwargs();
+      getProcessingResultMetadataByNodeId(block.id).then((result) => {
+        console.log(result);
+        setProcessingResultMetadata(result);
+        console.log(processingResultMetadata);
+      });
+
+      if (processingResultMetadata.is_processed) {
+        getProcessingResultByNodeId(block.id).then((result) => {
+          setProcessingResult(result);
+        });
+      }
+
+      getAndAssignKwargs();
     }
   }, [show, block.id]);
 
@@ -66,53 +76,35 @@ const BlockModalDetails = ({
   }, [errorMsg]);
 
   const handleRunJob = () => {
-    runProcessingJob(block.id).then((result) => {
-      console.log("Processing job started:", result);
+    runProcessingJob(block.id).then(() => {
       let count = 0;
       const intervalId = setInterval(() => {
-        getLastProcessingResult();
-        count++;
-        if (count >= 3 || show === false) {
-          clearInterval(intervalId);
-        }
+        getProcessingResultMetadataByNodeId(block.id).then((result) => {
+          setProcessingResultMetadata(result);
+          if (processingResultMetadata.is_processed) {
+            console.log("elkoelko");
+            getProcessingResultByNodeId(block.id).then((result) => {
+              setProcessingResult(result);
+            });
+          }
+
+          count++;
+          if (
+            count >= 3 ||
+            processingResultMetadata.is_processed ||
+            show === false
+          ) {
+            clearInterval(intervalId);
+          }
+        });
       }, 1000);
     });
   };
 
-  const getLastProcessingResult = () => {
-    getProcessingResultByNodeId(block.id)
-      .then((result) => {
-        setProcessingResult(result);
-        getKwargs();
-      })
-      .catch((error) => {
-        setErrorMsg(`Processing for block '${block.name}' failed.`);
-        console.error("Error fetching processing result:", error);
-      });
-  };
-
-  const getProcessingResultMetadata = () => {
-    getProcessingResultMetadataByNodeId(block.id)
-      .then((result) => {
-        setProcessingResultMetadata(result);
-      })
-      .catch((error) => {
-        setErrorMsg(
-          `Getting processing result metadata for block '${block.name}' failed.`
-        );
-        console.error("Error fetching processing result:", error);
-      });
-  };
-
-  const getKwargs = () => {
-    getKwargsByNodeId(block.id)
-      .then((kwargs) => {
-        setBlock((prevBlock) => ({ ...prevBlock, kwargs }));
-      })
-      .catch((error) => {
-        setErrorMsg(`Fetching kwargs for block '${block.name}' failed`);
-        console.error("Error fetching kwargs:", error);
-      });
+  const getAndAssignKwargs = () => {
+    getKwargsByNodeId(block.id).then((kwargs) => {
+      setBlock((prevBlock) => ({ ...prevBlock, kwargs }));
+    });
   };
 
   // Called on every input change
@@ -151,6 +143,33 @@ const BlockModalDetails = ({
       });
   };
 
+  function renderProcessingResult() {
+    if (!processingResultMetadata.is_processed) {
+      return <Card.Text>No processing result available</Card.Text>;
+    }
+    if (
+      processingResultMetadata.frontend_type === "html" ||
+      processingResultMetadata.frontend_type === "plaintext"
+    ) {
+      return (
+        <Card.Body>
+          <Button
+            variant="primary"
+            onClick={() => {
+              const newWindow = window.open("", "_blank");
+              if (newWindow) {
+                newWindow.document.writeln(processingResult);
+              }
+            }}
+          >
+            Open Result in New Window
+          </Button>
+        </Card.Body>
+      );
+    }
+    return <Card.Text>{processingResult}</Card.Text>;
+  }
+
   return (
     <Modal
       show={show}
@@ -168,27 +187,7 @@ const BlockModalDetails = ({
         )}
         <Card className={styles.card}>
           <Card.Header>Processing Result</Card.Header>
-          {processingResultMetadata.frontend_type ? (
-            processingResultMetadata.frontend_type === "html" || "plaintext" ? (
-              <Card.Body>
-                <Button
-                  variant="primary"
-                  onClick={() => {
-                    const newWindow = window.open("", "_blank");
-                    if (newWindow) {
-                      newWindow.document.writeln(processingResult);
-                    }
-                  }}
-                >
-                  Open Result in New Window
-                </Button>
-              </Card.Body>
-            ) : (
-              <Card.Text>{processingResult}</Card.Text>
-            )
-          ) : (
-            <Card.Text>No processing result available</Card.Text>
-          )}
+          {renderProcessingResult()}
         </Card>
         <div className={styles.tableWrapper}>
           <Table hover responsive>

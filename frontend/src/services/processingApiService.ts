@@ -25,7 +25,6 @@ export async function getProcessingResultMetadataByNodeId(
       url: "http://127.0.0.1:5000/processingResult/" + nodeId + "/metadata",
     });
 
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching processing result metadata:", error);

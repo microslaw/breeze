@@ -153,7 +153,16 @@ const BlockModalDetails = ({
             onClick={() => {
               const newWindow = window.open("", "_blank");
               if (newWindow) {
-                newWindow.document.writeln(processingResult);
+                newWindow.document.writeln(`
+                  <html>
+                  <head><title>${
+                    "Processing result for node: " + block.id
+                  }</title><link rel="stylesheet" type="text/css" href="src/components/ProcessingResult.module.css"></head>
+                  <body>
+                    ${processingResult}
+                  </body>
+                  </html>
+                `);
               }
             }}
           >

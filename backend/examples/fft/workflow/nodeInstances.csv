@@ -1,0 +1,18 @@
+node_id,node_type,position_x,position_y,instance_name
+0,create_sin_wave,40,185,create_sin_wave
+1,create_sin_wave,35,368,create_sin_wave
+2,create_sin_wave,64,590,create_sin_wave
+3,scatterplot,317,59,sin wave scatterplot
+4,scatterplot,287,418,sin wave scatterplot
+5,scatterplot,360,639,sin wave scatterplot
+6,add,324,247,add
+7,add,644,482,add
+8,scatterplot,886,266,added sin waves scatterplot
+9,create_fft_matrix,342,783,create_fft_matrix
+10,numpy_exponential,617,765,numpy_exponential
+11,dot_product,898,685,dot_product
+12,numpy_abs,1205,228,numpy_abs
+13,scatterplot,1476,226,scatterplot
+14,numpy_imag,1220,592,numpy_imag
+15,numpy_real,1212,790,numpy_real
+16,scatterplot_3d,1490,678,scatterplot_3d

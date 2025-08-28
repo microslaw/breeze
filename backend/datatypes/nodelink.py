@@ -17,6 +17,12 @@ class NodeLink:
         self.destination_node_input: str = destination_node_input
 
     def toNameDict(self) -> dict[str, object]:
+        """
+        Used to serialize this object
+        Inverse of fromNameDict
+
+        :return: dictionary in format: {field_name : field_value}
+        """
         return {
             "node_link_id": self.node_link_id,
             "origin_node_id": self.origin_node_id,
@@ -27,6 +33,12 @@ class NodeLink:
 
     @staticmethod
     def fromNameDict(nameDict: dict[str, object]) -> "NodeLink":
+        """
+        Creates a NodeLink object from json serializable name dict
+        Inverse of toNameDict
+
+        :param nameDict: dictionary in format: {field_name : field_value}, e.g. output of `NodeLink.toNameDict`
+        """
         return NodeLink(
             node_link_id=nameDict.get("node_link_id"),
             origin_node_id=nameDict.get("origin_node_id"),

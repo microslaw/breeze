@@ -57,6 +57,7 @@ class Processor:
         if self.cached_exception is None:
             return list(self.processing_queue)
         else:
+            print(self.cached_exception)
             raise self.cached_exception from self.cached_exception.cause
 
     def update_processing_schedule(

@@ -9,7 +9,7 @@ N = 10_000
 
 @NodeType(tags=["numpy"])
 def create_sin_wave(freq: float) -> np.ndarray:
-    return np.sin(np.arange(0, 20, step=20 / N) * 2 * np.pi)
+    return np.sin(np.arange(0, 1, step=1 / N) * 2 * np.pi * freq)
 
 
 @NodeType

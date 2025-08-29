@@ -25,6 +25,13 @@ class NodeInstance:
         self.instance_name: Optional[str] = instance_name
 
     def toNameDict(self) -> dict[str, object]:
+        """
+        Used to serialize this object
+        Inverse of fromNameDict
+
+        :return: dictionary in format {field_name : field_value}
+
+        """
         return {
             "node_id": self.node_id,
             "node_type": self.node_type_name,
@@ -39,6 +46,12 @@ class NodeInstance:
 
     @staticmethod
     def fromNameDict(nameDict: dict[str, Any]) -> "NodeInstance":
+        """
+        Creates an NodeInstance object from json serializable name dict
+        Inverse of toNameDict
+
+        :param nameDict: dictionary in format {field_name : field_value}, e.g. output of `NodeInstance.toNameDict`
+        """
         if "overwrite_kwargs" in nameDict:
             overwrite_kwargs = {
                 arg_name: format_from_input(value)

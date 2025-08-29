@@ -23,6 +23,10 @@ OUTPUT_FILE_ENDING = "output"
 
 
 class Repository:
+    """
+    Handles persistance and reading of basic datatypes as well as outputs and arguments
+    """
+
     def __init__(
         self, db_name: str = "db.sqlite3", db_folder_path: str = "backend/data"
     ):
@@ -31,6 +35,9 @@ class Repository:
         self.init_db()
 
     def get_output_path(self, node_id: int, output_name: Optional[str]):
+        """
+        Pieces together path to a specific output
+        """
         if output_name is None:
             object_name = f"{node_id}--{OUTPUT_FILE_ENDING}"
         else:
@@ -43,6 +50,9 @@ class Repository:
         producer_node_id: int,
         producer_node_output: Optional[str] = None,
     ) -> None:
+        """
+        Writes output of a specific node to a file
+        """
         with open(
             self.get_output_path(producer_node_id, producer_node_output), "wb"
         ) as f:
@@ -58,6 +68,9 @@ class Repository:
         producer_node_id: int,
         producer_node_output: Optional[str] = None,
     ) -> object:
+        """
+        Reads output of a specific node from respective file
+        """
         self.check_node_instance_exists(producer_node_id)
 
         if not self.does_output_exist(producer_node_id, producer_node_output):
@@ -71,12 +84,20 @@ class Repository:
             return pickle.load(f)
 
     def get_output_created_date(self, node_id: int) -> str:
+        """
+        Returns the node processing date. Relies on the time on which the
+        output file was saved, therefore entrusting the timestamp to os
+        """
         self.check_node_instance_exists(node_id)
         output_path = self.get_output_path(node_id, None)
         float_date = os.path.getmtime(output_path)
         return datetime.fromtimestamp(float_date)
 
     def get_kwarg_path(self, node_id: int, kwarg_name: str):
+        """
+        Pieces together path to a specific kwarg,
+        """
+
         return (
             f"{self.db_folder_path}/objects/{node_id}-{kwarg_name}-{KWARG_FILE_ENDING}"
         )
@@ -90,6 +111,9 @@ class Repository:
         parent_node_id: int,
         kwarg_name: str,
     ) -> None:
+        """
+        Writes a specific overwrite kwarg to a file
+        """
         node_type_name = self.get_node_instance(parent_node_id).node_type_name
         self.check_node_kwarg_exists(node_type_name, kwarg_name)
 
@@ -101,6 +125,9 @@ class Repository:
         parent_node_id: int,
         kwarg_name: str,
     ) -> object:
+        """
+        Reads a specific overwrite kwarg from a file
+        """
         node_type_name = self.get_node_instance_type_name(parent_node_id)
         self.check_node_kwarg_exists(node_type_name, kwarg_name)
 
@@ -114,6 +141,9 @@ class Repository:
             return pickle.load(f)
 
     def read_instance_kwargs(self, instance_id: int):
+        """
+        Reads all overwrite kwargs of a specific node instance
+        """
         self.check_node_instance_exists(instance_id)
 
         filenames = os.listdir(f"{self.db_folder_path}/objects")
@@ -132,6 +162,10 @@ class Repository:
         }
 
     def load_workflow(self, path: str, filetype: str = "csv"):
+        """
+        Loads a workflow (essentially a set of node instances and node links) from
+        a file. Intended mostly for testing and tutorials, not for real user-made workflows
+        """
         if filetype == "csv":
             self.from_csv(f"{path}/nodeInstances.csv", "nodeInstances")
             self.from_csv(f"{path}/nodeLinks.csv", "nodeLinks")
@@ -145,6 +179,9 @@ class Repository:
         return self.get_connection().cursor()
 
     def execute(self, query: str) -> None:
+        """
+        Executes sql querry on linked database
+        """
         cursor = self.get_cursor()
         cursor.execute("PRAGMA foreign_keys = ON")
         cursor.execute(query)
@@ -152,6 +189,10 @@ class Repository:
         cursor.connection.close()
 
     def fetchall(self, query: str) -> list[str]:
+        """
+        Executes sql querry on a linked database and returns list of results
+        as tuples
+        """
         cursor = self.get_cursor()
         fetched = cursor.execute(query).fetchall()
         cursor.connection.commit()
@@ -160,6 +201,10 @@ class Repository:
         return fetched
 
     def fetchall_named(self, query: str) -> list[dict[str, object]]:
+        """
+        Executes sql querry on a linked database and returns list of results,
+        where each result is a dictionary in form of {colname:value}
+        """
         cursor = self.get_cursor()
         fetched = cursor.execute(query).fetchall()
         cursor.connection.commit()
@@ -173,6 +218,10 @@ class Repository:
         return fetched
 
     def fetchone(self, query: str) -> Any:
+        """
+        Executes sql querry on a linked database and returns singular result
+        as tuple of values
+        """
         cursor = self.get_cursor()
         fetched = cursor.execute(query).fetchone()
         cursor.connection.commit()
@@ -181,6 +230,9 @@ class Repository:
         return fetched
 
     def fetchone_named(self, query: str) -> dict[str, Any]:
+        """
+        Executes sql querry on a linked database and returns singular result
+        as dictionary has a form {colname:value}"""
         cursor = self.get_cursor()
         fetched = cursor.execute(query).fetchone()
         cursor.connection.commit()
@@ -192,12 +244,18 @@ class Repository:
         return fetched
 
     def from_csv(self, filename: str, table_name: str) -> None:
+        """
+        Appends contents of a csv to a table. Intended mostly for testing and tutorials
+        """
         df: pd.DataFrame = pd.read_csv(filename)
         connection = self.get_connection()
         df.to_sql(table_name, connection, if_exists="append", index=False)
         connection.close()
 
     def init_db(self) -> None:
+        """
+        Creates a clean database. Will purge previous database
+        """
         if os.path.exists(self.db_folder_path):
             shutil.rmtree(self.db_folder_path)
         os.mkdir(self.db_folder_path)
@@ -228,6 +286,9 @@ class Repository:
         )
 
     def get_all_node_instances(self) -> list[NodeInstance]:
+        """
+        Returns list of all node instances
+        """
         rows = self.fetchall_named("SELECT * FROM nodeInstances")
 
         node_instances: list[NodeInstance] = []
@@ -240,6 +301,12 @@ class Repository:
         return node_instances
 
     def check_node_instance_exists(self, node_id: int, raise_on: bool = False) -> None:
+        """
+        If raise_on == False, will raise if node does not exist
+        If raise_on == True, will raise if node does exist
+        Otherwise will not do anything
+        """
+
         if (
             self.fetchone(
                 f"SELECT node_id FROM nodeInstances WHERE node_id = {node_id}"
@@ -257,6 +324,9 @@ class Repository:
                 )
 
     def get_node_instance(self, node_id: int) -> NodeInstance:
+        """
+        Returns NodeInstance with specified node_id
+        """
         self.check_node_instance_exists(node_id)
         node_row = self.fetchone_named(
             f"SELECT * FROM nodeInstances WHERE node_id = {node_id}"
@@ -266,6 +336,10 @@ class Repository:
         return instance
 
     def get_new_node_instance_id(self) -> int:
+        """
+        Generates node_id of next NodeInstance to be added.
+        By default it is MAX(node_id)+1
+        """
         new_id = self.fetchone("SELECT MAX(node_id) FROM nodeInstances")[0]
         if new_id is None:
             new_id = 0
@@ -275,6 +349,7 @@ class Repository:
 
     def create_node_instance(self, node_instance: NodeInstance) -> int:
         """
+        Persists nodeInstance.
         Returns id of new node instance
         """
         node_id = self.get_new_node_instance_id()
@@ -295,6 +370,10 @@ class Repository:
         return node_id
 
     def update_node_instance(self, instance: NodeInstance, to_update_id: int) -> None:
+        """
+        Overwrites variables of already persisted NodeInstance identified by
+        to_update_id, with values from to_update_id
+        """
         self.check_node_instance_exists(to_update_id)
 
         sql_col_eq_values = ", ".join(
@@ -313,6 +392,9 @@ class Repository:
         self.execute(query)
 
     def delete_node_instance(self, node_id: int) -> None:
+        """
+        Removes node instance specified by node_id from the database
+        """
         linksToDelete = self.get_links_by_origin_node_id(
             node_id
         ) + self.get_links_by_destination_node_id(node_id)
@@ -322,6 +404,9 @@ class Repository:
         self.execute(f"DELETE FROM nodeInstances WHERE node_id = {node_id}")
 
     def get_links_by_origin_node_id(self, node_id: int) -> list[NodeLink]:
+        """
+        Returns list of all links that have origin in NodeInstance with specified node_id
+        """
         self.check_node_instance_exists(node_id)
         linkRows = self.fetchall_named(
             f"SELECT * FROM nodeLinks WHERE origin_node_id = {node_id}"
@@ -329,6 +414,9 @@ class Repository:
         return [NodeLink.fromNameDict(linkRow) for linkRow in linkRows]
 
     def get_links_by_destination_node_id(self, node_id: int) -> list[NodeLink]:
+        """
+        Returns list of all links that have destination in NodeInstance with specified node_id
+        """
         self.check_node_instance_exists(node_id)
         linkRows = self.fetchall_named(
             f"SELECT * FROM nodeLinks WHERE destination_node_id = {node_id}"
@@ -340,6 +428,10 @@ class Repository:
         origin_node_id: Optional[int] = None,
         destination_node_id: Optional[int] = None,
     ) -> list[NodeLink]:
+        """
+        Returns all NodeLinks. Can be filtered by origin, and by destination
+        """
+
         # TODO: Simplify this query
         query = "SELECT * FROM nodeLinks "
         if origin_node_id is not None:
@@ -355,6 +447,13 @@ class Repository:
         return [NodeLink.fromNameDict(linkRow) for linkRow in linkRows]
 
     def check_node_link_exists(self, link: NodeLink, raise_on: bool = False) -> None:
+        """
+        NodeLink is specified by all it's properties (origin, output, input, destination)
+        If raise_on == False, will raise if node does not exist
+        If raise_on == True, will raise if node does exist
+        Otherwise will not do anything
+        """
+
         select_one_query = f"""
             SELECT * FROM nodeLinks
                 WHERE origin_node_id = {link.origin_node_id}
@@ -378,6 +477,12 @@ class Repository:
     def check_node_link_exists_by_id(
         self, node_link_id: int, raise_on: bool = False
     ) -> None:
+        """
+        NodeLink is specified by its id
+        If raise_on == False, will raise if NodeLink does not exist
+        If raise_on == True, will raise if NodeLink does exist
+        Otherwise will not do anything
+        """
         query = f"""
             SELECT * FROM nodeLinks
                 WHERE node_link_id = {node_link_id}
@@ -394,6 +499,9 @@ class Repository:
                 )
 
     def get_node_link(self, node_link_id: int) -> NodeLink:
+        """
+        Returns singular NodeLink object, specified by node_link_id
+        """
         self.check_node_link_exists_by_id(node_link_id)
         node_row = self.fetchone_named(
             f"SELECT * FROM nodeLinks WHERE node_link_id = {node_link_id}"
@@ -402,6 +510,10 @@ class Repository:
         return instance
 
     def get_new_node_link_id(self) -> int:
+        """
+        Generates node_link_id of next NodeLink to be added.
+        By default it is MAX(node_link_id)+1
+        """
         new_id = self.fetchone("SELECT MAX(node_link_id) FROM nodeLinks")[0]
         if new_id is None:
             new_id = 0
@@ -410,6 +522,10 @@ class Repository:
         return new_id
 
     def create_node_link(self, link: NodeLink) -> int:
+        """
+        Adds NodeLink object to the database.
+        Returns node_link_id of the new NodeLink
+        """
         self.check_node_link_exists(link, raise_on=True)
         self.check_node_instance_exists(link.origin_node_id)
         self.check_node_instance_exists(link.destination_node_id)
@@ -433,6 +549,10 @@ class Repository:
         return node_link_id
 
     def update_node_link(self, update_link: NodeLink, to_update_id: int) -> None:
+        """
+        Overwrites variables of already persisted NodeLink identified by
+        to_update_id, with values from update_link
+        """
         self.check_node_link_exists_by_id(to_update_id)
 
         sql_col_eq_values = ", ".join(
@@ -452,7 +572,7 @@ class Repository:
 
     def delete_node_link(self, node_link_id: int) -> None:
         """
-        Each link is unique only when all fields are the same, so all fields are used
+        Removes NodeLink identified by node_link_id from the database
         """
         self.check_node_link_exists_by_id(node_link_id)
         query = f"""
@@ -465,6 +585,7 @@ class Repository:
     def check_node_type_exists(
         self, node_type_name: str, raise_on: bool = False
     ) -> None:
+        """ """
         if node_type_name not in self.get_all_node_type_names():
             if raise_on == False:
                 raise ObjectNotInDBException(f"Node type {node_type_name} not found")

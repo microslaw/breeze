@@ -8,6 +8,12 @@ from typing import Optional
 
 
 class Processor:
+    """
+    Simple task scheduler
+    Starts a processing_daemon when there are some tasks to do
+    """
+
+
     def __init__(self, repository: Repository):
         self.processing_queue: deque[int] = deque()
         self.repository = repository
@@ -16,6 +22,13 @@ class Processor:
         self.processing_daemon = None
 
     def get_all_prerequisite_node_ids(self, node_id: int) -> list[int]:
+        """
+        Returns ids of nodes that have to be processed to provide arguments
+        for node with specified node_id
+
+        :param node_id: ID of the node to check prerequisites for
+        :return: List of node_id of prerequesite nodes.
+        """
         queue_appendix: list[int] = []
         to_add = [node_id]
 
@@ -35,6 +48,12 @@ class Processor:
         return queue_appendix
 
     def get_processing_schedule(self) -> list[int]:
+        """
+        If some exception occurred while processing, will raise this exception
+        during the execution of this function
+
+        :return: nodes left to process
+        """
         if self.cached_exception is None:
             return list(self.processing_queue)
         else:
@@ -43,6 +62,12 @@ class Processor:
     def update_processing_schedule(
         self, node_id: int, start_processing: bool = True
     ) -> None:
+        """
+        Appends node_id and it's prerequisite nodes to processing schedule.
+
+        :param node_id: DataFrame containing the data to plot.
+        :param start_processing: if true will start processing;
+        """
         queue_appendix = self.get_all_prerequisite_node_ids(node_id)
 
         for item in queue_appendix:
@@ -53,6 +78,10 @@ class Processor:
             self.start_processing()
 
     def start_processing(self):
+        """
+        Begins processing of nodes specified inprocessing_queue.
+        Creates a separate thread that processes nodes one by one
+        """
         self.running = True
         self.processing_daemon = threading.Thread(
             target=self.processing_daemon_loop, daemon=True
@@ -60,19 +89,38 @@ class Processor:
         self.processing_daemon.start()
 
     def processing_daemon_loop(self):
+        """
+        Intended to be used within a separate thread.
+        Will keep processing nodes from processing queue untill they run out
+        or untill it is stopped by swiching self.running to False.
+        When stopped, will try to finish currently processed node
+        """
         while self.running and len(self.processing_queue) > 0:
             node_id = self.processing_queue.popleft()
             self.process(node_id)
         self.processing_daemon = None
 
     def stop_processing_daemon(self):
+        """
+        Halts node processing daemon
+        """
         self.running = False
 
     def reset_processing_queue(self) -> None:
+        """
+        Clears processing queue, along with any exceptions that occured
+        during processing
+        """
         self.processing_queue = deque()
         self.cached_exception = None
 
     def wait_till_finished(self, timeout: Optional[float] = None):
+        """
+        Won't return untill node processing is finished.
+        Intended for debugging
+
+        :param timeout: maximum time to wait in seconds
+        """
         if self.processing_daemon is None:
             return
 
@@ -84,11 +132,23 @@ class Processor:
         overwrite_kwargs: dict[str, object],
         prerequisite_kwargs: dict[str, object],
     ) -> dict[str, object]:
+        """
+        Specifies priorities of different kwargs and how they are combined
+
+        :param default_kwargs: kwargs that are default for the node type and are specified in node type definition
+        :param overwrite_kwargs: kwargs that are specified by user to overwrite default kwargs
+        :param prerequisite_kwargs: kwargs that are provided by prerequisite nodes
+
+        :return: combined kwargs
+        """
         return default_kwargs | overwrite_kwargs | prerequisite_kwargs
 
     def get_kwargs_details(self, processed_node_instance: NodeInstance):
         """
-        Similar get_kwargs, but provides more detail for frontend display
+        Similar to get_kwargs, but provides more detail for frontend display
+
+        :param processed_node_instance: node instance to get kwargs for
+        :return: detailed kwargs
         """
         processed_node_type = self.repository.get_node_type_from_name(
             processed_node_instance.node_type_name
@@ -145,6 +205,12 @@ class Processor:
         )
 
     def get_kwargs(self, processed_node_instance: NodeInstance):
+        """
+        Returns all available kwargs that are needed to process processed_node_instances
+
+        :param processed_node_instance: node instance to get kwargs for
+        :return: kwargs needed to process the node instance
+        """
         prerequisite_links = self.repository.get_links_by_destination_node_id(
             processed_node_instance.node_id
         )
@@ -167,6 +233,12 @@ class Processor:
         )
 
     def process(self, node_id: int):
+        """
+        Processes individual nodes. If exception occurs during processing, will cache it till
+        reset_processing queue is called
+
+        :param node_id: ID of the node to process
+        """
         processed_node_instance = self.repository.get_node_instance(node_id)
         processed_node_type = self.repository.get_node_type_from_name(
             processed_node_instance.node_type_name
@@ -189,6 +261,10 @@ class Processor:
 
 
 class ProcessingException(Exception):
+    """
+    Wrapper for exceptions that occur during node processing
+    """
+
     def __init__(
         self,
         e: Exception,
@@ -211,6 +287,9 @@ class ProcessingException(Exception):
     def prune_traceback(traceback: list[str]) -> str:
         """
         Removes part of the trace caused by the breeze library
+
+        :param traceback: full traceback as returned by traceback.format_exception
+        :return: pruned traceback as a string
         """
 
         pruned_traceback = traceback[0]
@@ -219,6 +298,11 @@ class ProcessingException(Exception):
         return pruned_traceback
 
     def toJson(self) -> dict[str, object]:
+        """
+        Creates a JSON representation that can be serialized and sent to frontend
+
+        :return: JSON representation of the exception
+        """
         return {
             "origin": self.origin.toNameDict(),
             "traceback_str": self.traceback_str,

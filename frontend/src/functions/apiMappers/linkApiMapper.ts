@@ -1,3 +1,4 @@
+import { BLOCK_WIDTH } from "../../constants/ui";
 import { LinkI } from "../../models/link.model";
 
 export function mapApiResponseToLinks(apiResponse: any[]): LinkI[] {
@@ -10,7 +11,7 @@ export function mapApiResponseToLinks(apiResponse: any[]): LinkI[] {
     startX: link.source_x || 0,
     startY: link.source_y || 0,
     endX: link.target_x || 0,
-    endY: link.target_y || 100,
+    endY: link.target_y || BLOCK_WIDTH,
   }));
 }
 

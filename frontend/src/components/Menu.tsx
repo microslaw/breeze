@@ -39,23 +39,6 @@ const Menu = ({ blocks, setBlocks }: MenuProps) => {
         <Button onClick={() => setIsQueueModalDeatilsVisible(true)}>
           View processing queue
         </Button>
-        <Button onClick={() => getProcessingResultMetadataByNodeId(0)}>
-          Get processing metadata for node 0
-        </Button>
-        {/* Comented out functions are used for testing purposes do not remove
-        them !!! */}
-        {/* <Button onClick={() => console.log(blocks)}>Log list of blocks</Button>
-        <Button onClick={() => getNodeTypes()}>Get node types from API</Button>
-        <Button onClick={() => getAllNodes()}>
-          Get node instances from API
-        </Button>
-        <Button onClick={() => getNodeById(1)}>
-          Get node instance by ID from API
-        </Button>
-        <Button onClick={() => getLinksByOriginNode(1)}>
-        Get node links by origin ID from API
-        </Button>
-        <Button onClick={() => getAllLinks()}>Get node links from API</Button> */}
       </span>
       <BlockModalCreate
         show={isBlockModalCreateVisible}

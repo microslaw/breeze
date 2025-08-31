@@ -8,6 +8,9 @@
   border-radius: 8px;
   margin-bottom: 16px;
 }
+.kwargTextInput {
+  width: 100%;
+}
 
 .modalBody {
   padding: 1rem;

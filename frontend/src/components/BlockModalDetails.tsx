@@ -240,6 +240,7 @@ const BlockModalDetails = ({
                   <td>{kwarg.key}</td>
                   <td>
                     <input
+                      className={styles.kwargTextInput}
                       type="text"
                       value={kwarg.value ?? ""}
                       onChange={(e) =>

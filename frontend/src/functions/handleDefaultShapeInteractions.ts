@@ -1,3 +1,4 @@
+import { BLOCK_HEIGHT, BLOCK_WIDTH } from "../constants/ui";
 import { BlockI } from "../models/block.model";
 import { LinkI } from "../models/link.model";
 import LinkCircleI from "../models/linkcircle.model";
@@ -58,12 +59,12 @@ export const handleDragBlockEnd = (
   setLinks(
     links.map((link) => {
       if (link.originNodeId === block.id) {
-        link.startX = e.target.x() + 200;
-        link.startY = e.target.y() + 65;
+        link.startX = e.target.x() + BLOCK_WIDTH;
+        link.startY = e.target.y() + BLOCK_HEIGHT / 2;
       }
       if (link.destinationNodeId === block.id) {
         link.endX = e.target.x();
-        link.endY = e.target.y() + 65;
+        link.endY = e.target.y() + BLOCK_HEIGHT / 2;
       }
       return link;
     })
@@ -107,14 +108,11 @@ export const handleDragCircleEnd = (
   const circleRadius = e.target.radius();
 
   blocks.forEach((destBlock) => {
-    const blockWidth = 200;
-    const blockHeight = 130;
-
     const isOverlapping =
       circleX + circleRadius > destBlock.x &&
-      circleX - circleRadius < destBlock.x + blockWidth &&
+      circleX - circleRadius < destBlock.x + BLOCK_WIDTH &&
       circleY + circleRadius > destBlock.y &&
-      circleY - circleRadius < destBlock.y + blockHeight;
+      circleY - circleRadius < destBlock.y + BLOCK_HEIGHT;
 
     if (isOverlapping) {
       const newLink = {

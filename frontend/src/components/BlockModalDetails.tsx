@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Table, Card } from "react-bootstrap";
+import { Modal, Button, Table, Card, Stack } from "react-bootstrap";
 import { BlockI } from "../models/block.model";
 import {
   getProcessingResultByNodeId,
@@ -137,6 +137,16 @@ const BlockModalDetails = ({
       });
   };
 
+  function renderModalTitle() {
+    if (block.name) {
+      return <Modal.Title>{block.name}</Modal.Title>;
+    } else if (block.type) {
+      return <Modal.Title>{block.type}</Modal.Title>;
+    } else {
+      return <Modal.Title>Unknown name and type</Modal.Title>;
+    }
+  }
+
   function renderProcessingResult() {
     if (!processingResultMetadata.is_processed) {
       return (
@@ -191,9 +201,7 @@ const BlockModalDetails = ({
       className={styles.modal}
       dialogClassName={styles.modalDialog}
     >
-      <Modal.Header>
-        <Modal.Title>{block.name}</Modal.Title>
-      </Modal.Header>
+      <Modal.Header>{renderModalTitle()}</Modal.Header>
       <Modal.Body className={styles.modalBody}>
         {errorMsg && (
           <div style={{ color: "red", marginBottom: "10px" }}>{errorMsg}</div>
@@ -224,44 +232,46 @@ const BlockModalDetails = ({
           </Table>
         </div> */}
         {/* KWARG TABLE */}
-        <div className={styles.tableWrapper}>
-          <Table hover responsive>
-            <thead>
-              <tr>
-                <th>Field</th>
-                <th>Value</th>
-                <th>Type</th>
-                <th>Source</th>
-              </tr>
-            </thead>
-            <tbody>
-              {block.kwargs.map((kwarg, index) => (
-                <tr key={index}>
-                  <td>{kwarg.key}</td>
-                  <td>
-                    <input
-                      className={styles.kwargTextInput}
-                      type="text"
-                      value={kwarg.value ?? ""}
-                      onChange={(e) =>
-                        handleKwargValueChange(kwarg.key, e.target.value)
-                      }
-                      onFocus={(e) =>
-                        handleKwargValueFocus(kwarg.key, kwarg.value)
-                      }
-                      onBlur={() => handleKwargValueBlur(kwarg)}
-                    />
-                  </td>
-                  <td>{kwarg.type}</td>
-                  <td>{kwarg.source}</td>
+        {block.kwargs.length > 0 && (
+          <div className={styles.tableWrapper}>
+            <Table hover responsive>
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Value</th>
+                  <th>Type</th>
+                  <th>Source</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
-        </div>
+              </thead>
+              <tbody>
+                {block.kwargs.map((kwarg, index) => (
+                  <tr key={index}>
+                    <td>{kwarg.key}</td>
+                    <td>
+                      <input
+                        className={styles.kwargTextInput}
+                        type="text"
+                        value={kwarg.value ?? ""}
+                        onChange={(e) =>
+                          handleKwargValueChange(kwarg.key, e.target.value)
+                        }
+                        onFocus={(e) =>
+                          handleKwargValueFocus(kwarg.key, kwarg.value)
+                        }
+                        onBlur={() => handleKwargValueBlur(kwarg)}
+                      />
+                    </td>
+                    <td>{kwarg.type}</td>
+                    <td>{kwarg.source}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
+        )}
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
+        <Button variant="secondary" className="me-auto" onClick={handleClose}>
           Close
         </Button>
         <Button variant="primary" onClick={handleRunJob}>

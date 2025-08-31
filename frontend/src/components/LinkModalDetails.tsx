@@ -38,7 +38,7 @@ const LinkModalDetails = ({
         </Table>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
+        <Button variant="secondary" className="me-auto" onClick={handleClose}>
           Close
         </Button>
         <Button variant="danger" onClick={() => handleDelete(link.id)}>

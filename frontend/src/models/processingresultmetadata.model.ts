@@ -1,5 +1,5 @@
 export interface ProcessingResultMetadataI {
-  created_date?: Date;
+  created_date?: string;
   datatype?: string;
   frontend_type?: FrontendType;
   is_processed: boolean;

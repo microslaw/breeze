@@ -13,7 +13,6 @@ import {
 } from "../services/kwargsApiService";
 import { KwargI } from "../models/kwarg.model";
 import { ProcessingResultMetadataI } from "../models/processingresultmetadata.model";
-
 interface BlockModalDetailsProps {
   show: boolean;
   block: BlockI;
@@ -140,7 +139,11 @@ const BlockModalDetails = ({
 
   function renderProcessingResult() {
     if (!processingResultMetadata.is_processed) {
-      return <Card.Text>No processing result available</Card.Text>;
+      return (
+        <Card.Body>
+          <Card.Text>No processing result available</Card.Text>
+        </Card.Body>
+      );
     }
     if (
       processingResultMetadata.frontend_type === "html" ||
@@ -168,6 +171,12 @@ const BlockModalDetails = ({
           >
             Open Result in New Window
           </Button>
+          <Card.Text>
+            Processed at:{" "}
+            {processingResultMetadata?.created_date
+              ? processingResultMetadata?.created_date
+              : "no data"}
+          </Card.Text>
         </Card.Body>
       );
     }
@@ -193,8 +202,9 @@ const BlockModalDetails = ({
           <Card.Header>Processing Result</Card.Header>
           {renderProcessingResult()}
         </Card>
-        <div className={styles.tableWrapper}>
-          <Table hover responsive>
+        {/* BLOCK TABLE (test/debug only) */}
+        {/* <div className={styles.tableWrapper}>
+          <Table hover>
             <thead>
               <tr>
                 <th>Field</th>
@@ -212,7 +222,8 @@ const BlockModalDetails = ({
                 ))}
             </tbody>
           </Table>
-        </div>
+        </div> */}
+        {/* KWARG TABLE */}
         <div className={styles.tableWrapper}>
           <Table hover responsive>
             <thead>

@@ -66,11 +66,11 @@ const Block = ({
         shadowBlur={10}
         shadowOpacity={0.6}
         draggable
-        stroke={block.isSelected ? "red" : ""}
-        shadowOffsetX={block.isDragging ? 10 : 5}
-        shadowOffsetY={block.isDragging ? 10 : 5}
-        scaleX={block.isDragging ? 1.2 : 1}
-        scaleY={block.isDragging ? 1.2 : 1}
+        stroke={block.isSelected ? "lightSlateGray" : ""}
+        shadowOffsetX={block.isDragging ? 5 : 2.5}
+        shadowOffsetY={block.isDragging ? 5 : 2.5}
+        scaleX={block.isDragging ? 1.15 : 1}
+        scaleY={block.isDragging ? 1.15 : 1}
         onDragStart={() => handleDragBlockStart(block, blocks, setBlocks)}
         onDragEnd={(e) =>
           handleDragBlockEnd(e, block, blocks, setBlocks, links, setLinks)
@@ -112,9 +112,9 @@ const Block = ({
               setIsLinkModalCreateVisible
             );
           }}
-          radius={linkCircle.isDragging ? 14 : 10}
-          fill="red"
-          stroke={"black"}
+          radius={linkCircle.isDragging ? 7 : 5}
+          fill="darkSlateGray"
+          stroke={"lightSlateGray"}
         />
       )}
     </Group>

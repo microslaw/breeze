@@ -29,8 +29,8 @@ const Link = ({
     <Arrow
       draggable={draggable || false}
       points={[link.startX, link.startY, link.endX, link.endY]}
-      stroke="black"
-      fill="black"
+      stroke="darkSlateGray"
+      fill="darkSlateGray"
       strokeWidth={2}
       pointerLength={pointerSize || 10}
       pointerWidth={pointerSize || 10}

@@ -1,0 +1,23 @@
+.smallMenuModal {
+  position: fixed;
+  margin: 0;
+  z-index: 1050;
+}
+
+.menuCard {
+  width: 140px;
+  /* min-height: 100px; */
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.menuButton {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.menuButtonLast {
+  width: 100%;
+}

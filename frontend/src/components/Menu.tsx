@@ -26,7 +26,7 @@ const Menu = ({ blocks, setBlocks }: MenuProps) => {
   const [isBlockModalCreateVisible, setIsBlockModalCreateVisible] =
     useState<boolean>(false);
 
-  const [isQueueModalDeatilsVisible, setIsQueueModalDeatilsVisible] =
+  const [isQueueModalDetailsVisible, setIsQueueModalDetailsVisible] =
     useState<boolean>(false);
 
   return (
@@ -36,10 +36,11 @@ const Menu = ({ blocks, setBlocks }: MenuProps) => {
         <Button onClick={() => setIsBlockModalCreateVisible(true)}>
           Add new block
         </Button>
-        <Button onClick={() => setIsQueueModalDeatilsVisible(true)}>
+        <Button onClick={() => setIsQueueModalDetailsVisible(true)}>
           View processing queue
         </Button>
       </span>
+      {/* TODO move BlockModalCreate and QueueModalDetails to App */}
       <BlockModalCreate
         show={isBlockModalCreateVisible}
         handleClose={() => setIsBlockModalCreateVisible(false)}
@@ -47,8 +48,8 @@ const Menu = ({ blocks, setBlocks }: MenuProps) => {
         setBlocks={setBlocks}
       ></BlockModalCreate>
       <QueueModalDetails
-        show={isQueueModalDeatilsVisible}
-        handleClose={() => setIsQueueModalDeatilsVisible(false)}
+        show={isQueueModalDetailsVisible}
+        handleClose={() => setIsQueueModalDetailsVisible(false)}
       ></QueueModalDetails>
     </div>
   );

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Table, Card } from "react-bootstrap";
+import { Modal, Button, Table, Card, Stack } from "react-bootstrap";
 import { BlockI } from "../models/block.model";
 import {
   getProcessingResultByNodeId,
+  getProcessingResultMetadataByNodeId,
   runProcessingJob,
 } from "../services/processingApiService";
 import styles from "./BlockModalDetails.module.css";
@@ -11,7 +12,7 @@ import {
   updateKwargByNodeId,
 } from "../services/kwargsApiService";
 import { KwargI } from "../models/kwarg.model";
-
+import { ProcessingResultMetadataI } from "../models/processingresultmetadata.model";
 interface BlockModalDetailsProps {
   show: boolean;
   block: BlockI;
@@ -27,8 +28,12 @@ const BlockModalDetails = ({
   handleClose,
   handleDelete,
 }: BlockModalDetailsProps) => {
-  // TODO put processing result into some kind of structure
   const [processingResult, setProcessingResult] = useState<any>(null);
+
+  const [processingResultMetadata, setProcessingResultMetadata] =
+    useState<ProcessingResultMetadataI>({
+      is_processed: false,
+    });
 
   const [focusedKwargValue, setFocusedKwargValue] = useState<KwargI>({
     key: "",
@@ -39,20 +44,23 @@ const BlockModalDetails = ({
 
   const [errorMsg, setErrorMsg] = useState<string>("");
 
-  const isHtmlContent = (content: string): boolean => {
-    if (typeof content !== "string") return false;
-    const htmlRegex = /<[^>]*>/;
-    return htmlRegex.test(content);
-  };
-
   useEffect(() => {
     if (!show) {
+      setProcessingResultMetadata({ is_processed: false });
       setProcessingResult(null);
       setFocusedKwargValue({ key: "", value: "", type: "", source: "" });
       setErrorMsg("");
     } else {
-      getLastProcessingResult();
-      getKwargs();
+      getProcessingResultMetadataByNodeId(block.id).then((result) => {
+        setProcessingResultMetadata(result);
+        if (result.is_processed) {
+          getProcessingResultByNodeId(block.id).then((result) => {
+            setProcessingResult(result);
+          });
+        }
+      });
+
+      getAndAssignKwargs();
     }
   }, [show, block.id]);
 
@@ -64,41 +72,33 @@ const BlockModalDetails = ({
   }, [errorMsg]);
 
   const handleRunJob = () => {
-    runProcessingJob(block.id).then((result) => {
-      console.log("Processing job started:", result);
+    runProcessingJob(block.id).then(() => {
       let count = 0;
       const intervalId = setInterval(() => {
-        getLastProcessingResult();
-        count++;
-        if (count >= 3 || show === false) {
-          clearInterval(intervalId);
-        }
+        getProcessingResultMetadataByNodeId(block.id).then((result) => {
+          setProcessingResultMetadata(result);
+          if (result.is_processed) {
+            getProcessingResultByNodeId(block.id).then((result) => {
+              setProcessingResult(result);
+              count++;
+              if (
+                count >= 3 ||
+                processingResultMetadata.is_processed ||
+                show === false
+              ) {
+                clearInterval(intervalId);
+              }
+            });
+          }
+        });
       }, 1000);
     });
   };
 
-  const getLastProcessingResult = () => {
-    console.log("block modal block id:", block.id);
-    getProcessingResultByNodeId(block.id)
-      .then((result) => {
-        setProcessingResult(result);
-        getKwargs();
-      })
-      .catch((error) => {
-        setErrorMsg(`Processing for block '${block.name}' failed.`);
-        console.error("Error fetching processing result:", error);
-      });
-  };
-
-  const getKwargs = () => {
-    getKwargsByNodeId(block.id)
-      .then((kwargs) => {
-        setBlock((prevBlock) => ({ ...prevBlock, kwargs }));
-      })
-      .catch((error) => {
-        setErrorMsg(`Fetching kwargs for block '${block.name}' failed`);
-        console.error("Error fetching kwargs:", error);
-      });
+  const getAndAssignKwargs = () => {
+    getKwargsByNodeId(block.id).then((kwargs) => {
+      setBlock((prevBlock) => ({ ...prevBlock, kwargs }));
+    });
   };
 
   // Called on every input change
@@ -137,6 +137,62 @@ const BlockModalDetails = ({
       });
   };
 
+  function renderModalTitle() {
+    if (block.name) {
+      return <Modal.Title>{block.name}</Modal.Title>;
+    } else if (block.type) {
+      return <Modal.Title>{block.type}</Modal.Title>;
+    } else {
+      return <Modal.Title>Unknown name and type</Modal.Title>;
+    }
+  }
+
+  function renderProcessingResult() {
+    if (!processingResultMetadata.is_processed) {
+      return (
+        <Card.Body>
+          <Card.Text>No processing result available</Card.Text>
+        </Card.Body>
+      );
+    }
+    if (
+      processingResultMetadata.frontend_type === "html" ||
+      processingResultMetadata.frontend_type === "plaintext"
+    ) {
+      return (
+        <Card.Body>
+          <Button
+            variant="primary"
+            onClick={() => {
+              const newWindow = window.open("", "_blank");
+              if (newWindow) {
+                newWindow.document.writeln(`
+                  <html>
+                  <head><title>${
+                    "Processing result for node: " + block.id
+                  }</title><link rel="stylesheet" type="text/css" href="src/components/ProcessingResult.module.css"></head>
+                  <body>
+                    ${processingResult}
+                  </body>
+                  </html>
+                `);
+              }
+            }}
+          >
+            Open Result in New Window
+          </Button>
+          <Card.Text>
+            Processed at:{" "}
+            {processingResultMetadata?.created_date
+              ? processingResultMetadata?.created_date
+              : "no data"}
+          </Card.Text>
+        </Card.Body>
+      );
+    }
+    return <Card.Text>{processingResult}</Card.Text>;
+  }
+
   return (
     <Modal
       show={show}
@@ -145,39 +201,18 @@ const BlockModalDetails = ({
       className={styles.modal}
       dialogClassName={styles.modalDialog}
     >
-      <Modal.Header>
-        <Modal.Title>{block.name}</Modal.Title>
-      </Modal.Header>
+      <Modal.Header>{renderModalTitle()}</Modal.Header>
       <Modal.Body className={styles.modalBody}>
         {errorMsg && (
           <div style={{ color: "red", marginBottom: "10px" }}>{errorMsg}</div>
         )}
         <Card className={styles.card}>
           <Card.Header>Processing Result</Card.Header>
-          {processingResult ? (
-            isHtmlContent(processingResult) ? (
-              <Card.Body>
-                <Button
-                  variant="primary"
-                  onClick={() => {
-                    const newWindow = window.open("", "_blank");
-                    if (newWindow) {
-                      newWindow.document.writeln(processingResult);
-                    }
-                  }}
-                >
-                  Open Result in New Window
-                </Button>
-              </Card.Body>
-            ) : (
-              <Card.Text>{processingResult}</Card.Text>
-            )
-          ) : (
-            <Card.Text>No processing result available</Card.Text>
-          )}
+          {renderProcessingResult()}
         </Card>
-        <div className={styles.tableWrapper}>
-          <Table hover responsive>
+        {/* BLOCK TABLE (test/debug only) */}
+        {/* <div className={styles.tableWrapper}>
+          <Table hover>
             <thead>
               <tr>
                 <th>Field</th>
@@ -195,44 +230,48 @@ const BlockModalDetails = ({
                 ))}
             </tbody>
           </Table>
-        </div>
-        <div className={styles.tableWrapper}>
-          <Table hover responsive>
-            <thead>
-              <tr>
-                <th>Field</th>
-                <th>Value</th>
-                <th>Type</th>
-                <th>Source</th>
-              </tr>
-            </thead>
-            <tbody>
-              {block.kwargs.map((kwarg, index) => (
-                <tr key={index}>
-                  <td>{kwarg.key}</td>
-                  <td>
-                    <input
-                      type="text"
-                      value={kwarg.value ?? ""}
-                      onChange={(e) =>
-                        handleKwargValueChange(kwarg.key, e.target.value)
-                      }
-                      onFocus={(e) =>
-                        handleKwargValueFocus(kwarg.key, kwarg.value)
-                      }
-                      onBlur={() => handleKwargValueBlur(kwarg)}
-                    />
-                  </td>
-                  <td>{kwarg.type}</td>
-                  <td>{kwarg.source}</td>
+        </div> */}
+        {/* KWARG TABLE */}
+        {block.kwargs.length > 0 && (
+          <div className={styles.tableWrapper}>
+            <Table hover responsive>
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Value</th>
+                  <th>Type</th>
+                  <th>Source</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
-        </div>
+              </thead>
+              <tbody>
+                {block.kwargs.map((kwarg, index) => (
+                  <tr key={index}>
+                    <td>{kwarg.key}</td>
+                    <td>
+                      <input
+                        className={styles.kwargTextInput}
+                        type="text"
+                        value={kwarg.value ?? ""}
+                        onChange={(e) =>
+                          handleKwargValueChange(kwarg.key, e.target.value)
+                        }
+                        onFocus={(e) =>
+                          handleKwargValueFocus(kwarg.key, kwarg.value)
+                        }
+                        onBlur={() => handleKwargValueBlur(kwarg)}
+                      />
+                    </td>
+                    <td>{kwarg.type}</td>
+                    <td>{kwarg.source}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
+        )}
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
+        <Button variant="secondary" className="me-auto" onClick={handleClose}>
           Close
         </Button>
         <Button variant="primary" onClick={handleRunJob}>

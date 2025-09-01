@@ -13,6 +13,7 @@ import {
 import { LinkI } from "../models/link.model";
 import Link from "./Link";
 import LinkCircleI from "../models/linkcircle.model";
+import { BLOCK_HEIGHT, BLOCK_WIDTH } from "../constants/ui";
 
 interface BlockProps {
   block: BlockI;
@@ -24,8 +25,6 @@ interface BlockProps {
   setIsLinkModalCreateVisible: React.Dispatch<React.SetStateAction<boolean>>;
   handleDoubleClick: (block: BlockI) => void;
 }
-const RECTANGLE_WIDTH = 200;
-const RECTANGLE_HEIGHT = 130;
 
 const Block = ({
   block,
@@ -44,8 +43,8 @@ const Block = ({
 
   const [linkCircle, setLinkCircle] = useState<LinkCircleI>({
     isDragging: false,
-    x: block.x + RECTANGLE_WIDTH,
-    y: block.y + RECTANGLE_HEIGHT / 2,
+    x: block.x + BLOCK_WIDTH,
+    y: block.y + BLOCK_HEIGHT / 2,
   });
 
   const handleDragMove = (e: any) => {
@@ -59,19 +58,19 @@ const Block = ({
         id={block.id.toString()}
         x={block.x}
         y={block.y}
-        width={RECTANGLE_WIDTH}
-        height={RECTANGLE_HEIGHT}
+        width={BLOCK_WIDTH}
+        height={BLOCK_HEIGHT}
         fill="lightblue"
         opacity={0.8}
         shadowColor="black"
         shadowBlur={10}
         shadowOpacity={0.6}
         draggable
-        stroke={block.isSelected ? "red" : ""}
-        shadowOffsetX={block.isDragging ? 10 : 5}
-        shadowOffsetY={block.isDragging ? 10 : 5}
-        scaleX={block.isDragging ? 1.2 : 1}
-        scaleY={block.isDragging ? 1.2 : 1}
+        stroke={block.isSelected ? "lightSlateGray" : ""}
+        shadowOffsetX={block.isDragging ? 5 : 2.5}
+        shadowOffsetY={block.isDragging ? 5 : 2.5}
+        scaleX={block.isDragging ? 1.15 : 1}
+        scaleY={block.isDragging ? 1.15 : 1}
         onDragStart={() => handleDragBlockStart(block, blocks, setBlocks)}
         onDragEnd={(e) =>
           handleDragBlockEnd(e, block, blocks, setBlocks, links, setLinks)
@@ -86,17 +85,17 @@ const Block = ({
         x={dynamicPosition.x}
         y={dynamicPosition.y}
         text={block.name}
-        fontSize={16}
+        fontSize={14}
         fontStyle="bold"
         fill="black"
-        offsetX={-RECTANGLE_WIDTH / 10}
-        offsetY={-RECTANGLE_HEIGHT / 10}
+        offsetX={-BLOCK_WIDTH / 10}
+        offsetY={-BLOCK_HEIGHT / 10}
       />
       {block.isSelected && (
         <Circle
           draggable
-          x={dynamicPosition.x + RECTANGLE_WIDTH}
-          y={dynamicPosition.y + RECTANGLE_HEIGHT / 2}
+          x={dynamicPosition.x + BLOCK_WIDTH}
+          y={dynamicPosition.y + BLOCK_HEIGHT / 2}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           onDragStart={() => handleDragCircleStart(setLinkCircle)}
@@ -113,9 +112,9 @@ const Block = ({
               setIsLinkModalCreateVisible
             );
           }}
-          radius={linkCircle.isDragging ? 14 : 10}
-          fill="red"
-          stroke={"black"}
+          radius={linkCircle.isDragging ? 7 : 5}
+          fill="darkSlateGray"
+          stroke={"lightSlateGray"}
         />
       )}
     </Group>

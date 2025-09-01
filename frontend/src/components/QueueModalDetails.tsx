@@ -40,7 +40,11 @@ const QueueModalDetails = ({ show, handleClose }: BlockModalDetailsProps) => {
         </ul>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={() => handleClose()}>
+        <Button
+          variant="secondary"
+          className="me-auto"
+          onClick={() => handleClose()}
+        >
           Close
         </Button>
       </Modal.Footer>

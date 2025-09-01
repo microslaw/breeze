@@ -11,8 +11,23 @@ export async function getProcessingResultByNodeId(
 
     return response.data;
   } catch (error) {
-    // TODO handle error after changing the backend (404 => 204 when no processing result)
-    // console.log("Error fetching processing :", error);
+    console.error("Error fetching processing result:", error);
+    throw error;
+  }
+}
+
+export async function getProcessingResultMetadataByNodeId(
+  nodeId: number
+): Promise<any> {
+  try {
+    const response = await axios({
+      method: "get",
+      url: "http://127.0.0.1:5000/processingResult/" + nodeId + "/metadata",
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching processing result metadata:", error);
     throw error;
   }
 }

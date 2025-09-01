@@ -3,6 +3,7 @@ import { Stage } from "react-konva";
 import FlowLayer from "./FlowLayer";
 import { BlockI } from "../models/block.model";
 import { LinkI } from "../models/link.model";
+import styles from "./MainStage.module.css";
 
 interface MainStageProps {
   blocks: BlockI[];
@@ -57,6 +58,7 @@ const MainStage = ({
       onContextMenu={(e) => {
         handleDefaultContextMenu(e);
       }}
+      className={styles.mainStage}
     >
       <FlowLayer
         blocks={blocks}

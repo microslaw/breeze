@@ -1,11 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { Layer } from "react-konva";
 import Block from "./Block";
 import { BlockI } from "../models/block.model";
-import { handleBlockSingleClick } from "../functions/handleDefaultShapeInteractions";
 import { LinkI } from "../models/link.model";
 import Link from "./Link";
-import LinkModalCreate from "./LinkModalCreate";
 
 interface FlowLayerProps {
   blocks: BlockI[];

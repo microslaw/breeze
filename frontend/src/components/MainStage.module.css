@@ -1,0 +1,7 @@
+.mainStage {
+  background-image: linear-gradient(
+    to bottom,
+    rgb(255, 255, 255),
+    rgb(213, 213, 213)
+  );
+}

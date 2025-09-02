@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Stage } from "react-konva";
 import FlowLayer from "./FlowLayer";
 import { BlockI } from "../models/block.model";
 import { LinkI } from "../models/link.model";
+import styles from "./MainStage.module.css";
+import SmallMenu from "./SmallMenu";
 
 interface MainStageProps {
   blocks: BlockI[];
@@ -10,6 +12,7 @@ interface MainStageProps {
   links: LinkI[];
   setLinks: React.Dispatch<React.SetStateAction<LinkI[]>>;
   setSelectedLink: React.Dispatch<React.SetStateAction<LinkI>>;
+  setIsBlockModalCreateVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setIsLinkModalCreateVisible: React.Dispatch<React.SetStateAction<boolean>>;
   handleBlockDoubleClick: (block: BlockI) => void;
   handleLinkDoubleClick: (link: LinkI) => void;
@@ -21,24 +24,46 @@ const MainStage = ({
   links,
   setLinks,
   setSelectedLink,
+  setIsBlockModalCreateVisible,
   setIsLinkModalCreateVisible,
   handleBlockDoubleClick,
   handleLinkDoubleClick,
 }: MainStageProps) => {
+  const [isSmallMenuVisible, setIsSmallMenuVisible] = useState<boolean>(false);
+  const [lastClickPosition, setLastClickPosition] = useState<{
+    x: number;
+    y: number;
+  }>({ x: 0, y: 0 });
+
   function handleClick(e: any) {
-    if (e.target !== e.target.getStage()) return;
+    setLastClickPosition({ x: e.evt.layerX, y: e.evt.layerY });
 
     // button == 0 means left click
     if (e.evt.button === 0) {
+      handleLeftClick(e);
+      // button == 2 means right click
+    } else if (e.evt.button === 2) {
+      handleRightClick(e);
+    }
+  }
+
+  function handleLeftClick(e: any) {
+    setIsSmallMenuVisible(false);
+
+    if (e.target === e.target.getStage()) {
       setBlocks(
         blocks.map((b) => ({
           ...b,
           isSelected: false,
         }))
       );
-      // button == 0 means right click
-    } else if (e.evt.button === 2) {
-      // TODO implement action on right click
+    }
+  }
+
+  function handleRightClick(e: any) {
+    e.evt.preventDefault();
+    if (e.target === e.target.getStage()) {
+      setIsSmallMenuVisible(true);
     }
   }
 
@@ -47,28 +72,38 @@ const MainStage = ({
   }
 
   return (
-    <Stage
-      width={window.innerWidth}
-      height={window.innerHeight}
-      draggable={true}
-      onClick={(e) => {
-        handleClick(e);
-      }}
-      onContextMenu={(e) => {
-        handleDefaultContextMenu(e);
-      }}
-    >
-      <FlowLayer
-        blocks={blocks}
-        setBlocks={setBlocks}
-        links={links}
-        setLinks={setLinks}
-        setSelectedLink={setSelectedLink}
-        setIsLinkModalCreateVisible={setIsLinkModalCreateVisible}
-        handleBlockDoubleClick={(block) => handleBlockDoubleClick(block)}
-        handleLinkDoubleClick={(link) => handleLinkDoubleClick(link)}
+    <span>
+      <Stage
+        width={window.innerWidth}
+        height={window.innerHeight}
+        draggable={true}
+        onClick={(e) => {
+          handleClick(e);
+        }}
+        onContextMenu={(e) => {
+          handleDefaultContextMenu(e);
+        }}
+        className={styles.mainStage}
+      >
+        <FlowLayer
+          blocks={blocks}
+          setBlocks={setBlocks}
+          links={links}
+          setLinks={setLinks}
+          setSelectedLink={setSelectedLink}
+          setIsLinkModalCreateVisible={setIsLinkModalCreateVisible}
+          handleBlockDoubleClick={(block) => handleBlockDoubleClick(block)}
+          handleLinkDoubleClick={(link) => handleLinkDoubleClick(link)}
+        />
+      </Stage>
+      <SmallMenu
+        show={isSmallMenuVisible}
+        setShow={setIsSmallMenuVisible}
+        position_x={lastClickPosition.x}
+        position_y={lastClickPosition.y}
+        setIsBlockModalCreateVisible={setIsBlockModalCreateVisible}
       />
-    </Stage>
+    </span>
   );
 };
 

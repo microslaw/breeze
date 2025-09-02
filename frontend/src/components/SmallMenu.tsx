@@ -23,33 +23,31 @@ const SmallMenu = ({
     top: position_y,
   };
 
-  return (
-    show && (
-      <div className={styles.smallMenuModal} style={positionStyle}>
-        <Card className={styles.menuCard}>
-          <Button
-            size="sm"
-            className={styles.menuButton}
-            variant="primary"
-            onClick={() => {
-              setShow(false);
-              setIsBlockModalCreateVisible(true);
-            }}
-          >
-            Add new block
-          </Button>
-          <Button
-            size="sm"
-            className={styles.menuButtonLast}
-            variant="primary"
-            onClick={() => console.log("Place holder small menu button")}
-          >
-            Placeholder
-          </Button>
-        </Card>
-      </div>
-    )
-  );
+  return show ? (
+    <div className={styles.smallMenuModal} style={positionStyle}>
+      <Card className={styles.menuCard}>
+        <Button
+          size="sm"
+          className={styles.menuButton}
+          variant="primary"
+          onClick={() => {
+            setShow(false);
+            setIsBlockModalCreateVisible(true);
+          }}
+        >
+          Add new block
+        </Button>
+        <Button
+          size="sm"
+          className={styles.menuButtonLast}
+          variant="primary"
+          onClick={() => console.log("Place holder small menu button")}
+        >
+          Placeholder
+        </Button>
+      </Card>
+    </div>
+  ) : null;
 };
 
 export default SmallMenu;

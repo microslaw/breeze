@@ -12,6 +12,7 @@ interface MainStageProps {
   links: LinkI[];
   setLinks: React.Dispatch<React.SetStateAction<LinkI[]>>;
   setSelectedLink: React.Dispatch<React.SetStateAction<LinkI>>;
+  setIsBlockModalCreateVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setIsLinkModalCreateVisible: React.Dispatch<React.SetStateAction<boolean>>;
   handleBlockDoubleClick: (block: BlockI) => void;
   handleLinkDoubleClick: (link: LinkI) => void;
@@ -23,6 +24,7 @@ const MainStage = ({
   links,
   setLinks,
   setSelectedLink,
+  setIsBlockModalCreateVisible,
   setIsLinkModalCreateVisible,
   handleBlockDoubleClick,
   handleLinkDoubleClick,
@@ -34,20 +36,33 @@ const MainStage = ({
   }>({ x: 0, y: 0 });
 
   function handleClick(e: any) {
-    if (e.target !== e.target.getStage()) return;
-
     setLastClickPosition({ x: e.evt.layerX, y: e.evt.layerY });
+
     // button == 0 means left click
     if (e.evt.button === 0) {
+      handleLeftClick(e);
+      // button == 2 means right click
+    } else if (e.evt.button === 2) {
+      handleRightClick(e);
+    }
+  }
+
+  function handleLeftClick(e: any) {
+    setIsSmallMenuVisible(false);
+
+    if (e.target === e.target.getStage()) {
       setBlocks(
         blocks.map((b) => ({
           ...b,
           isSelected: false,
         }))
       );
-      setIsSmallMenuVisible(false);
-      // button == 2 means right click
-    } else if (e.evt.button === 2) {
+    }
+  }
+
+  function handleRightClick(e: any) {
+    e.evt.preventDefault();
+    if (e.target === e.target.getStage()) {
       setIsSmallMenuVisible(true);
     }
   }
@@ -83,10 +98,10 @@ const MainStage = ({
       </Stage>
       <SmallMenu
         show={isSmallMenuVisible}
+        setShow={setIsSmallMenuVisible}
         position_x={lastClickPosition.x}
         position_y={lastClickPosition.y}
-        blocks={blocks}
-        setBlocks={setBlocks}
+        setIsBlockModalCreateVisible={setIsBlockModalCreateVisible}
       />
     </span>
   );

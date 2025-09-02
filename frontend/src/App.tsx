@@ -13,6 +13,7 @@ import LinkModalDetails from "./components/LinkModalDetails";
 import { LinkI } from "./models/link.model";
 import assignLinksPositionByBlocksPosition from "./functions/assignLinksPositionByBlocksPosition";
 import LinkModalCreate from "./components/LinkModalCreate";
+import BlockModalCreate from "./components/BlockModalCreate";
 
 function App() {
   const [blocks, setBlocks] = useState<BlockI[]>([]);
@@ -31,6 +32,9 @@ function App() {
   }, []);
 
   const [isBlockModalDetailsVisible, setIsBlockModalDetailsVisible] =
+    useState<boolean>(false);
+
+  const [isBlockModalCreateVisible, setIsBlockModalCreateVisible] =
     useState<boolean>(false);
 
   const [isLinkModalDeatilsVisible, setIsLinkModalDeatilsVisible] =
@@ -103,7 +107,7 @@ function App() {
 
   return (
     <div>
-      <Menu blocks={blocks} setBlocks={setBlocks} />
+      <Menu setIsBlockModalCreateVisible={setIsBlockModalCreateVisible} />
       {/* TODO add component wrapping MainStage and modals associated with its elements*/}
       <MainStage
         blocks={blocks}
@@ -111,6 +115,7 @@ function App() {
         links={links}
         setLinks={setLinks}
         setSelectedLink={setSelectedLink}
+        setIsBlockModalCreateVisible={setIsBlockModalCreateVisible}
         setIsLinkModalCreateVisible={setIsLinkModalCreateVisible}
         handleBlockDoubleClick={(block) => handleBlockDoubleClick(block)}
         handleLinkDoubleClick={(link) => handleLinkDoubleClick(link)}
@@ -122,6 +127,12 @@ function App() {
         handleClose={() => handleCloseBlockDetails()}
         handleDelete={(blockId) => handleDeleteBlock(blockId)}
       />
+      <BlockModalCreate
+        show={isBlockModalCreateVisible}
+        handleClose={() => setIsBlockModalCreateVisible(false)}
+        blocks={blocks}
+        setBlocks={setBlocks}
+      ></BlockModalCreate>
       <LinkModalDetails
         link={selectedLink}
         show={isLinkModalDeatilsVisible}

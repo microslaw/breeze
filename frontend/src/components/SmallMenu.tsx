@@ -5,18 +5,18 @@ import { Button, Card, Modal } from "react-bootstrap";
 
 interface SmallMenuProps {
   show: boolean;
+  setShow: React.Dispatch<React.SetStateAction<boolean>>;
   position_x: number;
   position_y: number;
-  blocks: BlockI[];
-  setBlocks: React.Dispatch<React.SetStateAction<BlockI[]>>;
+  setIsBlockModalCreateVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const SmallMenu = ({
   show,
+  setShow,
   position_x,
   position_y,
-  blocks,
-  setBlocks,
+  setIsBlockModalCreateVisible,
 }: SmallMenuProps) => {
   const positionStyle: React.CSSProperties = {
     left: position_x,
@@ -31,7 +31,10 @@ const SmallMenu = ({
             size="sm"
             className={styles.menuButton}
             variant="primary"
-            onClick={() => console.log("Add new block")}
+            onClick={() => {
+              setShow(false);
+              setIsBlockModalCreateVisible(true);
+            }}
           >
             Add new block
           </Button>

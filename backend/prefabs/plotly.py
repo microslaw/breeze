@@ -29,9 +29,9 @@ def histogram(
 
 @NodeType(tags=["plotly"])
 def scatterplot(
-    df: pd.DataFrame,
-    x: str,
-    y: str,
+    df: pd.DataFrame = None,
+    x: str = None,
+    y: str = None,
     color: Optional[str] = None,
     trendline: Optional[str] = None,
 ) -> Figure:
@@ -56,10 +56,10 @@ def scatterplot(
 
 @NodeType(tags=["plotly"])
 def scatterplot_3d(
-    df: pd.DataFrame,
-    x: str,
-    y: str,
-    z: str,
+    df: pd.DataFrame = None,
+    x: str = None,
+    y: str = None,
+    z: str = None,
     color: Optional[str] = None,
 ) -> Figure:
     """

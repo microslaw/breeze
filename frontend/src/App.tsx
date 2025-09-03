@@ -119,11 +119,10 @@ function App() {
       setProcessingQueue(queue);
       setBlocks((prevBlocks) => {
         const updatedBlocks = [...prevBlocks];
-        queue.forEach((item) => {
-          const block = updatedBlocks.find((b) => b.id === item);
-          if (block) {
-            block.isQueued = true;
-          }
+        updatedBlocks.forEach((block) => {
+          queue.find((item) => block.id === item)
+            ? (block.isQueued = true)
+            : (block.isQueued = false);
         });
         return updatedBlocks;
       });

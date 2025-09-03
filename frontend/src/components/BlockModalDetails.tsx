@@ -139,7 +139,7 @@ const BlockModalDetails = ({
 
   function renderModalTitle() {
     if (block.name) {
-      return <Modal.Title>{block.name}</Modal.Title>;
+      return <Modal.Title>{block.name.replaceAll("_", " ")}</Modal.Title>;
     } else if (block.type) {
       return <Modal.Title>{block.type}</Modal.Title>;
     } else {

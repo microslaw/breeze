@@ -14,13 +14,15 @@ import { LinkI } from "./models/link.model";
 import assignLinksPositionByBlocksPosition from "./functions/assignLinksPositionByBlocksPosition";
 import LinkModalCreate from "./components/LinkModalCreate";
 import BlockModalCreate from "./components/BlockModalCreate";
+import QueueModalDetails from "./components/QueueModalDetails";
+import { getProcessingQueue } from "./services/processingApiService";
 
 function App() {
   const [blocks, setBlocks] = useState<BlockI[]>([]);
   const [links, setLinks] = useState<LinkI[]>([]);
+  const [processingQueue, setProcessingQueue] = useState<number[]>([]);
 
   useEffect(() => {
-    console.log("App mounted");
     const fetchAppState = async () => {
       const blocks = await getAllNodes();
       const links = await getAllLinks();
@@ -29,6 +31,9 @@ function App() {
       assignLinksPositionByBlocksPosition(blocks, links);
     };
     fetchAppState();
+
+    let interval: number | null = null;
+    interval = setInterval(updateProcessingQueue, 1000);
   }, []);
 
   const [isBlockModalDetailsVisible, setIsBlockModalDetailsVisible] =
@@ -43,6 +48,9 @@ function App() {
   const [isLinkModalCreateVisible, setIsLinkModalCreateVisible] =
     useState<boolean>(false);
 
+  const [isQueueModalDetailsVisible, setIsQueueModalDetailsVisible] =
+    useState<boolean>(false);
+
   const [selectedBlock, setSelectedBlock] = useState<BlockI>({
     id: -1,
     name: "",
@@ -51,6 +59,7 @@ function App() {
     y: 0,
     isDragging: false,
     isSelected: false,
+    isQueued: false,
     kwargs: [],
   });
 
@@ -105,9 +114,28 @@ function App() {
     handleCloseLinkDetails();
   };
 
+  function updateProcessingQueue() {
+    getProcessingQueue().then((queue) => {
+      setProcessingQueue(queue);
+      setBlocks((prevBlocks) => {
+        const updatedBlocks = [...prevBlocks];
+        queue.forEach((item) => {
+          const block = updatedBlocks.find((b) => b.id === item);
+          if (block) {
+            block.isQueued = true;
+          }
+        });
+        return updatedBlocks;
+      });
+    });
+  }
+
   return (
     <div>
-      <Menu setIsBlockModalCreateVisible={setIsBlockModalCreateVisible} />
+      <Menu
+        setIsBlockModalCreateVisible={setIsBlockModalCreateVisible}
+        setIsQueueModalDetailsVisible={setIsQueueModalDetailsVisible}
+      />
       {/* TODO add component wrapping MainStage and modals associated with its elements*/}
       <MainStage
         blocks={blocks}
@@ -146,6 +174,11 @@ function App() {
         setLinks={setLinks}
         handleClose={() => setIsLinkModalCreateVisible(false)}
       />
+      <QueueModalDetails
+        show={isQueueModalDetailsVisible}
+        handleClose={() => setIsQueueModalDetailsVisible(false)}
+        processingQueue={processingQueue}
+      ></QueueModalDetails>
     </div>
   );
 }

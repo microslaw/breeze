@@ -49,7 +49,7 @@ export async function runProcessingJob(nodeId: number): Promise<any> {
   }
 }
 
-export async function getProcessingQueue(): Promise<any[]> {
+export async function getProcessingQueue(): Promise<number[]> {
   try {
     const response = await axios({
       method: "get",

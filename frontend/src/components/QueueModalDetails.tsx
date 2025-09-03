@@ -1,31 +1,17 @@
-import { useState } from "react";
-import { Modal, Button, Table, Card } from "react-bootstrap";
+import { Modal, Button } from "react-bootstrap";
 import { useEffect } from "react";
-import { getProcessingQueue } from "../services/processingApiService";
+
 interface BlockModalDetailsProps {
   show: boolean;
   handleClose: () => void;
+  processingQueue: number[];
 }
-const QueueModalDetails = ({ show, handleClose }: BlockModalDetailsProps) => {
-  const [processingQueue, setProcessingQueue] = useState<any[]>([]);
-
-  function updateProcessingQueue() {
-    console.log("Updating processing queue...");
-    getProcessingQueue().then((queue) => {
-      setProcessingQueue(queue);
-    });
-  }
-
-  useEffect(() => {
-    let interval: number | null = null;
-    if (show) {
-      updateProcessingQueue();
-      interval = setInterval(updateProcessingQueue, 3000);
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [show]);
+const QueueModalDetails = ({
+  show,
+  handleClose,
+  processingQueue,
+}: BlockModalDetailsProps) => {
+  useEffect(() => {}, [show]);
 
   return (
     <Modal show={show}>

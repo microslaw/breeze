@@ -60,7 +60,7 @@ const Block = ({
         y={block.y}
         width={BLOCK_WIDTH}
         height={BLOCK_HEIGHT}
-        fill="lightblue"
+        fill={block.isQueued ? "lightgreen" : "lightblue"}
         opacity={0.8}
         shadowColor="black"
         shadowBlur={10}
@@ -84,10 +84,11 @@ const Block = ({
       <Text
         x={dynamicPosition.x}
         y={dynamicPosition.y}
-        text={block.name}
-        fontSize={14}
+        text={block.name.replaceAll("_", " ")}
+        fontSize={12}
         fontStyle="bold"
         fill="black"
+        width={BLOCK_WIDTH - BLOCK_WIDTH / 10}
         offsetX={-BLOCK_WIDTH / 10}
         offsetY={-BLOCK_HEIGHT / 10}
       />

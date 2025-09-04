@@ -193,3 +193,13 @@ def test_unprocessed_output_metadata():
 
     assert metadata.status_code == 200
     assert metadata.json == {"is_processed": False}
+
+
+def test_run_all():
+    processor = initialize_processor()
+
+    processor.run_all(start_processing=False)
+
+    assert processor.get_processing_schedule() == [
+        node.node_id for node in processor.repository.get_all_node_instances()
+    ]

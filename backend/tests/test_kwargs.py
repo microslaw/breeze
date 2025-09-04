@@ -236,7 +236,7 @@ def test_custom_format_from_input():
         assert response.status_code == 200
         assert response.data == b"OK"
 
-    assert app.repository.does_kwarg_exist(node_id=3, kwarg_name="instance")
+    assert app.repository.is_kwarg_created(node_id=3, kwarg_name="instance")
     instance = app.repository.read_kwarg(parent_node_id=3, kwarg_name="instance")
     assert (
         instance.describe() == backend.prefabs.testing.kwargs.MyClass("name").describe()

@@ -269,7 +269,7 @@ class Controller:
             :param node_id: specifies id of a node.
             :return: Metadata dictionary.
             """
-            if self.repository.does_output_exist(node_id):
+            if self.repository.is_output_created(node_id):
                 output = self.repository.read_output(node_id)
                 return {
                     "is_processed": True,

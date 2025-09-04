@@ -13,7 +13,6 @@ class Processor:
     Starts a processing_daemon when there are some tasks to do
     """
 
-
     def __init__(self, repository: Repository):
         self.processing_queue: deque[int] = deque()
         self.repository = repository
@@ -57,7 +56,6 @@ class Processor:
         if self.cached_exception is None:
             return list(self.processing_queue)
         else:
-            print(self.cached_exception)
             raise self.cached_exception from self.cached_exception.cause
 
     def update_processing_schedule(
@@ -78,16 +76,26 @@ class Processor:
         if start_processing:
             self.start_processing()
 
+    def run_all(self, start_processing: bool = False):
+        to_process = self.repository.get_all_final_node_ids()
+
+        for node_id in to_process:
+            self.update_processing_schedule(node_id, start_processing=False)
+
+        if start_processing:
+            self.start_processing()
+
     def start_processing(self):
         """
         Begins processing of nodes specified inprocessing_queue.
         Creates a separate thread that processes nodes one by one
         """
-        self.running = True
-        self.processing_daemon = threading.Thread(
-            target=self.processing_daemon_loop, daemon=True
-        )
-        self.processing_daemon.start()
+        if not self.running:
+            self.running = True
+            self.processing_daemon = threading.Thread(
+                target=self.processing_daemon_loop, daemon=True
+            )
+            self.processing_daemon.start()
 
     def processing_daemon_loop(self):
         """

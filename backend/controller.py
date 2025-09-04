@@ -5,12 +5,17 @@ from backend.repository import Repository
 from backend.repository import ObjectAlreadyInDBException
 from backend.repository import ObjectNotInDBException
 from backend.processor import Processor, ProcessingException
-from backend.formatting import format_for_display, format_from_input, frontend_display_type
+from backend.formatting import (
+    format_for_display,
+    format_from_input,
+    frontend_display_type,
+)
 from typing import Any
 
 
 class BadRequestException(Exception):
     """Exception raised for invalid API requests."""
+
     pass
 
 
@@ -19,6 +24,7 @@ class Controller:
     Passes API communications to repository or processor.
     Provides REST endpoints for node types, instances, links, processing, and kwargs.
     """
+
     def __init__(self, repository: Repository, processor: Processor):
         """
         Initialize the Controller with a repository and processor.
@@ -226,6 +232,13 @@ class Controller:
             self.processor.update_processing_schedule(nodeToProcess.node_id)
             return "OK", 200
 
+        @self.flask_server.route("/queueProcessing/all", methods=["POST"])
+        def queue_all():
+            """
+            Starts processing of everything
+            """
+            self.processor.run_all()
+
         @self.flask_server.route("/queueProcessing", methods=["GET"])
         def check_processing_queue():
             """
@@ -263,7 +276,7 @@ class Controller:
                     "created_date": format_for_display(
                         repository.get_output_created_date(node_id)
                     ),
-                    "frontend_type":frontend_display_type(output)
+                    "frontend_type": frontend_display_type(output),
                 }
             else:
                 return {"is_processed": False}

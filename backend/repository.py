@@ -300,6 +300,16 @@ class Repository:
             node_instances.append(node_instance)
         return node_instances
 
+    def get_all_final_node_ids(self):
+        """
+        Returns ids of nodes that do not have any other nodes dependant on them (no links originating in them)
+        """
+        wrapped_node_ids = self.fetchall(
+            "SELECT node_id FROM nodeInstances WHERE node_id NOT IN (SELECT origin_node_id FROM nodeLinks)"
+        )
+
+        return [node_id_tuple[0] for node_id_tuple in wrapped_node_ids]
+
     def check_node_instance_exists(self, node_id: int, raise_on: bool = False) -> None:
         """
         If raise_on == False, will raise if node does not exist

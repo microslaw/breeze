@@ -90,12 +90,12 @@ class Processor:
         Begins processing of nodes specified inprocessing_queue.
         Creates a separate thread that processes nodes one by one
         """
-        # make resistant to multiple calls
-        self.running = True
-        self.processing_daemon = threading.Thread(
-            target=self.processing_daemon_loop, daemon=True
-        )
-        self.processing_daemon.start()
+        if not self.running:
+            self.running = True
+            self.processing_daemon = threading.Thread(
+                target=self.processing_daemon_loop, daemon=True
+            )
+            self.processing_daemon.start()
 
     def processing_daemon_loop(self):
         """

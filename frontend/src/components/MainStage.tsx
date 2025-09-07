@@ -6,7 +6,7 @@ import { LinkI } from "../models/link.model";
 import styles from "./MainStage.module.css";
 import SmallMenu from "./SmallMenu";
 import ZoomButtons from "./ZoomButtons";
-import { handleWheel } from "./../functions/mainStageActions";
+import { handleClick, handleWheel } from "./../functions/mainStageActions";
 
 interface MainStageProps {
   blocks: BlockI[];
@@ -42,42 +42,6 @@ const MainStage = ({
 
   const stageRef = useRef(null);
 
-  function handleClick(e: any) {
-    setLastClickPosition({ x: e.evt.layerX, y: e.evt.layerY });
-
-    // button == 0 means left click
-    if (e.evt.button === 0) {
-      handleLeftClick(e);
-      // button == 2 means right click
-    } else if (e.evt.button === 2) {
-      handleRightClick(e);
-    }
-  }
-
-  function handleLeftClick(e: any) {
-    setIsSmallMenuVisible(false);
-
-    if (e.target === e.target.getStage()) {
-      setBlocks(
-        blocks.map((b) => ({
-          ...b,
-          isSelected: false,
-        }))
-      );
-    }
-  }
-
-  function handleRightClick(e: any) {
-    e.evt.preventDefault();
-    if (e.target === e.target.getStage()) {
-      setIsSmallMenuVisible(true);
-    }
-  }
-
-  function handleDefaultContextMenu(e: any) {
-    e.evt.preventDefault();
-  }
-
   return (
     <span>
       <Stage
@@ -85,10 +49,16 @@ const MainStage = ({
         height={height}
         draggable={true}
         onClick={(e) => {
-          handleClick(e);
+          handleClick(
+            e,
+            setLastClickPosition,
+            setIsSmallMenuVisible,
+            blocks,
+            setBlocks
+          );
         }}
         onContextMenu={(e) => {
-          handleDefaultContextMenu(e);
+          e.evt.preventDefault();
         }}
         className={styles.mainStage}
         ref={stageRef}

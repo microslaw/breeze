@@ -7,12 +7,13 @@ import QueueModalDetails from "./QueueModalDetails";
 
 interface MenuProps {
   setIsBlockModalCreateVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsQueueModalDetailsVisible: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const Menu = ({ setIsBlockModalCreateVisible }: MenuProps) => {
-  const [isQueueModalDetailsVisible, setIsQueueModalDetailsVisible] =
-    useState<boolean>(false);
-
+const Menu = ({
+  setIsBlockModalCreateVisible,
+  setIsQueueModalDetailsVisible,
+}: MenuProps) => {
   return (
     <div className={styles.menu}>
       <span>
@@ -24,10 +25,6 @@ const Menu = ({ setIsBlockModalCreateVisible }: MenuProps) => {
         </Button>
       </span>
       {/* TODO move QueueModalDetails to App */}
-      <QueueModalDetails
-        show={isQueueModalDetailsVisible}
-        handleClose={() => setIsQueueModalDetailsVisible(false)}
-      ></QueueModalDetails>
     </div>
   );
 };

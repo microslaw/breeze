@@ -1,4 +1,4 @@
-import { Rect, Text, Group, Circle } from "react-konva";
+import { Rect, Text, Group, Circle, Arc } from "react-konva";
 import { BlockI } from "../models/block.model";
 import { useState } from "react";
 import {
@@ -14,6 +14,8 @@ import { LinkI } from "../models/link.model";
 import Link from "./Link";
 import LinkCircleI from "../models/linkcircle.model";
 import { BLOCK_HEIGHT, BLOCK_WIDTH } from "../constants/ui";
+import Konva from "konva";
+import Loader from "./Loader";
 
 interface BlockProps {
   block: BlockI;
@@ -60,7 +62,7 @@ const Block = ({
         y={block.y}
         width={BLOCK_WIDTH}
         height={BLOCK_HEIGHT}
-        fill="lightblue"
+        fill={"lightblue"}
         opacity={0.8}
         shadowColor="black"
         shadowBlur={10}
@@ -81,13 +83,19 @@ const Block = ({
         onClick={() => handleBlockSingleClick(block, setBlocks)}
         onDblClick={() => handleDoubleClick(block)}
       />
+      <Loader
+        show={block.isQueued}
+        x={dynamicPosition.x + (BLOCK_WIDTH * 9) / 10}
+        y={dynamicPosition.y + (BLOCK_HEIGHT * 1.5) / 10}
+      />
       <Text
         x={dynamicPosition.x}
         y={dynamicPosition.y}
-        text={block.name}
-        fontSize={14}
+        text={block.name.replaceAll("_", " ")}
+        fontSize={12}
         fontStyle="bold"
         fill="black"
+        width={BLOCK_WIDTH - (BLOCK_WIDTH * 3) / 10}
         offsetX={-BLOCK_WIDTH / 10}
         offsetY={-BLOCK_HEIGHT / 10}
       />

@@ -10,6 +10,7 @@ export function mapApiResponseToBlocks(apiResponse: any[]): BlockI[] {
     y: node.position_y,
     isDragging: false,
     isSelected: false,
+    isQueued: false,
     kwargs: [],
   }));
 }

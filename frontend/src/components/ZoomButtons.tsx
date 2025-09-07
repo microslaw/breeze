@@ -7,7 +7,7 @@ import {
   faMagnifyingGlassPlus,
   faQuestion,
 } from "@fortawesome/free-solid-svg-icons";
-import zoomStage from "../functions/mainStageActions";
+import { zoomStage } from "../functions/mainStageActions";
 
 interface ZoomButtonsProps {
   stage: any;

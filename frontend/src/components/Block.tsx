@@ -1,6 +1,6 @@
-import { Rect, Text, Group, Circle } from "react-konva";
+import { Rect, Text, Group, Circle, Arc } from "react-konva";
 import { BlockI } from "../models/block.model";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   handleBlockSingleClick,
   handleDragBlockEnd,
@@ -14,6 +14,7 @@ import { LinkI } from "../models/link.model";
 import Link from "./Link";
 import LinkCircleI from "../models/linkcircle.model";
 import { BLOCK_HEIGHT, BLOCK_WIDTH } from "../constants/ui";
+import Konva from "konva";
 
 interface BlockProps {
   block: BlockI;
@@ -51,6 +52,24 @@ const Block = ({
     setdynamicPosition({ x: e.target.x(), y: e.target.y() });
   };
 
+  const loaderRef = useRef<Konva.Arc>(null);
+
+  useEffect(() => {
+    const angularSpeed = 360;
+    const anim = new Konva.Animation((frame) => {
+      if (frame) {
+        const angleDiff = (frame.timeDiff * angularSpeed) / 1000;
+        loaderRef.current?.rotate(angleDiff);
+      }
+    }, loaderRef.current?.getLayer() || null);
+
+    anim.start();
+
+    return () => {
+      anim.stop();
+    };
+  }, []);
+
   return (
     <Group>
       <Rect
@@ -60,7 +79,7 @@ const Block = ({
         y={block.y}
         width={BLOCK_WIDTH}
         height={BLOCK_HEIGHT}
-        fill={block.isQueued ? "lightgreen" : "lightblue"}
+        fill={"lightblue"}
         opacity={0.8}
         shadowColor="black"
         shadowBlur={10}
@@ -81,6 +100,17 @@ const Block = ({
         onClick={() => handleBlockSingleClick(block, setBlocks)}
         onDblClick={() => handleDoubleClick(block)}
       />
+      {block.isQueued && (
+        <Arc
+          ref={loaderRef}
+          x={dynamicPosition.x + (BLOCK_WIDTH * 9) / 10}
+          y={dynamicPosition.y + (BLOCK_HEIGHT * 1.5) / 10}
+          fill="darkSlateGray"
+          angle={100}
+          innerRadius={BLOCK_HEIGHT / 20}
+          outerRadius={BLOCK_HEIGHT / 10}
+        />
+      )}
       <Text
         x={dynamicPosition.x}
         y={dynamicPosition.y}
@@ -88,7 +118,7 @@ const Block = ({
         fontSize={12}
         fontStyle="bold"
         fill="black"
-        width={BLOCK_WIDTH - BLOCK_WIDTH / 10}
+        width={BLOCK_WIDTH - (BLOCK_WIDTH * 3) / 10}
         offsetX={-BLOCK_WIDTH / 10}
         offsetY={-BLOCK_HEIGHT / 10}
       />

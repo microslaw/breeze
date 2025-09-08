@@ -1,5 +1,6 @@
 from backend.datatypes import NodeType
 import pandas as pd
+from backend.formatting import add_tag_color_mapping
 
 
 @NodeType(tags=["testing"])
@@ -13,3 +14,6 @@ def remove_outliers(df: pd.DataFrame, colname: str, sd_limit: float) -> pd.DataF
     df["z_score"] = (df[colname] - df[colname].mean()) / df[colname].std()
     df = df[df["z_score"].abs() < sd_limit]
     return df
+
+
+add_tag_color_mapping("tag", "#888888")

@@ -16,6 +16,7 @@ class FrontendDisplayType(Enum):
 display_format_map: dict[type, Callable[[Any], Any]] = {}
 frontend_type_format_map: dict[type, FrontendDisplayType] = {}
 input_format_map: dict[type, Callable[[Any], Any]] = {}
+tag_color_map: dict[str, str] = {}
 
 # TODO implement formatting exception
 
@@ -50,6 +51,16 @@ def add_input_format(input_type: T_input, format_function: Callable[[T_input], A
     input_format_map[input_type] = format_function
 
 
+def add_tag_color_mapping(tag: str, colour: str):
+    """
+    Makes tag appear with a specific color
+    """
+
+    if len(colour) != 7 or colour[0] != "#":
+        raise ValueError(f"Colour should have format: #112233 but has {colour}" )
+    tag_color_map[tag] = colour
+
+
 def format_for_display(obj: object) -> object:
     """
     Formats any object with a specified function before sending it to frontend.
@@ -78,6 +89,13 @@ def frontend_display_type(obj: object) -> str:
     :return: FrontendDisplayType name
     """
     return frontend_type_format_map[type(obj)].name
+
+
+def get_tag_color_map():
+    """
+    Returns the map of frontend coloring
+    """
+    return tag_color_map
 
 
 def format_from_input(obj: object, type: Optional[type] = None) -> object:
@@ -111,3 +129,4 @@ add_display_format(type, lambda x: x.__name__)
 add_display_format(type(None), lambda _: None)
 add_display_format(datetime, lambda x: x.strftime("%Y-%m-%d %H:%M:%S"))
 add_display_format(int, lambda x: str(x), FrontendDisplayType.integer)
+add_tag_color_mapping("testing", "#ff00ff")

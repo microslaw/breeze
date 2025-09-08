@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Table, Card, Stack } from "react-bootstrap";
+import { Modal, Button, Table, Card } from "react-bootstrap";
 import { BlockI } from "../models/block.model";
 import {
   getProcessingResultByNodeId,

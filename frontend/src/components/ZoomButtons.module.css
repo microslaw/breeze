@@ -1,0 +1,39 @@
+.zoomButtons {
+  position: fixed;
+  margin: 0;
+  z-index: 1050;
+  background-color: transparent;
+  border: none;
+  bottom: 5vh;
+  left: 5vh;
+}
+
+.buttonsCard {
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 0.5rem !important;
+}
+
+.topButton {
+  border-radius: 0.5rem 0.5rem 0 0 !important;
+  margin-bottom: 0;
+  width: 40px;
+  height: 40px;
+  border: solid 1px rgb(85, 85, 85) !important;
+}
+
+.bottomButton {
+  border-radius: 0 0 0.5rem 0.5rem !important;
+  margin-top: 0;
+  width: 40px;
+  height: 40px;
+  border: solid 1px rgb(85, 85, 85) !important;
+  border-top: 0 !important;
+}
+
+.zoomButtons .btn {
+  display: block;
+  width: 100%;
+  border-radius: 0 !important;
+  margin: 0;
+}

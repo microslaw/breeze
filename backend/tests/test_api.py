@@ -1,9 +1,11 @@
+import pytest
 from importlib import reload
 import backend.prefabs.testing.default
 from backend import NodeType
 from backend import Repository
 from backend import Processor
 from backend import Controller
+from backend import formatting
 
 
 def initialize_server() -> Controller:
@@ -486,3 +488,19 @@ def test_get_node_links_filtered_by_origin_and_destination():
                 "origin_node_output": None,
             },
         ]
+
+
+def test_custom_colour():
+    controller = initialize_server()
+    with controller.test_client() as client:
+        colour_map = client.get("/nodeTypes/colours")
+    assert colour_map.status_code == 200
+    assert colour_map.json == {
+        "tag": "#888888",
+        "testing": "#ff00ff",
+    }
+
+
+def test_add_invalid_colour():
+    with pytest.raises(ValueError):
+        formatting.add_tag_color_mapping("tag", "123456")

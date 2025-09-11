@@ -108,6 +108,7 @@ class Processor:
             node_id = self.processing_queue.popleft()
             self.process(node_id)
         self.processing_daemon = None
+        self.running = False
 
     def stop_processing_daemon(self):
         """

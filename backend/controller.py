@@ -9,7 +9,7 @@ from backend.formatting import (
     format_for_display,
     format_from_input,
     frontend_display_type,
-    get_tag_color_map
+    get_tag_color_map,
 )
 from typing import Any
 
@@ -169,6 +169,16 @@ class Controller:
             """
             return self.repository.get_node_link(node_link_id).toNameDict()
 
+        @self.flask_server.route(
+            "/nodeInstances/<node_id>/clear_output", methods=["DELETE"]
+        )
+        def clear_node_output(node_id: int):
+            """
+            Deletes an output, effectively un-processing specified node
+            """
+            self.repository.delete_output(node_id)
+            return "OK", 200
+
         @self.flask_server.route("/nodeLinks", methods=["GET"])
         def get_all_node_links():
             """
@@ -269,7 +279,7 @@ class Controller:
             :param node_id: specifies id of a node.
             :return: Metadata dictionary.
             """
-            if self.repository.does_output_exist(node_id):
+            if self.repository.is_output_created(node_id):
                 output = self.repository.read_output(node_id)
                 return {
                     "is_processed": True,

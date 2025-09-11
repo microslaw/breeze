@@ -58,10 +58,30 @@ class Repository:
         ) as f:
             pickle.dump(object, f)
 
-    def does_output_exist(
+    def is_output_created(
         self, node_id: int, output_name: Optional[str] = None
     ) -> bool:
         return os.path.isfile(self.get_output_path(node_id, output_name))
+
+    def delete_output(
+        self,
+        producer_node_id: int,
+        producer_node_output: Optional[str] = None,
+    ) -> None:
+        """
+        Removes file with specific output of a specific node
+        """
+        if self.is_output_created(producer_node_id, producer_node_output):
+            os.remove(self.get_output_path(producer_node_id, producer_node_output))
+        else:
+            raise ObjectNotInDBException(
+                f"Output {producer_node_output} of node {producer_node_id} does not exist"
+            )
+
+    def delete_all_outputs(self):
+        for node_id in self.get_all_node_ids():
+            if self.is_output_created(node_id):
+                self.delete_output(node_id)
 
     def read_output(
         self,
@@ -73,7 +93,7 @@ class Repository:
         """
         self.check_node_instance_exists(producer_node_id)
 
-        if not self.does_output_exist(producer_node_id, producer_node_output):
+        if not self.is_output_created(producer_node_id, producer_node_output):
             raise ObjectNotInDBException(
                 f"Processing result of node with node_id={producer_node_id} not found"
             )
@@ -102,7 +122,7 @@ class Repository:
             f"{self.db_folder_path}/objects/{node_id}-{kwarg_name}-{KWARG_FILE_ENDING}"
         )
 
-    def does_kwarg_exist(self, node_id: int, kwarg_name: str) -> bool:
+    def is_kwarg_created(self, node_id: int, kwarg_name: str) -> bool:
         return os.path.isfile(self.get_kwarg_path(node_id, kwarg_name))
 
     def write_kwarg(
@@ -115,7 +135,8 @@ class Repository:
         Writes a specific overwrite kwarg to a file
         """
         node_type_name = self.get_node_instance(parent_node_id).node_type_name
-        self.check_node_kwarg_exists(node_type_name, kwarg_name)
+        self.does_node_have_kwarg(node_type_name, kwarg_name)
+        self.delete_all_following_node_outputs(parent_node_id)
 
         with open(self.get_kwarg_path(parent_node_id, kwarg_name), "wb") as f:
             pickle.dump(object, f)
@@ -129,10 +150,10 @@ class Repository:
         Reads a specific overwrite kwarg from a file
         """
         node_type_name = self.get_node_instance_type_name(parent_node_id)
-        self.check_node_kwarg_exists(node_type_name, kwarg_name)
+        self.does_node_have_kwarg(node_type_name, kwarg_name)
 
         full_path = f"{self.db_folder_path}/objects/{parent_node_id}-{kwarg_name}-{KWARG_FILE_ENDING}"
-        if not self.does_kwarg_exist(parent_node_id, kwarg_name):
+        if not self.is_kwarg_created(parent_node_id, kwarg_name):
             raise ObjectNotInDBException(
                 f"Kwarg {kwarg_name} of node with node_id={parent_node_id} not found"
             )
@@ -299,6 +320,13 @@ class Repository:
             )
             node_instances.append(node_instance)
         return node_instances
+
+    def get_all_node_ids(self) -> list[int]:
+        """
+        Returns a list of all node ids
+        """
+        rows = self.fetchall_named("SELECT node_id FROM nodeInstances")
+        return [row["node_id"] for row in rows]
 
     def get_all_final_node_ids(self):
         """
@@ -605,7 +633,7 @@ class Repository:
                     f"Node type {node_type_name} already exists"
                 )
 
-    def check_node_kwarg_exists(self, node_type_name: str, kwarg_name: str):
+    def does_node_have_kwarg(self, node_type_name: str, kwarg_name: str):
         node_type = self.get_node_type_from_name(node_type_name)
         if kwarg_name not in node_type.get_arg_names():
             raise ObjectNotInDBException(
@@ -627,7 +655,7 @@ class Repository:
         return NodeType.all_udn[node_type_name]
 
     def get_arg_type(self, node_type_name: str, arg_name: str):
-        self.check_node_kwarg_exists(node_type_name, arg_name)
+        self.does_node_have_kwarg(node_type_name, arg_name)
         return (
             self.get_node_type_from_name(node_type_name).get_arg_types().get(arg_name)
         )
@@ -643,3 +671,29 @@ class Repository:
         )
 
         return [node_row["node_id"] for node_row in node_rows]
+
+    def get_following_node_ids(self, node_id: int) -> list[int]:
+        self.check_node_instance_exists(node_id)
+
+        node_rows = self.fetchall_named(
+            f"""
+            SELECT destination_node_id
+            FROM nodeLinks
+            WHERE origin_node_id = {node_id}
+            """,
+        )
+
+        return [node_row["destination_node_id"] for node_row in node_rows]
+
+    def delete_all_following_node_outputs(self, node_id: int) -> list[int]:
+        to_remove: list[int] = []
+        to_check: list[int] = [node_id]
+
+        while len(to_check) > 0:
+            checked = to_check.pop()
+            to_remove.append(checked)
+            to_check.extend(self.get_following_node_ids(checked))
+
+        for node_id in to_remove:
+            if self.is_output_created(node_id):
+                self.delete_output(node_id)

@@ -327,6 +327,7 @@ def test_get_node_link():
 
     with controller.test_client() as client:
         response = client.get("/nodeLinks/0")
+        assert response.status_code == 200
         assert response.json == {
             "origin_node_id": 0,
             "destination_node_input": "a",
@@ -334,8 +335,6 @@ def test_get_node_link():
             "destination_node_id": 2,
             "origin_node_output": None,
         }
-
-        assert response.status_code == 200
 
 
 def test_get_missing_node_link():
@@ -504,3 +503,9 @@ def test_custom_colour():
 def test_add_invalid_colour():
     with pytest.raises(ValueError):
         formatting.add_tag_color_mapping("tag", "123456")
+
+
+def test_get_all_node_ids():
+    controller = initialize_server()
+    all_node_ids = controller.repository.get_all_node_ids()
+    assert all_node_ids == [0, 1, 2, 3]

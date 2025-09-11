@@ -38,7 +38,7 @@ class Processor:
             required_unprocessed_node_ids = [
                 node_id
                 for node_id in required_node_ids
-                if not self.repository.does_output_exist(node_id)
+                if not self.repository.is_output_created(node_id)
             ]
             to_add.extend(required_unprocessed_node_ids)
             queue_appendix.append(node_id)
@@ -177,7 +177,7 @@ class Processor:
                 link.origin_node_id, link.origin_node_output
             )
             for link in prerequisite_links
-            if self.repository.does_output_exist(
+            if self.repository.is_output_created(
                 link.origin_node_id, link.origin_node_output
             )
         }

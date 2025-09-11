@@ -200,6 +200,73 @@ def test_run_all():
 
     processor.run_all(start_processing=False)
 
-    assert processor.get_processing_schedule() == [
-        node.node_id for node in processor.repository.get_all_node_instances()
+    assert (
+        processor.get_processing_schedule() == processor.repository.get_all_node_ids()
+    )
+
+
+def test_delete_all_outputs():
+    processor = initialize_processor()
+
+    for node_id in processor.repository.get_all_node_ids():
+        processor.repository.write_output(None, node_id)
+
+    processor.repository.delete_all_outputs()
+
+    is_output_removed = [
+        not processor.repository.is_output_created(node_id)
+        for node_id in processor.repository.get_all_node_ids()
+    ]
+    assert all(is_output_removed)
+
+
+def test_delete_following_outputs():
+    processor = initialize_processor()
+
+    for node_id in processor.repository.get_all_node_ids():
+        processor.repository.write_output(None, node_id)
+
+    processor.repository.delete_all_following_node_outputs(1)
+
+    is_output_created = [
+        processor.repository.is_output_created(node_id)
+        for node_id in processor.repository.get_all_node_ids()
+    ]
+    assert is_output_created == [
+        True,
+        False,
+        False,
+        True,
+        False,
+        True,
+        True,
+        True,
+        True,
+        True,
+    ]
+
+
+def test_delete_following_outputs_no_following():
+    processor = initialize_processor()
+
+    for node_id in processor.repository.get_all_node_ids():
+        processor.repository.write_output(None, node_id)
+
+    processor.repository.delete_all_following_node_outputs(4)
+
+    is_output_created = [
+        processor.repository.is_output_created(node_id)
+        for node_id in processor.repository.get_all_node_ids()
+    ]
+    assert is_output_created == [
+        True,
+        True,
+        True,
+        True,
+        False,
+        True,
+        True,
+        True,
+        True,
+        True,
     ]

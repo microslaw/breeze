@@ -10,6 +10,7 @@ import {
   mapApiResponseToLinks,
   mapLinkToApiPostRequest,
 } from "../functions/apiMappers/linkApiMapper";
+import { ColourI } from "../models/colour.model";
 
 // TODO assign response types to the functions
 export async function getAllNodes(): Promise<BlockI[]> {
@@ -166,6 +167,28 @@ export async function getNodeTypes(): Promise<string[]> {
     return response.data;
   } catch (error) {
     console.error("Error fetching node types:", error);
+    throw error;
+  }
+}
+
+export async function getNodeTypesColourMap(): Promise<ColourI[]> {
+  try {
+    const response = await axios({
+      method: "get",
+      url: "http://127.0.0.1:5000/nodeTypes/colours",
+    });
+
+    const data = response.data;
+
+    // map object from api to colours array
+    // TODO move to separate function
+    const colourMap: ColourI[] = Object.entries(data).map(([tag, colour]) => ({
+      tag: tag,
+      colour: colour as string,
+    }));
+    return colourMap;
+  } catch (error) {
+    console.error("Error fetching node types colour map:", error);
     throw error;
   }
 }

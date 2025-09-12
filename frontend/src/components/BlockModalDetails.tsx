@@ -157,7 +157,8 @@ const BlockModalDetails = ({
     }
     if (
       processingResultMetadata.frontend_type === "html" ||
-      processingResultMetadata.frontend_type === "plaintext"
+      (processingResultMetadata.frontend_type === "plaintext" &&
+        processingResultMetadata.datatype === "Figure")
     ) {
       return (
         <Card.Body>

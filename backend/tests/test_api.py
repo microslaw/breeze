@@ -26,7 +26,24 @@ def test_get_all_node_types():
     with controller.test_client() as client:
         response = client.get("/nodeTypes")
 
-        assert response.json == [{'arg_names': ['a', 'b'], 'arg_types': {'b': 'int'}, 'default_args': {}, 'name': 'add_int', 'return_type': 'int', 'tags': ['testing']}, {'arg_names': ['df', 'colname', 'sd_limit'], 'arg_types': {'colname': 'str', 'df': 'DataFrame', 'sd_limit': 'float'}, 'default_args': {}, 'name': 'remove_outliers', 'return_type': 'DataFrame', 'tags': ['testing', 'pandas']}]
+        assert response.json == [
+            {
+                "arg_names": ["a", "b"],
+                "arg_types": {"b": "int"},
+                "default_args": {},
+                "name": "add_int",
+                "return_type": "int",
+                "tags": ["testing"],
+            },
+            {
+                "arg_names": ["df", "colname", "sd_limit"],
+                "arg_types": {"colname": "str", "df": "DataFrame", "sd_limit": "float"},
+                "default_args": {},
+                "name": "remove_outliers",
+                "return_type": "DataFrame",
+                "tags": ["testing", "pandas"],
+            },
+        ]
         assert response.status_code == 200
 
 
@@ -494,7 +511,13 @@ def test_custom_colour():
     with controller.test_client() as client:
         colour_map = client.get("/nodeTypes/colours")
     assert colour_map.status_code == 200
-    assert colour_map.json == {'import': '#f189d2', 'numpy': '#f7935d', 'pandas': '#9289f1', 'plotly': '#850C0C', 'tag': '#888888'}
+    assert colour_map.json == {
+        "import": "#f189d2",
+        "numpy": "#f7935d",
+        "pandas": "#9289f1",
+        "plotly": "#850C0C",
+        "tag": "#888888",
+    }
 
 
 def test_add_invalid_colour():

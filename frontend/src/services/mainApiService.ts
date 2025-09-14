@@ -12,6 +12,7 @@ import {
 } from "../functions/apiMappers/linkApiMapper";
 import { ColourI } from "../models/colour.model";
 import { NodeTypeI } from "../models/nodetype.model";
+import { getNodeTypeColour } from "../functions/getBlockColourForNodeTypes";
 
 // TODO assign response types to the functions
 export async function getAllNodes(): Promise<BlockI[]> {
@@ -26,7 +27,23 @@ export async function getAllNodes(): Promise<BlockI[]> {
     }
 
     const blocks: BlockI[] = mapApiResponseToBlocks(response.data);
-    return blocks;
+
+    return getNodeTypesColourMap()
+      .then(async (colourMap) => {
+        const nodeTypes = await getNodeTypes();
+        blocks.forEach((block) => {
+          const nodeTypeFull = nodeTypes.find((t) => t.name === block.type);
+
+          if (nodeTypeFull) {
+            block.colour = getNodeTypeColour(nodeTypeFull, colourMap);
+          }
+        });
+        return blocks;
+      })
+      .catch((error) => {
+        console.error("Error fetching nodes:", error);
+        throw error;
+      });
   } catch (error) {
     console.error("Error fetching nodes:", error);
     throw error;

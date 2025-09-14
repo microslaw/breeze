@@ -11,6 +11,7 @@ import {
   mapLinkToApiPostRequest,
 } from "../functions/apiMappers/linkApiMapper";
 import { ColourI } from "../models/colour.model";
+import { NodeTypeI } from "../models/nodetype.model";
 
 // TODO assign response types to the functions
 export async function getAllNodes(): Promise<BlockI[]> {
@@ -153,7 +154,7 @@ export async function createLink(link: LinkI) {
 }
 
 // TODO implement non primitive handling of the response
-export async function getNodeTypes(): Promise<string[]> {
+export async function getNodeTypes(): Promise<NodeTypeI[]> {
   try {
     const response = await axios({
       method: "get",

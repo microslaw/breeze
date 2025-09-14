@@ -33,7 +33,7 @@ const BlockModalCreate = ({
   useEffect(() => {
     const fetchBlockTypes = async () => {
       const nodeTypes = await getNodeTypes();
-      setBlockTypes(nodeTypes);
+      setBlockTypes(nodeTypes.map((t) => t.name));
     };
     fetchBlockTypes();
   }, []);

@@ -16,6 +16,7 @@ import LinkModalCreate from "./components/LinkModalCreate";
 import BlockModalCreate from "./components/BlockModalCreate";
 import QueueModalDetails from "./components/QueueModalDetails";
 import { getProcessingQueue } from "./services/processingApiService";
+import { BLOCK_DEFAULT_COLOUR } from "./constants/ui";
 
 function App() {
   const [blocks, setBlocks] = useState<BlockI[]>([]);
@@ -61,6 +62,7 @@ function App() {
     isSelected: false,
     isQueued: false,
     kwargs: [],
+    colour: BLOCK_DEFAULT_COLOUR,
   });
 
   const [selectedLink, setSelectedLink] = useState<LinkI>({

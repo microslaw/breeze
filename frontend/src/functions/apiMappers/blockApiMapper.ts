@@ -1,3 +1,4 @@
+import { BLOCK_DEFAULT_COLOUR } from "../../constants/ui";
 import { BlockI, PartialBlockI } from "../../models/block.model";
 
 export function mapApiResponseToBlocks(apiResponse: any[]): BlockI[] {
@@ -12,6 +13,7 @@ export function mapApiResponseToBlocks(apiResponse: any[]): BlockI[] {
     isSelected: false,
     isQueued: false,
     kwargs: [],
+    colour: BLOCK_DEFAULT_COLOUR,
   }));
 }
 

@@ -11,6 +11,7 @@ export interface BlockI {
   isSelected: boolean;
   isQueued: boolean;
   kwargs: KwargI[];
+  colour: string;
 }
 
 // Used only for updating the block using patch request

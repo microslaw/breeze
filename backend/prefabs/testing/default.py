@@ -17,3 +17,4 @@ def remove_outliers(df: pd.DataFrame, colname: str, sd_limit: float) -> pd.DataF
 
 
 add_tag_color_mapping("tag", "#888888")
+add_tag_color_mapping("plotly", "#850C0C")

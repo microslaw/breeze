@@ -1,3 +1,4 @@
+import { BLOCK_DEFAULT_COLOUR } from "../constants/ui";
 import { BlockI } from "../models/block.model";
 
 // DEPRECATED: This function was only used for testing without backend integration.
@@ -13,5 +14,6 @@ export function generateShapes(): BlockI[] {
     isSelected: false,
     isQueued: false,
     kwargs: [],
+    colour: BLOCK_DEFAULT_COLOUR,
   }));
 }

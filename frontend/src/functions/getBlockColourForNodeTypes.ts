@@ -6,8 +6,8 @@ export function getNodeTypeColour(
   nodeType: NodeTypeI,
   colorMap: ColourI[]
 ): string {
-  const colour = colorMap.find((colour) => {
-    nodeType.tags.find((tag) => tag === colour.tag);
-  })?.colour;
+  const colour = colorMap.find((colour) =>
+    nodeType.tags.some((tag) => tag === colour.tag)
+  )?.colour;
   return colour ?? BLOCK_DEFAULT_COLOUR;
 }

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { BlockI } from "../models/block.model";
 import { createNode, getNodeTypes } from "../services/mainApiService";
+import { BLOCK_DEFAULT_COLOUR } from "../constants/ui";
 
 interface BlockModalCreateProps {
   show: boolean;
@@ -26,6 +27,7 @@ const BlockModalCreate = ({
     isSelected: false,
     isQueued: false,
     kwargs: [],
+    colour: BLOCK_DEFAULT_COLOUR,
   });
 
   const [blockTypes, setBlockTypes] = useState<string[]>([]);
@@ -64,6 +66,7 @@ const BlockModalCreate = ({
         isSelected: false,
         isQueued: false,
         kwargs: [],
+        colour: BLOCK_DEFAULT_COLOUR,
       });
     });
     handleClose();

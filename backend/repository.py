@@ -642,6 +642,9 @@ class Repository:
 
     def get_all_node_type_names(self) -> list[str]:
         return list(NodeType.all_udn.keys())
+    
+    def get_all_node_types(self) -> list[NodeType]:
+        return list(NodeType.all_udn.values())
 
     def get_node_instance_type_name(self, node_id: int) -> str:
         self.check_node_instance_exists(node_id)

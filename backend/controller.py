@@ -83,11 +83,11 @@ class Controller:
         @self.flask_server.route("/nodeTypes", methods=["GET"])
         def get_all_node_types():
             """
-            Returns all node type names.
+            Returns all node types.
 
-            :return: list of node type names.
+            :return: list of node types.
             """
-            return self.repository.get_all_node_type_names()
+            return [obj.toJSON() for obj in self.repository.get_all_node_types()]
 
         @self.flask_server.route("/nodeTypes/<node_type_name>", methods=["GET"])
         def get_node_type(node_type_name: str):

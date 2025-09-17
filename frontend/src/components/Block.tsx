@@ -55,6 +55,7 @@ const Block = ({
   return (
     <Group>
       <Rect
+        perfectDrawEnabled={false}
         key={block.id}
         id={block.id.toString()}
         x={block.x}
@@ -106,6 +107,7 @@ const Block = ({
       />
       {block.isSelected && (
         <Circle
+          perfectDrawEnabled={false}
           draggable
           x={dynamicPosition.x + BLOCK_WIDTH}
           y={dynamicPosition.y + BLOCK_HEIGHT / 2}

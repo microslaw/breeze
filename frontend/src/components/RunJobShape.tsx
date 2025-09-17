@@ -28,6 +28,7 @@ const RunJobShape = ({ show, x, y, id }: RunJobShapeProps) => {
     <Group>
       {show && (
         <RegularPolygon
+          perfectDrawEnabled={false}
           x={x}
           y={y}
           fill={fill}

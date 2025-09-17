@@ -32,6 +32,7 @@ const Loader = ({ show, x, y }: LoaderProps) => {
     <Group>
       {show && (
         <Arc
+          perfectDrawEnabled={false}
           ref={loaderRef}
           x={x}
           y={y}

@@ -1,5 +1,5 @@
-// CONCEPT COMPONENT ONLY !!!
 import { Group, RegularPolygon } from "react-konva";
+import { useState } from "react";
 import { BLOCK_HEIGHT } from "../constants/ui";
 import { runProcessingJob } from "../services/processingApiService";
 import {
@@ -15,9 +15,14 @@ interface RunJobShapeProps {
 }
 
 const RunJobShape = ({ show, x, y, id }: RunJobShapeProps) => {
+  const [pressed, setPressed] = useState(false);
+
   const handleRunJob = async () => {
     await runProcessingJob(id);
   };
+
+  const scale = pressed ? 0.9 : 1;
+  const fill = pressed ? "#197148ff" : "green";
 
   return (
     <Group>
@@ -25,7 +30,7 @@ const RunJobShape = ({ show, x, y, id }: RunJobShapeProps) => {
         <RegularPolygon
           x={x}
           y={y}
-          fill="green"
+          fill={fill}
           stroke={"darkSlateGray"}
           strokeWidth={1}
           sides={3}
@@ -38,9 +43,16 @@ const RunJobShape = ({ show, x, y, id }: RunJobShapeProps) => {
           draggable
           shadowOffsetX={0.7}
           shadowOffsetY={0.7}
+          scaleX={scale}
+          scaleY={scale}
           onClick={handleRunJob}
           onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          onMouseLeave={(e) => {
+            handleMouseLeave(e);
+            setPressed(false);
+          }}
+          onMouseDown={() => setPressed(true)}
+          onMouseUp={() => setPressed(false)}
         />
       )}
     </Group>

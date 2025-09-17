@@ -16,6 +16,7 @@ import LinkCircleI from "../models/linkcircle.model";
 import { BLOCK_HEIGHT, BLOCK_WIDTH } from "../constants/ui";
 import Konva from "konva";
 import Loader from "./Loader";
+import RunJobShape from "./RunJobShape";
 
 interface BlockProps {
   block: BlockI;
@@ -88,6 +89,12 @@ const Block = ({
         x={dynamicPosition.x + (BLOCK_WIDTH * 9) / 10}
         y={dynamicPosition.y + (BLOCK_HEIGHT * 1.5) / 10}
       />
+      <RunJobShape
+        show={!block.isQueued}
+        x={dynamicPosition.x + (BLOCK_WIDTH * 9) / 10}
+        y={dynamicPosition.y + (BLOCK_HEIGHT * 1.5) / 10}
+        id={0}
+      ></RunJobShape>
       <Text
         x={dynamicPosition.x}
         y={dynamicPosition.y}

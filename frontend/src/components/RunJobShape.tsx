@@ -36,11 +36,10 @@ const RunJobShape = ({ show, x, y, id }: RunJobShapeProps) => {
           sides={3}
           rotation={90}
           lineJoin={"round"}
-          radius={BLOCK_HEIGHT / 10}
+          radius={BLOCK_HEIGHT / 8}
           shadowColor="black"
           shadowBlur={3}
           shadowOpacity={0.5}
-          draggable
           shadowOffsetX={0.7}
           shadowOffsetY={0.7}
           scaleX={scale}

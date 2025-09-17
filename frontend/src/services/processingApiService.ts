@@ -61,3 +61,16 @@ export async function getProcessingQueue(): Promise<number[]> {
     throw error;
   }
 }
+
+export async function processAllNodes(): Promise<any> {
+  try {
+    await axios({
+      method: "post",
+      url: "http://127.0.0.1:5000/queueProcessing/all",
+    });
+    return;
+  } catch (error) {
+    console.error("Error fetching processing queue:", error);
+    throw error;
+  }
+}

@@ -85,8 +85,8 @@ const Block = ({
       />
       <Loader
         show={block.isQueued}
-        x={dynamicPosition.x + (BLOCK_WIDTH * 9) / 10}
-        y={dynamicPosition.y + (BLOCK_HEIGHT * 1.5) / 10}
+        x={dynamicPosition.x + (BLOCK_WIDTH * 8.5) / 10}
+        y={dynamicPosition.y + (BLOCK_HEIGHT * 2.5) / 10}
       />
       <RunJobShape
         show={!block.isQueued}

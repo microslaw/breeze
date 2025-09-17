@@ -38,8 +38,8 @@ const Loader = ({ show, x, y }: LoaderProps) => {
           y={y}
           fill="darkSlateGray"
           angle={100}
-          innerRadius={BLOCK_HEIGHT / 20}
-          outerRadius={BLOCK_HEIGHT / 10}
+          innerRadius={BLOCK_HEIGHT / 16}
+          outerRadius={BLOCK_HEIGHT / 8}
         />
       )}
     </Group>

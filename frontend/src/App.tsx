@@ -134,6 +134,8 @@ function App() {
   return (
     <div>
       <Menu
+        processingQueue={processingQueue}
+        blocks={blocks}
         setIsBlockModalCreateVisible={setIsBlockModalCreateVisible}
         setIsQueueModalDetailsVisible={setIsQueueModalDetailsVisible}
       />

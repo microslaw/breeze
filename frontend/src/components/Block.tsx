@@ -105,6 +105,19 @@ const Block = ({
         offsetX={-BLOCK_WIDTH / 10}
         offsetY={-BLOCK_HEIGHT / 8}
       />
+      <Text
+        x={dynamicPosition.x}
+        y={dynamicPosition.y}
+        text={block.id.toString()}
+        fontSize={30}
+        fontStyle="bold"
+        fill={block.colour}
+        stroke="black"
+        strokeWidth={0.3}
+        width={BLOCK_WIDTH}
+        offsetX={-BLOCK_WIDTH * 0.1}
+        offsetY={-BLOCK_HEIGHT * 0.55}
+      ></Text>
       {block.isSelected && (
         <Circle
           perfectDrawEnabled={false}

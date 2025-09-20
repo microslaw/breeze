@@ -40,12 +40,22 @@ export async function getAllNodes(): Promise<BlockI[]> {
         });
         return blocks;
       })
-      .catch((error) => {
-        console.error("Error fetching nodes:", error);
+      .catch((error: any) => {
+        console.error("Error fetching node type colour map:", error);
+        if (error.response && error.response.status === 500) {
+          alert("can not connect with the server");
+        } else {
+          alert("Error fetching node type colour map: " + error);
+        }
         throw error;
       });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching nodes:", error);
+    if (error.response && error.response.status === 500) {
+      alert("can not connect with the server");
+    } else {
+      alert("Error fetching nodes: " + error);
+    }
     throw error;
   }
 }
@@ -57,8 +67,13 @@ export async function deleteNodeById(id: number) {
       url: "http://127.0.0.1:5000/nodeInstances/" + id,
     });
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting node:", error);
+    if (error.response && error.response.status === 500) {
+      alert("can not connect with the server");
+    } else {
+      alert("Error deleting node: " + error);
+    }
     throw error;
   }
 }
@@ -75,8 +90,13 @@ export async function createNode(block: BlockI): Promise<{ node_id: number }> {
       data: node,
     });
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error creating node:", error);
+    if (error.response && error.response.status === 500) {
+      alert("can not connect with the server");
+    } else {
+      alert("Error creating node: " + error);
+    }
     throw error;
   }
 }
@@ -93,8 +113,13 @@ export async function updateNode(block: PartialBlockI) {
       data: node.attributes,
     });
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating node:", error);
+    if (error.response && error.response.status === 500) {
+      alert("can not connect with the server");
+    } else {
+      alert("Error updating node: " + error);
+    }
     throw error;
   }
 }
@@ -121,8 +146,13 @@ export async function getAllLinks(): Promise<LinkI[]> {
 
     const links: LinkI[] = mapApiResponseToLinks(response.data);
     return links;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching links:", error);
+    if (error.response && error.response.status === 500) {
+      alert("can not connect with the server");
+    } else {
+      alert("Error fetching links: " + error);
+    }
     throw error;
   }
 }
@@ -134,19 +164,30 @@ export async function deleteLinkById(id: number) {
       url: "http://127.0.0.1:5000/nodeLinks/" + id,
     });
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting link:", error);
+    if (error.response && error.response.status === 500) {
+      alert("can not connect with the server");
+    } else {
+      alert("Error deleting link: " + error);
+    }
     throw error;
   }
 }
 
 // TODO implement non primitive handling of the response
 export async function getLinksByOriginNode(nodeId: number) {
-  const response = await axios({
-    method: "get",
-    url: "http://127.0.0.1:5000/nodeLinks/" + nodeId,
-  });
-  return response.data;
+  try {
+    const response = await axios({
+      method: "get",
+      url: "http://127.0.0.1:5000/nodeLinks/" + nodeId,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching links by origin node:", error);
+    alert("Error fetching links by origin node: " + error);
+    throw error;
+  }
 }
 
 // TODO implement non primitive handling of the response
@@ -154,7 +195,7 @@ export async function getLinksByOriginNode(nodeId: number) {
 // for now we assume that node can have only one output
 export async function createLink(link: LinkI) {
   const data = mapLinkToApiPostRequest(link);
-  const response = await axios({
+  await axios({
     method: "post",
     url: "http://127.0.0.1:5000/nodeLinks",
     headers: {
@@ -167,6 +208,7 @@ export async function createLink(link: LinkI) {
     })
     .catch((error) => {
       console.error("Error creating link:", error);
+      alert("Error creating link: " + error);
     });
 }
 
@@ -183,8 +225,13 @@ export async function getNodeTypes(): Promise<NodeTypeI[]> {
     }
 
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching node types:", error);
+    if (error.response && error.response.status === 500) {
+      alert("can not connect with the server");
+    } else {
+      alert("Error fetching node types: " + error);
+    }
     throw error;
   }
 }
@@ -205,8 +252,13 @@ export async function getNodeTypesColourMap(): Promise<ColourI[]> {
       colour: colour as string,
     }));
     return colourMap;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching node types colour map:", error);
+    if (error.response && error.response.status === 500) {
+      alert("can not connect with the server");
+    } else {
+      alert("Error fetching node type colour map: " + error);
+    }
     throw error;
   }
 }

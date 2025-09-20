@@ -17,8 +17,13 @@ export async function updateKwargByNodeId(nodeId: number, kwarg: KwargI) {
       data: kwarg.value,
     });
     return response.data;
-  } catch (error) {
-    console.error("Error updating kwarg:", error);
+  } catch (error: any) {
+    console.error("Error updating kwarg: ", error);
+    if (error.response && error.response.status === 500) {
+      alert("can not connect with the server");
+    } else {
+      alert("Error updating kwarg: " + error);
+    }
     throw error;
   }
 }
@@ -34,8 +39,13 @@ export async function getKwargsByNodeId(nodeId: number): Promise<KwargI[]> {
     });
     const kwargs = mapApiResponseToKwargs(response.data);
     return kwargs;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error getting kwargs:", error);
+    if (error.response && error.response.status === 500) {
+      alert("can not connect with the server");
+    } else {
+      alert("Error getting kwargs: " + error);
+    }
     throw error;
   }
 }

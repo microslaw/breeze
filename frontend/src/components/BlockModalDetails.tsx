@@ -183,7 +183,7 @@ const BlockModalDetails = ({
             Open Result in New Window
           </Button>
           <Card.Text className={styles.processedAt}>
-            Processed at:
+            Processed at:{" "}
             <span className={styles.processedAtDate}>
               {processingResultMetadata?.created_date
                 ? processingResultMetadata?.created_date
@@ -197,7 +197,7 @@ const BlockModalDetails = ({
       <Card.Body>
         <Card.Text>{processingResult}</Card.Text>
         <Card.Text className={styles.processedAt}>
-          Processed at:
+          Processed at:{" "}
           <span className={styles.processedAtDate}>
             {processingResultMetadata?.created_date
               ? processingResultMetadata?.created_date

@@ -71,28 +71,27 @@ const BlockModalDetails = ({
     }
   }, [errorMsg]);
 
-  const handleRunJob = () => {
-    runProcessingJob(block.id).then(() => {
-      let count = 0;
-      const intervalId = setInterval(() => {
-        getProcessingResultMetadataByNodeId(block.id).then((result) => {
-          setProcessingResultMetadata(result);
-          if (result.is_processed) {
-            getProcessingResultByNodeId(block.id).then((result) => {
-              setProcessingResult(result);
-              count++;
-              if (
-                count >= 3 ||
-                processingResultMetadata.is_processed ||
-                show === false
-              ) {
-                clearInterval(intervalId);
-              }
-            });
-          }
-        });
-      }, 1000);
-    });
+  const handleRunJobAndGetResult = async () => {
+    await runProcessingJob(block.id);
+    let count = 0;
+    const intervalId = setInterval(() => {
+      getProcessingResultMetadataByNodeId(block.id).then((result) => {
+        setProcessingResultMetadata(result);
+        if (result.is_processed) {
+          getProcessingResultByNodeId(block.id).then((result) => {
+            setProcessingResult(result);
+            count++;
+            if (
+              count >= 3 ||
+              processingResultMetadata.is_processed ||
+              show === false
+            ) {
+              clearInterval(intervalId);
+            }
+          });
+        }
+      });
+    }, 1000);
   };
 
   const getAndAssignKwargs = () => {
@@ -275,7 +274,7 @@ const BlockModalDetails = ({
         <Button variant="secondary" className="me-auto" onClick={handleClose}>
           Close
         </Button>
-        <Button variant="primary" onClick={handleRunJob}>
+        <Button variant="primary" onClick={handleRunJobAndGetResult}>
           Run job
         </Button>
         <Button variant="danger" onClick={() => handleDelete(block.id)}>

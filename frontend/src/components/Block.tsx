@@ -1,4 +1,4 @@
-import { Rect, Text, Group, Circle, Arc } from "react-konva";
+import { Rect, Text, Group, Circle } from "react-konva";
 import { BlockI } from "../models/block.model";
 import { useState } from "react";
 import {
@@ -11,11 +11,10 @@ import {
   handleMouseLeave,
 } from "../functions/handleDefaultShapeInteractions";
 import { LinkI } from "../models/link.model";
-import Link from "./Link";
 import LinkCircleI from "../models/linkcircle.model";
 import { BLOCK_HEIGHT, BLOCK_WIDTH } from "../constants/ui";
-import Konva from "konva";
 import Loader from "./Loader";
+import RunJobShape from "./RunJobShape";
 
 interface BlockProps {
   block: BlockI;
@@ -56,6 +55,7 @@ const Block = ({
   return (
     <Group>
       <Rect
+        perfectDrawEnabled={false}
         key={block.id}
         id={block.id.toString()}
         x={block.x}
@@ -85,9 +85,15 @@ const Block = ({
       />
       <Loader
         show={block.isQueued}
-        x={dynamicPosition.x + (BLOCK_WIDTH * 9) / 10}
-        y={dynamicPosition.y + (BLOCK_HEIGHT * 1.5) / 10}
+        x={dynamicPosition.x + (BLOCK_WIDTH * 8.5) / 10}
+        y={dynamicPosition.y + (BLOCK_HEIGHT * 2.5) / 10}
       />
+      <RunJobShape
+        show={!block.isQueued}
+        x={dynamicPosition.x + (BLOCK_WIDTH * 8.5) / 10}
+        y={dynamicPosition.y + (BLOCK_HEIGHT * 2.5) / 10}
+        id={block.id}
+      ></RunJobShape>
       <Text
         x={dynamicPosition.x}
         y={dynamicPosition.y}
@@ -95,12 +101,13 @@ const Block = ({
         fontSize={10}
         fontStyle="bold"
         fill="black"
-        width={BLOCK_WIDTH - (BLOCK_WIDTH * 3) / 10}
+        width={BLOCK_WIDTH - (BLOCK_WIDTH * 4) / 10}
         offsetX={-BLOCK_WIDTH / 10}
-        offsetY={-BLOCK_HEIGHT / 10}
+        offsetY={-BLOCK_HEIGHT / 8}
       />
       {block.isSelected && (
         <Circle
+          perfectDrawEnabled={false}
           draggable
           x={dynamicPosition.x + BLOCK_WIDTH}
           y={dynamicPosition.y + BLOCK_HEIGHT / 2}

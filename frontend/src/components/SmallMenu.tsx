@@ -2,6 +2,7 @@ import React from "react";
 import styles from "./SmallMenu.module.css";
 import { BlockI } from "../models/block.model";
 import { Button, Card, Modal } from "react-bootstrap";
+import { processAllNodes } from "../services/processingApiService";
 
 interface SmallMenuProps {
   show: boolean;
@@ -23,6 +24,13 @@ const SmallMenu = ({
     top: position_y,
   };
 
+  function handleProcessAllNodes() {
+    processAllNodes();
+    // .then((res) => {
+    //   console.log("all nodes added to processing queue", res);
+    // });
+  }
+
   return show ? (
     <div className={styles.smallMenuModal} style={positionStyle}>
       <Card className={styles.menuCard}>
@@ -35,15 +43,15 @@ const SmallMenu = ({
             setIsBlockModalCreateVisible(true);
           }}
         >
-          Add new block
+          Add new node
         </Button>
         <Button
           size="sm"
           className={styles.menuButtonLast}
           variant="primary"
-          onClick={() => console.log("Place holder small menu button")}
+          onClick={() => handleProcessAllNodes()}
         >
-          Placeholder
+          Run all nodes
         </Button>
       </Card>
     </div>

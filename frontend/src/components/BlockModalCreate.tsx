@@ -4,7 +4,6 @@ import { BlockI } from "../models/block.model";
 import {
   createNode,
   getAllNodes,
-  getNodeTypes,
   getNodeTypesEnrichedByColour,
 } from "../services/mainApiService";
 import { BLOCK_DEFAULT_COLOUR } from "../constants/ui";
@@ -41,6 +40,7 @@ const BlockModalCreate = ({
   useEffect(() => {
     const fetchBlockTypes = async () => {
       const nodeTypes = await getNodeTypesEnrichedByColour();
+      nodeTypes.sort((a, b) => a.name.localeCompare(b.name));
       setBlockTypes(nodeTypes);
     };
     fetchBlockTypes();
@@ -110,7 +110,10 @@ const BlockModalCreate = ({
               </option>
               {blockTypes.map((type) => (
                 <option key={type.name} value={type.name}>
-                  {type.name}
+                  {type.name.replaceAll("_", " ").toUpperCase() +
+                    " (" +
+                    type.tags.join(", ") +
+                    ")"}
                 </option>
               ))}
             </Form.Select>

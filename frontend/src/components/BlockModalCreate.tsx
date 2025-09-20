@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import { Modal, Button, Form, ListGroup } from "react-bootstrap";
 import { BlockI } from "../models/block.model";
 import {
   createNode,
   getAllNodes,
   getNodeTypes,
+  getNodeTypesEnrichedByColour,
 } from "../services/mainApiService";
 import { BLOCK_DEFAULT_COLOUR } from "../constants/ui";
+import { NodeTypeI } from "../models/nodetype.model";
 
 interface BlockModalCreateProps {
   show: boolean;
@@ -34,12 +36,12 @@ const BlockModalCreate = ({
     colour: BLOCK_DEFAULT_COLOUR,
   });
 
-  const [blockTypes, setBlockTypes] = useState<string[]>([]);
+  const [blockTypes, setBlockTypes] = useState<NodeTypeI[]>([]);
 
   useEffect(() => {
     const fetchBlockTypes = async () => {
-      const nodeTypes = await getNodeTypes();
-      setBlockTypes(nodeTypes.map((t) => t.name));
+      const nodeTypes = await getNodeTypesEnrichedByColour();
+      setBlockTypes(nodeTypes);
     };
     fetchBlockTypes();
   }, []);
@@ -107,8 +109,8 @@ const BlockModalCreate = ({
                 Select a type
               </option>
               {blockTypes.map((type) => (
-                <option key={type} value={type}>
-                  {type}
+                <option key={type.name} value={type.name}>
+                  {type.name}
                 </option>
               ))}
             </Form.Select>

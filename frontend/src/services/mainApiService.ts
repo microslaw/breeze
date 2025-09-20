@@ -26,29 +26,9 @@ export async function getAllNodes(): Promise<BlockI[]> {
       throw new Error("API response is not an array");
     }
 
-    const blocks: BlockI[] = mapApiResponseToBlocks(response.data);
+    let blocks: BlockI[] = mapApiResponseToBlocks(response.data);
 
-    return getNodeTypesColourMap()
-      .then(async (colourMap) => {
-        const nodeTypes = await getNodeTypes();
-        blocks.forEach((block) => {
-          const nodeTypeFull = nodeTypes.find((t) => t.name === block.type);
-
-          if (nodeTypeFull) {
-            block.colour = getNodeTypeColour(nodeTypeFull, colourMap);
-          }
-        });
-        return blocks;
-      })
-      .catch((error: any) => {
-        console.error("Error fetching node type colour map:", error);
-        if (error.response && error.response.status === 500) {
-          alert("can not connect with the server");
-        } else {
-          alert("Error fetching node type colour map: " + error);
-        }
-        throw error;
-      });
+    return await enrichNodesByColour(blocks);
   } catch (error: any) {
     console.error("Error fetching nodes:", error);
     if (error.response && error.response.status === 500) {
@@ -261,4 +241,42 @@ export async function getNodeTypesColourMap(): Promise<ColourI[]> {
     }
     throw error;
   }
+}
+
+export async function enrichNodesByColour(blocks: BlockI[]): Promise<BlockI[]> {
+  const blocksEnriched = getNodeTypesColourMap()
+    .then(async (colourMap) => {
+      const nodeTypes = await getNodeTypes();
+      blocks.forEach((block) => {
+        const nodeTypeFull = nodeTypes.find((t) => t.name === block.type);
+
+        if (nodeTypeFull) {
+          block.colour = getNodeTypeColour(nodeTypeFull, colourMap);
+        }
+      });
+      return blocks;
+    })
+    .catch((error: any) => {
+      console.error("Error fetching node type colour map:", error);
+      if (error.response && error.response.status === 500) {
+        alert("can not connect with the server");
+      } else {
+        alert("Error fetching node type colour map: " + error);
+      }
+      throw error;
+    });
+  return blocksEnriched;
+}
+
+export async function getNodeTypesEnrichedByColour(): Promise<NodeTypeI[]> {
+  const nodeTypesEnriched = await getNodeTypesColourMap().then(
+    async (colourMap) => {
+      const nodeTypes = await getNodeTypes();
+      nodeTypes.forEach((nodeType) => {
+        nodeType.colour = getNodeTypeColour(nodeType, colourMap);
+      });
+      return nodeTypes;
+    }
+  );
+  return nodeTypesEnriched;
 }

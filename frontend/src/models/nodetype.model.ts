@@ -5,4 +5,5 @@ export interface NodeTypeI {
   name: string;
   return_type: string;
   tags: string[];
+  colour?: string;
 }

@@ -108,7 +108,8 @@ const BlockModalCreate = ({
               ))}
             </Form.Select>
           </Form.Group>
-          <Form.Group controlId="formBlockX">
+          {/* Input for block coords on canvas */}
+          {/* <Form.Group controlId="formBlockX">
             <Form.Label>X Coordinate</Form.Label>
             <Form.Control
               as="input"
@@ -127,7 +128,7 @@ const BlockModalCreate = ({
               value={block.y}
               onChange={handleChange}
             />
-          </Form.Group>
+          </Form.Group> */}
         </Form>
       </Modal.Body>
       <Modal.Footer>

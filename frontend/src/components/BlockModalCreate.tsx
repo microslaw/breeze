@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { BlockI } from "../models/block.model";
-import { createNode, getNodeTypes } from "../services/mainApiService";
+import {
+  createNode,
+  getAllNodes,
+  getNodeTypes,
+} from "../services/mainApiService";
 import { BLOCK_DEFAULT_COLOUR } from "../constants/ui";
 
 interface BlockModalCreateProps {
@@ -53,9 +57,7 @@ const BlockModalCreate = ({
   };
 
   const handleSubmit = () => {
-    createNode(block).then((response) => {
-      block.id = response.node_id;
-      setBlocks([...blocks, block]);
+    createNode(block).then(async () => {
       setBlock({
         name: "",
         type: "",
@@ -68,6 +70,9 @@ const BlockModalCreate = ({
         kwargs: [],
         colour: BLOCK_DEFAULT_COLOUR,
       });
+
+      const blocks = await getAllNodes();
+      setBlocks(blocks);
     });
     handleClose();
   };

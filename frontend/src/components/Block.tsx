@@ -114,7 +114,6 @@ const Block = ({
         fill={block.colour}
         stroke="black"
         strokeWidth={0.3}
-        width={BLOCK_WIDTH}
         offsetX={-BLOCK_WIDTH * 0.1}
         offsetY={-BLOCK_HEIGHT * 0.55}
       ></Text>

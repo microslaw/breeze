@@ -162,6 +162,7 @@ const BlockModalDetails = ({
       return (
         <Card.Body>
           <Button
+            className={styles.newWindowButton}
             variant="primary"
             onClick={() => {
               const newWindow = window.open("", "_blank");
@@ -181,16 +182,30 @@ const BlockModalDetails = ({
           >
             Open Result in New Window
           </Button>
-          <Card.Text>
+          <Card.Text className={styles.processedAt}>
             Processed at:{" "}
-            {processingResultMetadata?.created_date
-              ? processingResultMetadata?.created_date
-              : "no data"}
+            <span className={styles.processedAtDate}>
+              {processingResultMetadata?.created_date
+                ? processingResultMetadata?.created_date
+                : "no data"}
+            </span>
           </Card.Text>
         </Card.Body>
       );
     }
-    return <Card.Text>{processingResult}</Card.Text>;
+    return (
+      <Card.Body>
+        <Card.Text>{processingResult}</Card.Text>
+        <Card.Text className={styles.processedAt}>
+          Processed at:{" "}
+          <span className={styles.processedAtDate}>
+            {processingResultMetadata?.created_date
+              ? processingResultMetadata?.created_date
+              : "no data"}
+          </span>
+        </Card.Text>
+      </Card.Body>
+    );
   }
 
   return (

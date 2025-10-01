@@ -100,11 +100,23 @@ const Block = ({
         text={block.name.replaceAll("_", " ")}
         fontSize={10}
         fontStyle="bold"
-        fill="black"
+        fill={"#232323ff"}
         width={BLOCK_WIDTH - (BLOCK_WIDTH * 4) / 10}
         offsetX={-BLOCK_WIDTH / 10}
         offsetY={-BLOCK_HEIGHT / 8}
       />
+      <Text
+        x={dynamicPosition.x}
+        y={dynamicPosition.y}
+        text={block.id.toString()}
+        fontSize={30}
+        fontStyle="bold"
+        fill={block.colour}
+        stroke="black"
+        strokeWidth={0.3}
+        offsetX={-BLOCK_WIDTH * 0.1}
+        offsetY={-BLOCK_HEIGHT * 0.55}
+      ></Text>
       {block.isSelected && (
         <Circle
           perfectDrawEnabled={false}

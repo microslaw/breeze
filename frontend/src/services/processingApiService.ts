@@ -10,8 +10,13 @@ export async function getProcessingResultByNodeId(
     });
 
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching processing result:", error);
+    if (error.response && error.response.status === 500) {
+      alert("can not connect with the server");
+    } else {
+      alert("Error fetching processing result: " + error);
+    }
     throw error;
   }
 }
@@ -26,8 +31,13 @@ export async function getProcessingResultMetadataByNodeId(
     });
 
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching processing result metadata:", error);
+    if (error.response && error.response.status === 500) {
+      alert("can not connect with the server");
+    } else {
+      alert("Error fetching processing result metadata: " + error);
+    }
     throw error;
   }
 }
@@ -43,8 +53,13 @@ export async function runProcessingJob(nodeId: number): Promise<any> {
     });
 
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error running processing job:", error);
+    if (error.response && error.response.status === 500) {
+      alert("can not connect with the server");
+    } else {
+      alert("Error running processing job: " + error);
+    }
     throw error;
   }
 }
@@ -56,8 +71,13 @@ export async function getProcessingQueue(): Promise<number[]> {
       url: "http://127.0.0.1:5000/queueProcessing",
     });
     return response.data;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching processing queue:", error);
+    if (error.response && error.response.status === 500) {
+      alert("can not connect with the server");
+    } else {
+      alert("Error fetching processing queue: " + error);
+    }
     throw error;
   }
 }
@@ -69,8 +89,13 @@ export async function processAllNodes(): Promise<any> {
       url: "http://127.0.0.1:5000/queueProcessing/all",
     });
     return;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching processing queue:", error);
+    if (error.response && error.response.status === 500) {
+      alert("can not connect with the server");
+    } else {
+      alert("Error fetching processing queue: " + error);
+    }
     throw error;
   }
 }

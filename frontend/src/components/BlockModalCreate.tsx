@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import { Modal, Button, Form, ListGroup } from "react-bootstrap";
 import { BlockI } from "../models/block.model";
-import { createNode, getNodeTypes } from "../services/mainApiService";
+import {
+  createNode,
+  getAllNodes,
+  getNodeTypesEnrichedByColour,
+} from "../services/mainApiService";
 import { BLOCK_DEFAULT_COLOUR } from "../constants/ui";
+import { NodeTypeI } from "../models/nodetype.model";
 
 interface BlockModalCreateProps {
   show: boolean;
@@ -30,12 +35,13 @@ const BlockModalCreate = ({
     colour: BLOCK_DEFAULT_COLOUR,
   });
 
-  const [blockTypes, setBlockTypes] = useState<string[]>([]);
+  const [blockTypes, setBlockTypes] = useState<NodeTypeI[]>([]);
 
   useEffect(() => {
     const fetchBlockTypes = async () => {
-      const nodeTypes = await getNodeTypes();
-      setBlockTypes(nodeTypes.map((t) => t.name));
+      const nodeTypes = await getNodeTypesEnrichedByColour();
+      nodeTypes.sort((a, b) => a.name.localeCompare(b.name));
+      setBlockTypes(nodeTypes);
     };
     fetchBlockTypes();
   }, []);
@@ -53,9 +59,7 @@ const BlockModalCreate = ({
   };
 
   const handleSubmit = () => {
-    createNode(block).then((response) => {
-      block.id = response.node_id;
-      setBlocks([...blocks, block]);
+    createNode(block).then(async () => {
       setBlock({
         name: "",
         type: "",
@@ -68,6 +72,9 @@ const BlockModalCreate = ({
         kwargs: [],
         colour: BLOCK_DEFAULT_COLOUR,
       });
+
+      const blocks = await getAllNodes();
+      setBlocks(blocks);
     });
     handleClose();
   };
@@ -102,13 +109,17 @@ const BlockModalCreate = ({
                 Select a type
               </option>
               {blockTypes.map((type) => (
-                <option key={type} value={type}>
-                  {type}
+                <option key={type.name} value={type.name}>
+                  {type.name.replaceAll("_", " ").toUpperCase() +
+                    " (" +
+                    type.tags.join(", ") +
+                    ")"}
                 </option>
               ))}
             </Form.Select>
           </Form.Group>
-          <Form.Group controlId="formBlockX">
+          {/* Input for block coords on canvas */}
+          {/* <Form.Group controlId="formBlockX">
             <Form.Label>X Coordinate</Form.Label>
             <Form.Control
               as="input"
@@ -127,7 +138,7 @@ const BlockModalCreate = ({
               value={block.y}
               onChange={handleChange}
             />
-          </Form.Group>
+          </Form.Group> */}
         </Form>
       </Modal.Body>
       <Modal.Footer>

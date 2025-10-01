@@ -7,3 +7,6 @@ def load_pandas():
 
 def load_plotly():
     from backend.prefabs import plotly
+
+def load_scikit():
+    from backend.prefabs import scikit

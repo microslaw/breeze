@@ -56,7 +56,7 @@ formatting.add_display_format(
 
 br = BreezeApp()
 
-br.repository.load_workflow("backend/examples/fft/workflow")
+br.repository.try_load_workflow("backend/examples/fft/workflow")
 br.repository.write_kwarg(1, 0, "freq")
 br.repository.write_kwarg(2, 1, "freq")
 br.repository.write_kwarg(3, 2, "freq")

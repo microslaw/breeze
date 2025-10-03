@@ -9,7 +9,7 @@ from backend import formatting
 
 
 def initialize_server() -> Controller:
-    repository = Repository()
+    repository = Repository(db_folder_path="backend/tests/data")
     processor = Processor(repository)
     controller = Controller(repository, processor)
 

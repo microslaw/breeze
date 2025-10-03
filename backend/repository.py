@@ -197,8 +197,16 @@ class Repository:
         else:
             raise NotImplementedError
 
+    def try_load_workflow(self, path: str, filetype: str = "csv"):
+        try:
+            self.load_workflow(path, filetype)
+        except sqlite3.IntegrityError:
+            print(f"Workflow {path} has been already loaded. Skipping")
+
     def get_connection(self) -> sqlite3.Connection:
-        return sqlite3.connect(f"{self.db_folder_path}/{self.db_name}")
+        return sqlite3.connect(
+            f"{self.db_folder_path}/{self.db_name}",
+        )
 
     def get_cursor(self) -> sqlite3.Cursor:
         return self.get_connection().cursor()
@@ -272,8 +280,19 @@ class Repository:
         """
         Appends contents of a csv to a table. Intended mostly for testing and tutorials
         """
+
         df: pd.DataFrame = pd.read_csv(filename)
         connection = self.get_connection()
+
+        ac = connection.autocommit
+        connection.autocommit = True
+
+        cursor = connection.cursor()
+        cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.close()
+
+        connection.autocommit = ac
+
         df.to_sql(table_name, connection, if_exists="append", index=False)
         connection.close()
 

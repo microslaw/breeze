@@ -8,8 +8,11 @@ class BreezeApp:
     Composition of all elements required for breeze workflows
     """
 
-    def __init__(self):
-        self.repository = Repository()
+    def __init__(self, repository: Repository = None):
+        if repository is None:
+            repository = Repository(purge=False)
+        self.repository = repository
+
         self.processor = Processor(self.repository)
         self.controller = Controller(self.repository, self.processor)
 

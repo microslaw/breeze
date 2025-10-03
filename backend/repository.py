@@ -28,11 +28,15 @@ class Repository:
     """
 
     def __init__(
-        self, db_name: str = "db.sqlite3", db_folder_path: str = "backend/data"
+        self,
+        db_name: str = "db.sqlite3",
+        db_folder_path: str = "backend/data",
+        purge=True,
     ):
         self.db_name = db_name
         self.db_folder_path = db_folder_path
-        self.init_db()
+        if purge:
+            self.init_db()
 
     def get_output_path(self, node_id: int, output_name: Optional[str]):
         """
@@ -642,7 +646,7 @@ class Repository:
 
     def get_all_node_type_names(self) -> list[str]:
         return list(NodeType.all_udn.keys())
-    
+
     def get_all_node_types(self) -> list[NodeType]:
         return list(NodeType.all_udn.values())
 

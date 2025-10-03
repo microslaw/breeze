@@ -10,7 +10,7 @@ from datetime import datetime
 
 
 def initialize_processor() -> Processor:
-    repository = Repository()
+    repository = Repository(db_folder_path="backend/tests/data")
     processor = Processor(repository)
 
     NodeType.clear_udns()

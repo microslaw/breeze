@@ -201,6 +201,7 @@ yarn-error.log*
 *.orig
 .vscode
 backend/data
+backend/tests/data
 
 # React specific files
 node_modules/

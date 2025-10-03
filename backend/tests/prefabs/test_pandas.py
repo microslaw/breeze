@@ -1,12 +1,13 @@
 from backend.datatypes import NodeType
 from importlib import reload
-from backend import BreezeApp
+from backend import BreezeApp, Repository
 import backend.prefabs.pandas
 import pandas as pd
 
 
 def initalize_app() -> BreezeApp:
-    app = BreezeApp()
+    repository = Repository(db_folder_path="backend/tests/data")
+    app = BreezeApp(repository=repository)
 
     NodeType.clear_udns()
     reload(backend.prefabs.pandas)

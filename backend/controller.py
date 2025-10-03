@@ -249,6 +249,7 @@ class Controller:
             Starts processing of everything
             """
             self.processor.run_all()
+            return "OK", 200
 
         @self.flask_server.route("/queueProcessing", methods=["GET"])
         def check_processing_queue():

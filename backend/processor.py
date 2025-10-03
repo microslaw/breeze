@@ -76,7 +76,7 @@ class Processor:
         if start_processing:
             self.start_processing()
 
-    def run_all(self, start_processing: bool = False):
+    def run_all(self, start_processing: bool = True):
         to_process = self.repository.get_all_final_node_ids()
 
         for node_id in to_process:

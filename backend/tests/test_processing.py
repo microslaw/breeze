@@ -270,3 +270,32 @@ def test_delete_following_outputs_no_following():
         True,
         True,
     ]
+
+
+def test_process_all():
+    controller = initalize_api_server()
+
+    # remove unprocessable node
+    controller.repository.delete_node_instance(6)
+    controller.repository.write_kwarg(1, 7, "b")
+
+    with controller.test_client() as client:
+        response = client.post("/queueProcessing/all")
+
+    assert response.status_code == 200
+    assert response.data == b"OK"
+
+    controller.processor.wait_till_finished(5)
+
+    with controller.test_client() as client:
+        response = client.get("/queueProcessing")
+
+    assert response.status_code == 200
+    assert response.json == []
+
+    are_outputs_created = [
+        not controller.repository.is_output_created(node_id)
+        for node_id in controller.repository.get_all_node_ids()
+    ]
+
+    assert not any(are_outputs_created)

@@ -270,6 +270,34 @@ class Controller:
             """
             return format_for_display(self.repository.read_output(node_id))
 
+        @self.flask_server.route("/processingResult/<node_id>", methods=["DELETE"])
+        def delete_processing_result(node_id: int):
+            """
+            Remove the processing result for a node.
+
+            :param node_id: specifies id of a node.
+            """
+            self.repository.delete_output(node_id)
+            return "OK", 200
+
+        @self.flask_server.route("/processingResult/all", methods=["DELETE"])
+        def delete_all_processing_results():
+            """
+            Remove all processing results.
+
+            :return: [node_id for node_id in removed results].
+            """
+
+            processed_node_ids = [
+                node_id
+                for node_id in self.repository.get_all_node_ids()
+                if self.repository.is_output_created(node_id)
+            ]
+
+            self.repository.delete_all_outputs()
+
+            return processed_node_ids, "200"
+
         @self.flask_server.route(
             "/processingResult/<node_id>/metadata", methods=["GET"]
         )

@@ -381,6 +381,17 @@ class Controller:
         def get_tag_color_json():
             return get_tag_color_map()
 
+        @self.flask_server.route("/stream")
+        def stream():
+            def get_data():
+                while True:
+                    message = self.processor.message_queue.get()
+                    yield f"data: {message} \n\n"
+
+            return self.flask_server.response_class(
+                get_data(), mimetype="text/event-stream"
+            )
+
     def test_client(self, **kwargs: Any) -> testing.FlaskClient:
         """
         Get a Flask test client for the server.

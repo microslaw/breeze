@@ -5,6 +5,8 @@ from collections import deque
 import threading
 import traceback
 from typing import Optional
+from enum import Enum
+import queue
 
 
 class Processor:
@@ -17,7 +19,7 @@ class Processor:
         self.processing_queue: deque[int] = deque()
         self.repository = repository
         self.running = False
-        self.cached_exception = None
+        self.message_queue = queue.Queue()
         self.processing_daemon = None
 
     def get_all_prerequisite_node_ids(self, node_id: int) -> list[int]:
@@ -48,15 +50,11 @@ class Processor:
 
     def get_processing_schedule(self) -> list[int]:
         """
-        If some exception occurred while processing, will raise this exception
-        during the execution of this function
+        Returns processing queue
 
         :return: nodes left to process
         """
-        if self.cached_exception is None:
-            return list(self.processing_queue)
-        else:
-            raise self.cached_exception from self.cached_exception.cause
+        return list(self.processing_queue)
 
     def update_processing_schedule(
         self, node_id: int, start_processing: bool = True
@@ -122,7 +120,6 @@ class Processor:
         during processing
         """
         self.processing_queue = deque()
-        self.cached_exception = None
 
     def wait_till_finished(self, timeout: Optional[float] = None):
         """
@@ -259,15 +256,39 @@ class Processor:
         try:
             output = processed_node_type(**kwargs)
             self.repository.write_output(output, node_id)
+
+            self.message_queue.put(
+                {
+                    "type": SseMessageTypes.finished_processing.value,
+                    "content": {
+                        "node_id": node_id,
+                        "processing_queue": self.get_processing_schedule(),
+                    },
+                },
+            )
+
         except Exception as e:
             self.stop_processing_daemon()
-            self.cached_exception = ProcessingException(
+
+            exception = ProcessingException(
                 e,
                 processed_node_instance,
                 traceback.format_exception(e),
                 kwargs,
                 list(self.processing_queue),
             )
+
+            self.message_queue.put(
+                {
+                    "type": SseMessageTypes.processing_error.value,
+                    "content": exception.toJson(),
+                }
+            )
+
+
+class SseMessageTypes(Enum):
+    processing_error = "processing_error"
+    finished_processing = "finished_processing"
 
 
 class ProcessingException(Exception):

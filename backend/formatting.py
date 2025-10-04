@@ -6,7 +6,8 @@ from enum import Enum
 
 class FrontendDisplayType(Enum):
     image = "image"
-    html = "html"
+    html_div = "html_div"
+    html_website = "html_website"
     plaintext = "plaintext"
     json = "json"
     integer = "integer"

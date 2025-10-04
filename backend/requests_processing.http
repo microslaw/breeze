@@ -22,3 +22,6 @@ GET http://127.0.0.1:5000/processingResult/4
 
 ### Get processing result metadata
 GET http://127.0.0.1:5000/processingResult/4/metadata
+
+### Remove all processing results
+DELETE http://127.0.0.1:5000/processingResult/all

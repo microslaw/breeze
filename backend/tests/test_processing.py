@@ -95,30 +95,33 @@ def test_processing_exception():
         )
         controller.processor.wait_till_finished()
 
-        response = client.get("/queueProcessing")
+        while controller.processor.message_queue.qsize() > 0:
+            last_message = controller.processor.message_queue.get()
 
-        assert response.json == {
-            "cancelled_nodes": [8],
-            "input_args": {
-                "a": "1",
-                "b": "a",
+        assert last_message == {
+            "content": {
+                "cancelled_nodes": [8],
+                "input_args": {
+                    "a": "1",
+                    "b": "a",
+                },
+                "origin": {
+                    "node_id": 7,
+                    "node_type": "add_int",
+                    "position_x": 110,
+                    "position_y": -215,
+                    "overwrite_kwargs": {},
+                    "instance_name": None,
+                },
+                "traceback_str": "Traceback (most recent call last):\n"
+                f'  File "{backend.prefabs.testing.processing.__file__}", '
+                f"line {backend.prefabs.testing.processing.add_int.func.__code__.co_firstlineno + 2}, in add_int\n"
+                "    return a + b\n"
+                "           ~~^~~\n"
+                "TypeError: unsupported operand type(s) for +: 'int' and 'str'\n",
             },
-            "origin": {
-                "node_id": 7,
-                "node_type": "add_int",
-                "position_x": 110,
-                "position_y": -215,
-                "overwrite_kwargs": {},
-                "instance_name": None,
-            },
-            "traceback_str": "Traceback (most recent call last):\n"
-            f'  File "{backend.prefabs.testing.processing.__file__}", '
-            f"line {backend.prefabs.testing.processing.add_int.func.__code__.co_firstlineno + 2}, in add_int\n"
-            "    return a + b\n"
-            "           ~~^~~\n"
-            "TypeError: unsupported operand type(s) for +: 'int' and 'str'\n",
+            "type": "processing_error",
         }
-        assert response.status_code == 422
 
 
 def test_get_processing_result():

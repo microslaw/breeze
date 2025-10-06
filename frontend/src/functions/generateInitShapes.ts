@@ -12,6 +12,7 @@ export function generateShapes(): BlockI[] {
     y: Math.floor(Math.random() * (window.innerHeight / 100)) * 100,
     isDragging: false,
     isSelected: false,
+    isProcessed: false,
     isQueued: false,
     kwargs: [],
     colour: BLOCK_DEFAULT_COLOUR,

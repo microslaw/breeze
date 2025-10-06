@@ -17,6 +17,7 @@ import BlockModalCreate from "./components/BlockModalCreate";
 import QueueModalDetails from "./components/QueueModalDetails";
 import { getProcessingQueue } from "./services/processingApiService";
 import { BLOCK_DEFAULT_COLOUR } from "./constants/ui";
+import { startSSE } from "./services/sseService";
 
 function App() {
   const [blocks, setBlocks] = useState<BlockI[]>([]);
@@ -31,26 +32,11 @@ function App() {
       setLinks(links);
       assignLinksPositionByBlocksPosition(blocks, links);
     };
+    startSSE(blocks, setBlocks, processingQueue, setProcessingQueue);
     fetchAppState();
 
     let interval: number | null = null;
     interval = setInterval(updateProcessingQueue, 1000);
-  }, []);
-
-  useEffect(() => {
-    const es = new EventSource("http://127.0.0.1:5000/stream");
-    es.onopen = (e) => console.log(">>> Connection opened!", e);
-    es.onerror = (e) => console.log("ERROR!", e);
-    es.onmessage = (e) => {
-      try {
-        const data = JSON.parse(e.data);
-        console.log(">>>", data);
-      } catch {
-        console.log(">>>", e.data);
-      }
-    };
-
-    return () => es.close();
   }, []);
 
   const [isBlockModalDetailsVisible, setIsBlockModalDetailsVisible] =
@@ -76,6 +62,7 @@ function App() {
     y: 0,
     isDragging: false,
     isSelected: false,
+    isProcessed: false,
     isQueued: false,
     kwargs: [],
     colour: BLOCK_DEFAULT_COLOUR,

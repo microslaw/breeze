@@ -2,7 +2,7 @@ import plotly.express as px
 from plotly.graph_objects import Figure
 import pandas as pd
 from breeze import NodeType
-from backend.formatting import add_display_format
+from backend.formatting import add_display_format, FrontendDisplayType
 from typing import Optional
 
 
@@ -81,4 +81,4 @@ def scatterplot_3d(
     return px.scatter_3d(data_frame=df, x=x, y=y, z=z, color=color)
 
 
-add_display_format(Figure, lambda x: x.to_html())
+add_display_format(Figure, lambda x: x.to_html(), FrontendDisplayType.html_website)

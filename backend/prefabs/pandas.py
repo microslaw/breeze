@@ -1,6 +1,6 @@
 import pandas as pd
 from breeze import NodeType
-from backend.formatting import add_display_format, add_input_format
+from backend.formatting import add_display_format, add_input_format, FrontendDisplayType
 
 
 @NodeType(tags=["pandas", "import"])
@@ -51,7 +51,9 @@ def groupby_agg(
 
 
 @NodeType(tags=["pandas"])
-def filter(df: pd.DataFrame, colname: str, value: str, condition: str = "equal") -> pd.DataFrame:
+def filter(
+    df: pd.DataFrame, colname: str, value: str, condition: str = "equal"
+) -> pd.DataFrame:
     """
     Filter rows in a DataFrame based on a condition.
 
@@ -82,4 +84,7 @@ add_input_format(
     dict[str, str],
     lambda x: {x.split(":")[0]: x.split(":")[1] for x in x.decode("utf-8").split(",")},
 )
-add_display_format(pd.DataFrame, lambda x: x.head().to_html())
+add_display_format(
+    pd.DataFrame, lambda x: x.head().to_html(), FrontendDisplayType.html_div
+)
+add_display_format(list[str], lambda x: ",".join(x))

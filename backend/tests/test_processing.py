@@ -85,7 +85,7 @@ def test_check_processing_queue():
         assert response.status_code == 200
 
 
-def test_processing_exception():
+def test_processing_exception_sse():
     controller = initalize_api_server()
 
     with controller.test_client() as client:
@@ -122,6 +122,106 @@ def test_processing_exception():
             },
             "type": "processing_error",
         }
+
+
+def test_processing_exception_rest():
+    controller = initalize_api_server()
+
+    with controller.test_client() as client:
+        client.post(
+            "/queueProcessing",
+            json={"node_id": 8},
+        )
+        controller.processor.wait_till_finished()
+
+        exception = client.get("/processingResult/exception")
+        assert exception.json == {
+            "content": {
+                "cancelled_nodes": [8],
+                "input_args": {
+                    "a": "1",
+                    "b": "a",
+                },
+                "origin": {
+                    "node_id": 7,
+                    "node_type": "add_int",
+                    "position_x": 110,
+                    "position_y": -215,
+                    "overwrite_kwargs": {},
+                    "instance_name": None,
+                },
+                "traceback_str": "Traceback (most recent call last):\n"
+                f'  File "{backend.prefabs.testing.processing.__file__}", '
+                f"line {backend.prefabs.testing.processing.add_int.func.__code__.co_firstlineno + 2}, in add_int\n"
+                "    return a + b\n"
+                "           ~~^~~\n"
+                "TypeError: unsupported operand type(s) for +: 'int' and 'str'\n",
+            },
+            "type": "processing_error",
+        }
+
+
+def test_processing_exception_delete_rest():
+    controller = initalize_api_server()
+
+    with controller.test_client() as client:
+        client.post(
+            "/queueProcessing",
+            json={"node_id": 8},
+        )
+        controller.processor.wait_till_finished()
+
+        exception = client.delete("/processingResult/exception")
+        assert exception.json == {
+            "content": {
+                "cancelled_nodes": [8],
+                "input_args": {
+                    "a": "1",
+                    "b": "a",
+                },
+                "origin": {
+                    "node_id": 7,
+                    "node_type": "add_int",
+                    "position_x": 110,
+                    "position_y": -215,
+                    "overwrite_kwargs": {},
+                    "instance_name": None,
+                },
+                "traceback_str": "Traceback (most recent call last):\n"
+                f'  File "{backend.prefabs.testing.processing.__file__}", '
+                f"line {backend.prefabs.testing.processing.add_int.func.__code__.co_firstlineno + 2}, in add_int\n"
+                "    return a + b\n"
+                "           ~~^~~\n"
+                "TypeError: unsupported operand type(s) for +: 'int' and 'str'\n",
+            },
+            "type": "processing_error",
+        }
+
+        assert controller.processor.get_cached_exception() is None
+
+
+def test_processing_exception_get_empty():
+    controller = initalize_api_server()
+
+    with controller.test_client() as client:
+        response = client.get("/processingResult/exception")
+
+        assert response.status_code == 204
+
+
+def test_processing_exception_delete_on_processing():
+    controller = initalize_api_server()
+
+    with controller.test_client() as client:
+        client.post(
+            "/queueProcessing",
+            json={"node_id": 8},
+        )
+        controller.processor.wait_till_finished()
+        controller.processor.process(1)
+
+        controller.processor.wait_till_finished()
+        assert controller.processor.get_cached_exception() is None
 
 
 def test_get_processing_result():

@@ -392,6 +392,23 @@ class Controller:
             )
             return "OK", 200
 
+        @self.flask_server.route("/processingResult/exception", methods=["GET"])
+        def get_processing_exception():
+            exception = self.processor.get_cached_exception()
+            if exception is not None:
+                return exception.toJson()
+            else:
+                return "", 204
+
+        @self.flask_server.route("/processingResult/exception", methods=["DELETE"])
+        def clear_processing_exception():
+            exception = self.processor.get_cached_exception()
+            if exception is not None:
+                self.processor.clear_cached_exception()
+                return exception.toJson()
+            else:
+                return "", 204
+
         @self.flask_server.route("/nodeTypes/colours", methods=["GET"])
         def get_tag_color_json():
             return get_tag_color_map()

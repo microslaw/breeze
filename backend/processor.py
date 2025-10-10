@@ -9,6 +9,63 @@ from enum import Enum
 import queue
 
 
+class ProcessingException(Exception):
+    """
+    Wrapper for exceptions that occur during node processing
+    """
+
+    def __init__(
+        self,
+        e: Exception,
+        node_instance: NodeInstance,
+        traceback: list[str],
+        input_args: dict[str, object],
+        cancelled_nodes: list[int],
+    ):
+        self.cause = e
+        self.origin: NodeInstance = node_instance
+        self.input_args = input_args
+        self.traceback_str = ProcessingException.prune_traceback(traceback)
+        self.cancelled_nodes = cancelled_nodes
+
+        super().__init__(
+            f"During processing of node {node_instance.toNameDict()} an exception occured:\n\n{self.traceback_str}"
+        )
+
+    @staticmethod
+    def prune_traceback(traceback: list[str]) -> str:
+        """
+        Removes part of the trace caused by the breeze library
+
+        :param traceback: full traceback as returned by traceback.format_exception
+        :return: pruned traceback as a string
+        """
+
+        pruned_traceback = traceback[0]
+        pruned_traceback += "".join(trace_file for trace_file in traceback[3:])
+
+        return pruned_traceback
+
+    def toJson(self) -> dict[str, object]:
+        """
+        Creates a JSON representation that can be serialized and sent to frontend
+
+        :return: JSON representation of the exception
+        """
+        return {
+            "type": SseMessageTypes.processing_error.value,
+            "content": {
+                "origin": self.origin.toNameDict(),
+                "traceback_str": self.traceback_str,
+                "cancelled_nodes": self.cancelled_nodes,
+                "input_args": {
+                    name: format_for_display(value)
+                    for name, value in self.input_args.items()
+                },
+            },
+        }
+
+
 class Processor:
     """
     Simple task scheduler
@@ -21,6 +78,7 @@ class Processor:
         self.running = False
         self.message_queue = queue.Queue()
         self.processing_daemon = None
+        self.cached_exception: ProcessingException = None
 
     def get_all_prerequisite_node_ids(self, node_id: int) -> list[int]:
         """
@@ -239,6 +297,15 @@ class Processor:
             default_kwargs, overwrite_kwargs, prerequisite_kwargs
         )
 
+    def clear_cached_exception(self):
+        self.cached_exception = None
+
+    def set_cached_exception(self, exception: ProcessingException):
+        self.cached_exception = exception
+
+    def get_cached_exception(self):
+        return self.cached_exception
+
     def process(self, node_id: int):
         """
         Processes individual nodes. If exception occurs during processing, will cache it till
@@ -246,6 +313,8 @@ class Processor:
 
         :param node_id: ID of the node to process
         """
+        self.clear_cached_exception()
+
         processed_node_instance = self.repository.get_node_instance(node_id)
         processed_node_type = self.repository.get_node_type_from_name(
             processed_node_instance.node_type_name
@@ -278,68 +347,11 @@ class Processor:
                 list(self.processing_queue),
             )
 
-            self.message_queue.put(
-                {
-                    "type": SseMessageTypes.processing_error.value,
-                    "content": exception.toJson(),
-                }
-            )
+            self.message_queue.put(exception.toJson())
+
+            self.set_cached_exception(exception)
 
 
 class SseMessageTypes(Enum):
     processing_error = "processing_error"
     finished_processing = "finished_processing"
-
-
-class ProcessingException(Exception):
-    """
-    Wrapper for exceptions that occur during node processing
-    """
-
-    def __init__(
-        self,
-        e: Exception,
-        node_instance: NodeInstance,
-        traceback: list[str],
-        input_args: dict[str, object],
-        cancelled_nodes: list[int],
-    ):
-        self.cause = e
-        self.origin: NodeInstance = node_instance
-        self.input_args = input_args
-        self.traceback_str = ProcessingException.prune_traceback(traceback)
-        self.cancelled_nodes = cancelled_nodes
-
-        super().__init__(
-            f"During processing of node {node_instance.toNameDict()} an exception occured:\n\n{self.traceback_str}"
-        )
-
-    @staticmethod
-    def prune_traceback(traceback: list[str]) -> str:
-        """
-        Removes part of the trace caused by the breeze library
-
-        :param traceback: full traceback as returned by traceback.format_exception
-        :return: pruned traceback as a string
-        """
-
-        pruned_traceback = traceback[0]
-        pruned_traceback += "".join(trace_file for trace_file in traceback[3:])
-
-        return pruned_traceback
-
-    def toJson(self) -> dict[str, object]:
-        """
-        Creates a JSON representation that can be serialized and sent to frontend
-
-        :return: JSON representation of the exception
-        """
-        return {
-            "origin": self.origin.toNameDict(),
-            "traceback_str": self.traceback_str,
-            "cancelled_nodes": self.cancelled_nodes,
-            "input_args": {
-                name: format_for_display(value)
-                for name, value in self.input_args.items()
-            },
-        }

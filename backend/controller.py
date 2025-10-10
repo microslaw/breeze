@@ -280,6 +280,21 @@ class Controller:
             self.repository.delete_output(node_id)
             return "OK", 200
 
+        @self.flask_server.route("/processingResult/all", methods=["GET"])
+        def get_all_processed_ids():
+            """
+            Get all processed nodes.
+
+            :return: [node_id for node_id in processed results results].
+            """
+
+            processed_node_ids = [
+                node_id
+                for node_id in self.repository.get_all_node_ids()
+                if self.repository.is_output_created(node_id)
+            ]
+            return processed_node_ids, "200"
+
         @self.flask_server.route("/processingResult/all", methods=["DELETE"])
         def delete_all_processing_results():
             """

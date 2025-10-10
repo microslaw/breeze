@@ -304,6 +304,19 @@ def test_process_all():
     assert not any(are_outputs_created)
 
 
+def test_get_all_outputs_api():
+    controller = initalize_api_server()
+
+    for node_id in [1, 2, 3, 4]:
+        controller.repository.write_output(None, node_id)
+
+    with controller.test_client() as client:
+        response = client.get("/processingResult/all")
+
+    assert response.status_code == 200
+    assert response.json == [1, 2, 3, 4]
+
+
 def test_delete_all_outputs_api():
     controller = initalize_api_server()
 
@@ -315,6 +328,13 @@ def test_delete_all_outputs_api():
 
     assert response.status_code == 200
     assert response.json == [1, 2, 3, 4]
+
+    are_outputs_deleted = [
+        not controller.repository.is_output_created(node_id)
+        for node_id in controller.repository.get_all_node_ids()
+    ]
+
+    assert all(are_outputs_deleted)
 
 
 def test_delete_output_api():

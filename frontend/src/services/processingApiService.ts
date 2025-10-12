@@ -1,4 +1,5 @@
 import axios from "axios";
+import { BlockI } from "../models/block.model";
 
 export async function getProcessingResultByNodeId(
   nodeId: number
@@ -95,6 +96,45 @@ export async function processAllNodes(): Promise<any> {
       alert("can not connect with the server");
     } else {
       alert("Error fetching processing queue: " + error);
+    }
+    throw error;
+  }
+}
+
+export async function getProcessingResultAll(): Promise<number[]> {
+  try {
+    const response = await axios({
+      method: "get",
+      url: "http://127.0.0.1:5000/processingResult/all",
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching processing result all:", error);
+    if (error.response && error.response.status === 500) {
+      alert("can not connect with the server");
+    } else {
+      alert("Error fetching processing result all: " + error);
+    }
+    throw error;
+  }
+}
+
+export async function enrichNodesByIsProcessed(
+  blocks: BlockI[]
+): Promise<BlockI[]> {
+  try {
+    const processedIds = await getProcessingResultAll();
+    const blocksEnriched: BlockI[] = blocks.map((block) => {
+      block.isProcessed = processedIds.includes(block.id);
+      return block;
+    });
+    return blocksEnriched;
+  } catch (error: any) {
+    console.error("Error fetching processing result all:", error);
+    if (error.response && error.response.status === 500) {
+      alert("can not connect with the server");
+    } else {
+      alert("Error fetching processing result all: " + error);
     }
     throw error;
   }

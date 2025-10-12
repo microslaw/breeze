@@ -10,6 +10,7 @@ export interface BlockI {
   // Used to indicate the mode which allows user to add links to other blocks
   isSelected: boolean;
   isQueued: boolean;
+  isProcessed: boolean;
   kwargs: KwargI[];
   colour: string;
 }

@@ -5,6 +5,65 @@ from collections import deque
 import threading
 import traceback
 from typing import Optional
+from enum import Enum
+import queue
+
+
+class ProcessingException(Exception):
+    """
+    Wrapper for exceptions that occur during node processing
+    """
+
+    def __init__(
+        self,
+        e: Exception,
+        node_instance: NodeInstance,
+        traceback: list[str],
+        input_args: dict[str, object],
+        cancelled_nodes: list[int],
+    ):
+        self.cause = e
+        self.origin: NodeInstance = node_instance
+        self.input_args = input_args
+        self.traceback_str = ProcessingException.prune_traceback(traceback)
+        self.cancelled_nodes = cancelled_nodes
+
+        super().__init__(
+            f"During processing of node {node_instance.toNameDict()} an exception occured:\n\n{self.traceback_str}"
+        )
+
+    @staticmethod
+    def prune_traceback(traceback: list[str]) -> str:
+        """
+        Removes part of the trace caused by the breeze library
+
+        :param traceback: full traceback as returned by traceback.format_exception
+        :return: pruned traceback as a string
+        """
+
+        pruned_traceback = traceback[0]
+        pruned_traceback += "".join(trace_file for trace_file in traceback[3:])
+
+        return pruned_traceback
+
+    def toJson(self) -> dict[str, object]:
+        """
+        Creates a JSON representation that can be serialized and sent to frontend
+
+        :return: JSON representation of the exception
+        """
+        return {
+            "type": SseMessageTypes.processing_error.value,
+            "content": {
+                "origin": self.origin.toNameDict(),
+                "traceback_str": self.traceback_str,
+                "cancelled_nodes": self.cancelled_nodes,
+                "input_args": {
+                    name: format_for_display(value)
+                    for name, value in self.input_args.items()
+                },
+            },
+        }
 
 
 class Processor:
@@ -17,8 +76,9 @@ class Processor:
         self.processing_queue: deque[int] = deque()
         self.repository = repository
         self.running = False
-        self.cached_exception = None
+        self.message_queue = queue.Queue()
         self.processing_daemon = None
+        self.cached_exception: ProcessingException = None
 
     def get_all_prerequisite_node_ids(self, node_id: int) -> list[int]:
         """
@@ -48,15 +108,11 @@ class Processor:
 
     def get_processing_schedule(self) -> list[int]:
         """
-        If some exception occurred while processing, will raise this exception
-        during the execution of this function
+        Returns processing queue
 
         :return: nodes left to process
         """
-        if self.cached_exception is None:
-            return list(self.processing_queue)
-        else:
-            raise self.cached_exception from self.cached_exception.cause
+        return list(self.processing_queue)
 
     def update_processing_schedule(
         self, node_id: int, start_processing: bool = True
@@ -122,7 +178,6 @@ class Processor:
         during processing
         """
         self.processing_queue = deque()
-        self.cached_exception = None
 
     def wait_till_finished(self, timeout: Optional[float] = None):
         """
@@ -242,6 +297,15 @@ class Processor:
             default_kwargs, overwrite_kwargs, prerequisite_kwargs
         )
 
+    def clear_cached_exception(self):
+        self.cached_exception = None
+
+    def set_cached_exception(self, exception: ProcessingException):
+        self.cached_exception = exception
+
+    def get_cached_exception(self):
+        return self.cached_exception
+
     def process(self, node_id: int):
         """
         Processes individual nodes. If exception occurs during processing, will cache it till
@@ -249,6 +313,8 @@ class Processor:
 
         :param node_id: ID of the node to process
         """
+        self.clear_cached_exception()
+
         processed_node_instance = self.repository.get_node_instance(node_id)
         processed_node_type = self.repository.get_node_type_from_name(
             processed_node_instance.node_type_name
@@ -259,9 +325,21 @@ class Processor:
         try:
             output = processed_node_type(**kwargs)
             self.repository.write_output(output, node_id)
+
+            self.message_queue.put(
+                {
+                    "type": SseMessageTypes.finished_processing.value,
+                    "content": {
+                        "node_id": node_id,
+                        "processing_queue": self.get_processing_schedule(),
+                    },
+                },
+            )
+
         except Exception as e:
             self.stop_processing_daemon()
-            self.cached_exception = ProcessingException(
+
+            exception = ProcessingException(
                 e,
                 processed_node_instance,
                 traceback.format_exception(e),
@@ -269,56 +347,11 @@ class Processor:
                 list(self.processing_queue),
             )
 
+            self.message_queue.put(exception.toJson())
 
-class ProcessingException(Exception):
-    """
-    Wrapper for exceptions that occur during node processing
-    """
+            self.set_cached_exception(exception)
 
-    def __init__(
-        self,
-        e: Exception,
-        node_instance: NodeInstance,
-        traceback: list[str],
-        input_args: dict[str, object],
-        cancelled_nodes: list[int],
-    ):
-        self.cause = e
-        self.origin: NodeInstance = node_instance
-        self.input_args = input_args
-        self.traceback_str = ProcessingException.prune_traceback(traceback)
-        self.cancelled_nodes = cancelled_nodes
 
-        super().__init__(
-            f"During processing of node {node_instance.toNameDict()} an exception occured:\n\n{self.traceback_str}"
-        )
-
-    @staticmethod
-    def prune_traceback(traceback: list[str]) -> str:
-        """
-        Removes part of the trace caused by the breeze library
-
-        :param traceback: full traceback as returned by traceback.format_exception
-        :return: pruned traceback as a string
-        """
-
-        pruned_traceback = traceback[0]
-        pruned_traceback += "".join(trace_file for trace_file in traceback[3:])
-
-        return pruned_traceback
-
-    def toJson(self) -> dict[str, object]:
-        """
-        Creates a JSON representation that can be serialized and sent to frontend
-
-        :return: JSON representation of the exception
-        """
-        return {
-            "origin": self.origin.toNameDict(),
-            "traceback_str": self.traceback_str,
-            "cancelled_nodes": self.cancelled_nodes,
-            "input_args": {
-                name: format_for_display(value)
-                for name, value in self.input_args.items()
-            },
-        }
+class SseMessageTypes(Enum):
+    processing_error = "processing_error"
+    finished_processing = "finished_processing"

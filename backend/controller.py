@@ -280,6 +280,21 @@ class Controller:
             self.repository.delete_output(node_id)
             return "OK", 200
 
+        @self.flask_server.route("/processingResult/all", methods=["GET"])
+        def get_all_processed_ids():
+            """
+            Get all processed nodes.
+
+            :return: [node_id for node_id in processed results results].
+            """
+
+            processed_node_ids = [
+                node_id
+                for node_id in self.repository.get_all_node_ids()
+                if self.repository.is_output_created(node_id)
+            ]
+            return processed_node_ids, "200"
+
         @self.flask_server.route("/processingResult/all", methods=["DELETE"])
         def delete_all_processing_results():
             """
@@ -377,9 +392,37 @@ class Controller:
             )
             return "OK", 200
 
+        @self.flask_server.route("/processingResult/exception", methods=["GET"])
+        def get_processing_exception():
+            exception = self.processor.get_cached_exception()
+            if exception is not None:
+                return exception.toJson()
+            else:
+                return "", 204
+
+        @self.flask_server.route("/processingResult/exception", methods=["DELETE"])
+        def clear_processing_exception():
+            exception = self.processor.get_cached_exception()
+            if exception is not None:
+                self.processor.clear_cached_exception()
+                return exception.toJson()
+            else:
+                return "", 204
+
         @self.flask_server.route("/nodeTypes/colours", methods=["GET"])
         def get_tag_color_json():
             return get_tag_color_map()
+
+        @self.flask_server.route("/stream")
+        def stream():
+            def get_data():
+                while True:
+                    message = self.processor.message_queue.get()
+                    yield f"data: {message} \n\n"
+
+            return self.flask_server.response_class(
+                get_data(), mimetype="text/event-stream"
+            )
 
     def test_client(self, **kwargs: Any) -> testing.FlaskClient:
         """

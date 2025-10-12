@@ -84,16 +84,28 @@ const Block = ({
         onDblClick={() => handleDoubleClick(block)}
       />
       <Loader
-        show={block.isQueued}
+        show={block.isQueued && !block.isProcessed}
         x={dynamicPosition.x + (BLOCK_WIDTH * 8.5) / 10}
         y={dynamicPosition.y + (BLOCK_HEIGHT * 2.5) / 10}
       />
       <RunJobShape
-        show={!block.isQueued}
+        show={!block.isQueued && !block.isProcessed}
         x={dynamicPosition.x + (BLOCK_WIDTH * 8.5) / 10}
         y={dynamicPosition.y + (BLOCK_HEIGHT * 2.5) / 10}
         id={block.id}
       ></RunJobShape>
+      {block.isProcessed && (
+        <Text
+          text={"\u2713"}
+          fontSize={28}
+          fontStyle="bold"
+          stroke="black"
+          strokeWidth={0.3}
+          fill="#197148ff"
+          x={dynamicPosition.x + (BLOCK_WIDTH * 7.25) / 10}
+          y={dynamicPosition.y + (BLOCK_HEIGHT * 1.25) / 10}
+        />
+      )}
       <Text
         x={dynamicPosition.x}
         y={dynamicPosition.y}

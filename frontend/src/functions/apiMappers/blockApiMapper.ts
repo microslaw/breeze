@@ -11,6 +11,7 @@ export function mapApiResponseToBlocks(apiResponse: any[]): BlockI[] {
     y: node.position_y,
     isDragging: false,
     isSelected: false,
+    isProcessed: false,
     isQueued: false,
     kwargs: [],
     colour: BLOCK_DEFAULT_COLOUR,

@@ -34,9 +34,6 @@ function App() {
     };
     startSSE(blocks, setBlocks, processingQueue, setProcessingQueue);
     fetchAppState();
-
-    let interval: number | null = null;
-    interval = setInterval(updateProcessingQueue, 1000);
   }, []);
 
   const [isBlockModalDetailsVisible, setIsBlockModalDetailsVisible] =

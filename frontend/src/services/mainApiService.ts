@@ -13,6 +13,7 @@ import {
 import { ColourI } from "../models/colour.model";
 import { NodeTypeI } from "../models/nodetype.model";
 import { getNodeTypeColour } from "../functions/getBlockColourForNodeTypes";
+import { enrichNodesByIsProcessed } from "./processingApiService";
 
 // TODO assign response types to the functions
 export async function getAllNodes(): Promise<BlockI[]> {
@@ -27,6 +28,7 @@ export async function getAllNodes(): Promise<BlockI[]> {
     }
 
     let blocks: BlockI[] = mapApiResponseToBlocks(response.data);
+    blocks = await enrichNodesByIsProcessed(blocks);
 
     return await enrichNodesByColour(blocks);
   } catch (error: any) {

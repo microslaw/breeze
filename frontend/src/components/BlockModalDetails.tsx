@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Table, Card } from "react-bootstrap";
+import {
+  Modal,
+  Button,
+  Table,
+  Card,
+  OverlayTrigger,
+  Tooltip,
+} from "react-bootstrap";
 import { BlockI } from "../models/block.model";
 import {
   getProcessingResultByNodeId,
@@ -14,12 +21,15 @@ import {
 import { KwargI } from "../models/kwarg.model";
 import { ProcessingResultMetadataI } from "../models/processingresultmetadata.model";
 import { FrontendTypeEnum } from "../types/frontendType";
+import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 interface BlockModalDetailsProps {
   show: boolean;
   block: BlockI;
   setBlock: React.Dispatch<React.SetStateAction<BlockI>>;
   handleClose: () => void;
   handleDelete: (blockId: number) => void;
+  handleDeleteProcessingResult: (blockId: number) => Promise<void>;
 }
 
 const BlockModalDetails = ({
@@ -28,6 +38,7 @@ const BlockModalDetails = ({
   setBlock,
   handleClose,
   handleDelete,
+  handleDeleteProcessingResult,
 }: BlockModalDetailsProps) => {
   const [processingResult, setProcessingResult] = useState<any>(null);
 
@@ -52,15 +63,7 @@ const BlockModalDetails = ({
       setFocusedKwargValue({ key: "", value: "", type: "", source: "" });
       setErrorMsg("");
     } else {
-      getProcessingResultMetadataByNodeId(block.id).then((result) => {
-        setProcessingResultMetadata(result);
-        if (result.is_processed) {
-          getProcessingResultByNodeId(block.id).then((result) => {
-            setProcessingResult(result);
-          });
-        }
-      });
-
+      getProcessingResultAndProcessingResultMetadata();
       getAndAssignKwargs();
     }
   }, [show, block.id]);
@@ -71,6 +74,26 @@ const BlockModalDetails = ({
       return () => clearTimeout(timer);
     }
   }, [errorMsg]);
+
+  const getProcessingResultAndProcessingResultMetadata = () => {
+    getProcessingResultMetadataByNodeId(block.id).then((result) => {
+      setProcessingResultMetadata(result);
+      if (result.is_processed) {
+        block.isProcessed = true;
+        getProcessingResultByNodeId(block.id).then((result) => {
+          setProcessingResult(result);
+        });
+      } else {
+        block.isProcessed = false;
+      }
+    });
+  };
+
+  const renderTooltip = (props: any) => (
+    <Tooltip id="button-tooltip" {...props}>
+      Clear processing result
+    </Tooltip>
+  );
 
   const handleRunJobAndGetResult = async () => {
     await runProcessingJob(block.id);
@@ -240,7 +263,41 @@ const BlockModalDetails = ({
           <div style={{ color: "red", marginBottom: "10px" }}>{errorMsg}</div>
         )}
         <Card className={styles.card}>
-          <Card.Header>Processing Result</Card.Header>
+          <Card.Header
+            className="d-flex align-items-center"
+            style={{ height: "70px" }}
+          >
+            <p className="me-auto mb-0 fs-5">Processing Result</p>
+            {block.isProcessed && (
+              <div className="my-2">
+                <OverlayTrigger
+                  placement="right"
+                  delay={{ show: 100, hide: 150 }}
+                  overlay={renderTooltip}
+                >
+                  <Button
+                    variant="danger"
+                    style={{
+                      borderRadius: "50%",
+                      width: "40px",
+                      height: "40px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: 0,
+                    }}
+                    onClick={() =>
+                      handleDeleteProcessingResult(block.id).then(() => {
+                        getProcessingResultAndProcessingResultMetadata();
+                      })
+                    }
+                  >
+                    <FontAwesomeIcon icon={faTrashCan} />
+                  </Button>
+                </OverlayTrigger>
+              </div>
+            )}
+          </Card.Header>
           {renderProcessingResult()}
         </Card>
         {/* BLOCK TABLE (test/debug only) */}
@@ -265,6 +322,7 @@ const BlockModalDetails = ({
           </Table>
         </div> */}
         {/* KWARG TABLE */}
+        {/* TODO move to separate component */}
         {block.kwargs.length > 0 && (
           <div className={styles.tableWrapper}>
             <Table hover responsive>

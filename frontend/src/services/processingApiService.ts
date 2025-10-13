@@ -119,6 +119,27 @@ export async function getProcessingResultAll(): Promise<number[]> {
   }
 }
 
+export async function deleteProcessingResultByNodeId(
+  nodeId: number
+): Promise<any> {
+  try {
+    const response = await axios({
+      method: "delete",
+      url: "http://127.0.0.1:5000/processingResult/" + nodeId,
+    });
+
+    return response.data;
+  } catch (error: any) {
+    console.error("Error deleting processing result:", error);
+    if (error.response && error.response.status === 500) {
+      alert("can not connect with the server");
+    } else {
+      alert("Error deleting processing result: " + error);
+    }
+    throw error;
+  }
+}
+
 export async function enrichNodesByIsProcessed(
   blocks: BlockI[]
 ): Promise<BlockI[]> {

@@ -13,6 +13,7 @@ import {
 } from "../services/kwargsApiService";
 import { KwargI } from "../models/kwarg.model";
 import { ProcessingResultMetadataI } from "../models/processingresultmetadata.model";
+import { FrontendTypeEnum } from "../types/frontendType";
 interface BlockModalDetailsProps {
   show: boolean;
   block: BlockI;
@@ -154,10 +155,27 @@ const BlockModalDetails = ({
         </Card.Body>
       );
     }
-    if (
-      processingResultMetadata.frontend_type === "html" ||
-      (processingResultMetadata.frontend_type === "plaintext" &&
-        processingResultMetadata.datatype === "Figure")
+    if (processingResultMetadata.frontend_type === FrontendTypeEnum.HtmlDiv) {
+      return (
+        <Card.Body>
+          <Card.Text>
+            <div
+              className={styles.processingResult}
+              dangerouslySetInnerHTML={{ __html: processingResult }}
+            />
+          </Card.Text>
+          <Card.Text className={styles.processedAt}>
+            Processed at:{" "}
+            <span className={styles.processedAtDate}>
+              {processingResultMetadata?.created_date
+                ? processingResultMetadata?.created_date
+                : "no data"}
+            </span>
+          </Card.Text>
+        </Card.Body>
+      );
+    } else if (
+      processingResultMetadata.frontend_type === FrontendTypeEnum.HtmlWebsite
     ) {
       return (
         <Card.Body>

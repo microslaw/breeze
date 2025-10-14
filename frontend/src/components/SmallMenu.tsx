@@ -2,11 +2,15 @@ import React from "react";
 import styles from "./SmallMenu.module.css";
 import { BlockI } from "../models/block.model";
 import { Button, Card, Modal } from "react-bootstrap";
-import { processAllNodes } from "../services/processingApiService";
+import {
+  deleteProcessingResultForAllNodes,
+  processAllNodes,
+} from "../services/processingApiService";
 
 interface SmallMenuProps {
   show: boolean;
   setShow: React.Dispatch<React.SetStateAction<boolean>>;
+  setBlocks: React.Dispatch<React.SetStateAction<BlockI[]>>;
   position_x: number;
   position_y: number;
   setIsBlockModalCreateVisible: React.Dispatch<React.SetStateAction<boolean>>;
@@ -15,6 +19,7 @@ interface SmallMenuProps {
 const SmallMenu = ({
   show,
   setShow,
+  setBlocks,
   position_x,
   position_y,
   setIsBlockModalCreateVisible,
@@ -29,6 +34,14 @@ const SmallMenu = ({
     // .then((res) => {
     //   console.log("all nodes added to processing queue", res);
     // });
+  }
+
+  function handleClearResults() {
+    deleteProcessingResultForAllNodes().then(() => {
+      setBlocks((prevBlocks) =>
+        prevBlocks.map((block) => ({ ...block, isProcessed: false }))
+      );
+    });
   }
 
   return show ? (
@@ -47,11 +60,19 @@ const SmallMenu = ({
         </Button>
         <Button
           size="sm"
-          className={styles.menuButtonLast}
+          className={styles.menuButton}
           variant="primary"
           onClick={() => handleProcessAllNodes()}
         >
           Run all nodes
+        </Button>
+        <Button
+          size="sm"
+          className={styles.menuButtonLast}
+          variant="danger"
+          onClick={() => handleClearResults()}
+        >
+          Clear results
         </Button>
       </Card>
     </div>

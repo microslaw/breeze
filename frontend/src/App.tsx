@@ -15,7 +15,7 @@ import assignLinksPositionByBlocksPosition from "./functions/assignLinksPosition
 import LinkModalCreate from "./components/LinkModalCreate";
 import BlockModalCreate from "./components/BlockModalCreate";
 import QueueModalDetails from "./components/QueueModalDetails";
-import { getProcessingQueue } from "./services/processingApiService";
+import { deleteProcessingResultByNodeId } from "./services/processingApiService";
 import { BLOCK_DEFAULT_COLOUR } from "./constants/ui";
 import { startSSE } from "./services/sseService";
 
@@ -116,20 +116,35 @@ function App() {
     handleCloseLinkDetails();
   };
 
-  function updateProcessingQueue() {
-    getProcessingQueue().then((queue) => {
-      setProcessingQueue(queue);
+  const deleteBlockProcessingResult = (nodeId: number): Promise<any> => {
+    return deleteProcessingResultByNodeId(nodeId).then(() => {
       setBlocks((prevBlocks) => {
         const updatedBlocks = [...prevBlocks];
         updatedBlocks.forEach((block) => {
-          queue.find((item) => block.id === item)
-            ? (block.isQueued = true)
-            : (block.isQueued = false);
+          if (block.id === nodeId) {
+            block.isProcessed = false;
+          }
         });
         return updatedBlocks;
       });
     });
-  }
+  };
+
+  // DEPRECATED used for updating queue state before SSE was implemented
+  // function updateProcessingQueue() {
+  //   getProcessingQueue().then((queue) => {
+  //     setProcessingQueue(queue);
+  //     setBlocks((prevBlocks) => {
+  //       const updatedBlocks = [...prevBlocks];
+  //       updatedBlocks.forEach((block) => {
+  //         queue.find((item) => block.id === item)
+  //           ? (block.isQueued = true)
+  //           : (block.isQueued = false);
+  //       });
+  //       return updatedBlocks;
+  //     });
+  //   });
+  // }
 
   return (
     <div>
@@ -157,6 +172,9 @@ function App() {
         show={isBlockModalDetailsVisible}
         handleClose={() => handleCloseBlockDetails()}
         handleDelete={(blockId) => handleDeleteBlock(blockId)}
+        handleDeleteProcessingResult={(nodeId) =>
+          deleteBlockProcessingResult(nodeId)
+        }
       />
       <BlockModalCreate
         show={isBlockModalCreateVisible}

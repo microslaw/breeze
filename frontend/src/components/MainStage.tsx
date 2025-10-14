@@ -78,6 +78,7 @@ const MainStage = ({
       <SmallMenu
         show={isSmallMenuVisible}
         setShow={setIsSmallMenuVisible}
+        setBlocks={setBlocks}
         position_x={lastClickPosition.x}
         position_y={lastClickPosition.y}
         setIsBlockModalCreateVisible={setIsBlockModalCreateVisible}

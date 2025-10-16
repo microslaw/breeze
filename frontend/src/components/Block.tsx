@@ -2,6 +2,7 @@ import { Rect, Text, Group, Circle } from "react-konva";
 import { BlockI } from "../models/block.model";
 import { useState } from "react";
 import {
+  handleBlockDragMove,
   handleBlockSingleClick,
   handleDragBlockEnd,
   handleDragBlockStart,
@@ -26,6 +27,7 @@ interface BlockProps {
   setIsLinkModalCreateVisible: React.Dispatch<React.SetStateAction<boolean>>;
   handleDoubleClick: (block: BlockI) => void;
 }
+const BLOCK_SCALE_WHEN_DRAGGING = 1.15;
 
 const Block = ({
   block,
@@ -37,7 +39,7 @@ const Block = ({
   setIsLinkModalCreateVisible,
   handleDoubleClick,
 }: BlockProps) => {
-  const [dynamicPosition, setdynamicPosition] = useState({
+  const [dynamicPosition, setDynamicPosition] = useState({
     x: block.x,
     y: block.y,
   });
@@ -47,10 +49,6 @@ const Block = ({
     x: block.x + BLOCK_WIDTH,
     y: block.y + BLOCK_HEIGHT / 2,
   });
-
-  const handleDragMove = (e: any) => {
-    setdynamicPosition({ x: e.target.x(), y: e.target.y() });
-  };
 
   return (
     <Group>
@@ -71,13 +69,21 @@ const Block = ({
         stroke={block.isSelected ? "lightSlateGray" : ""}
         shadowOffsetX={block.isDragging ? 5 : 2.5}
         shadowOffsetY={block.isDragging ? 5 : 2.5}
-        scaleX={block.isDragging ? 1.15 : 1}
-        scaleY={block.isDragging ? 1.15 : 1}
+        scaleX={block.isDragging ? BLOCK_SCALE_WHEN_DRAGGING : 1}
+        scaleY={block.isDragging ? BLOCK_SCALE_WHEN_DRAGGING : 1}
         onDragStart={() => handleDragBlockStart(block, blocks, setBlocks)}
         onDragEnd={(e) =>
           handleDragBlockEnd(e, block, blocks, setBlocks, links, setLinks)
         }
-        onDragMove={handleDragMove}
+        onDragMove={(e) =>
+          handleBlockDragMove(
+            e,
+            block,
+            setLinks,
+            setDynamicPosition,
+            BLOCK_SCALE_WHEN_DRAGGING
+          )
+        }
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={() => handleBlockSingleClick(block, setBlocks)}
@@ -133,7 +139,10 @@ const Block = ({
         <Circle
           perfectDrawEnabled={false}
           draggable
-          x={dynamicPosition.x + BLOCK_WIDTH}
+          x={
+            dynamicPosition.x +
+            BLOCK_WIDTH * (block.isDragging ? BLOCK_SCALE_WHEN_DRAGGING : 1)
+          }
           y={dynamicPosition.y + BLOCK_HEIGHT / 2}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}

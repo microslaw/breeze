@@ -89,3 +89,6 @@ Content-Type: application/json
     "position_y": 150
 
 }
+
+### Delete the whole workflow
+DELETE http://127.0.0.1:5000/workflow

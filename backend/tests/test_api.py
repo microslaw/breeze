@@ -529,3 +529,15 @@ def test_get_all_node_ids():
     controller = initialize_server()
     all_node_ids = controller.repository.get_all_node_ids()
     assert all_node_ids == [0, 1, 2, 3]
+
+
+def test_delete_workflow():
+    controller = initialize_server()
+
+    with controller.test_client() as client:
+        response = client.delete("/workflow")
+        assert response.data == b"OK"
+        assert response.status_code == 200
+
+    assert controller.repository.get_all_node_ids() == []
+    assert controller.repository.get_all_links() == []

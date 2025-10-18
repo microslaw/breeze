@@ -7,7 +7,7 @@ import {
   getAllLinks,
   getAllNodes,
 } from "./services/mainApiService";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import BlockModalDetails from "./components/BlockModalDetails";
 import LinkModalDetails from "./components/LinkModalDetails";
 import { LinkI } from "./models/link.model";
@@ -32,7 +32,14 @@ function App() {
       setLinks(links);
       assignLinksPositionByBlocksPosition(blocks, links);
     };
-    startSSE(blocks, setBlocks, processingQueue, setProcessingQueue);
+    startSSE(
+      blocks,
+      setBlocks,
+      processingQueue,
+      setProcessingQueue,
+      selectedBlockRef,
+      setSelectedBlock
+    );
     fetchAppState();
   }, []);
 
@@ -64,6 +71,12 @@ function App() {
     kwargs: [],
     colour: BLOCK_DEFAULT_COLOUR,
   });
+
+  // TODO store selectedBlock only as the ref not state
+  const selectedBlockRef = useRef<BlockI>(selectedBlock);
+  useEffect(() => {
+    selectedBlockRef.current = selectedBlock;
+  }, [selectedBlock]);
 
   const [selectedLink, setSelectedLink] = useState<LinkI>({
     id: -1,

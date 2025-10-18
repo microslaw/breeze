@@ -75,7 +75,8 @@ function handleMessageTypeFinishedProcessing(
         block.isProcessed = true;
       }
       if (block.id === selectedBlockRef.current.id) {
-        setSelectedBlock(block);
+        selectedBlockRef.current.isProcessed = block.isProcessed;
+        setSelectedBlock(selectedBlockRef.current);
       }
     });
     return updatedBlocks;

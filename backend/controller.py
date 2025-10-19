@@ -400,6 +400,11 @@ class Controller:
             else:
                 return "", 204
 
+        @self.flask_server.route("/workflow", methods=["DELETE"])
+        def delete_workflow():
+            self.repository.init_db()
+            return "OK", 200
+
         @self.flask_server.route("/processingResult/exception", methods=["DELETE"])
         def clear_processing_exception():
             exception = self.processor.get_cached_exception()

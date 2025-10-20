@@ -25,7 +25,6 @@ export const handleDragBlockStart = (
   blocks: BlockI[],
   setBlocks: React.Dispatch<React.SetStateAction<any[]>>
 ) => {
-  if (block.isSelected) return;
   setBlocks(
     blocks.map((element) => ({
       ...element,
@@ -67,6 +66,36 @@ export const handleDragBlockEnd = (
         link.endY = e.target.y() + BLOCK_HEIGHT / 2;
       }
       return link;
+    })
+  );
+};
+
+export const handleBlockDragMove = (
+  e: any,
+  block: BlockI,
+  setLinks: React.Dispatch<React.SetStateAction<any[]>>,
+  setdynamicPosition: React.Dispatch<
+    React.SetStateAction<{ x: number; y: number }>
+  >,
+  blockScaleWhenDragging: number
+) => {
+  const newX = e.target.x();
+  const newY = e.target.y();
+
+  setdynamicPosition({ x: newX, y: newY });
+  setLinks((prevLinks) =>
+    prevLinks.map((l) => {
+      if (l.originNodeId === block.id) {
+        return {
+          ...l,
+          startX: newX + BLOCK_WIDTH * blockScaleWhenDragging,
+          startY: newY + BLOCK_HEIGHT / 2,
+        };
+      }
+      if (l.destinationNodeId === block.id) {
+        return { ...l, endX: newX, endY: newY + BLOCK_HEIGHT / 2 };
+      }
+      return l;
     })
   );
 };

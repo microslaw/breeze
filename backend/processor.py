@@ -347,6 +347,8 @@ class Processor:
                 list(self.processing_queue),
             )
 
+            # TODO replace with proper logging
+            print("Exception occured:", exception.toJson())
             self.message_queue.put(exception.toJson())
 
             self.set_cached_exception(exception)

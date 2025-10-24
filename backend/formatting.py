@@ -89,7 +89,10 @@ def frontend_display_type(obj: object) -> str:
     :param obj: object to be checked
     :return: FrontendDisplayType name
     """
-    return frontend_type_format_map[type(obj)].name
+    if type(obj) in frontend_type_format_map:
+        return frontend_type_format_map[type(obj)].name
+    else:
+        return FrontendDisplayType.plaintext.value
 
 
 def get_tag_color_map():

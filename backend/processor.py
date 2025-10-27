@@ -6,6 +6,7 @@ import threading
 import traceback
 from typing import Optional
 from enum import Enum
+import json
 import queue
 
 
@@ -52,7 +53,7 @@ class ProcessingException(Exception):
 
         :return: JSON representation of the exception
         """
-        return {
+        json_dict = {
             "type": SseMessageTypes.processing_error.value,
             "content": {
                 "origin": self.origin.toNameDict(),
@@ -64,6 +65,7 @@ class ProcessingException(Exception):
                 },
             },
         }
+        return json.dumps(json_dict)
 
 
 class Processor:
@@ -326,15 +328,13 @@ class Processor:
             output = processed_node_type(**kwargs)
             self.repository.write_output(output, node_id)
 
-            message = (
-                {
-                    "type": SseMessageTypes.finished_processing.value,
-                    "content": {
-                        "node_id": node_id,
-                        "processing_queue": self.get_processing_schedule(),
-                    },
+            message = {
+                "type": SseMessageTypes.finished_processing.value,
+                "content": {
+                    "node_id": node_id,
+                    "processing_queue": self.get_processing_schedule(),
                 },
-            )
+            }
             self.message_queue.put(message)
 
         except Exception as e:

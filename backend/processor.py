@@ -326,7 +326,7 @@ class Processor:
             output = processed_node_type(**kwargs)
             self.repository.write_output(output, node_id)
 
-            self.message_queue.put(
+            message = (
                 {
                     "type": SseMessageTypes.finished_processing.value,
                     "content": {
@@ -335,6 +335,7 @@ class Processor:
                     },
                 },
             )
+            self.message_queue.put(message)
 
         except Exception as e:
             self.stop_processing_daemon()

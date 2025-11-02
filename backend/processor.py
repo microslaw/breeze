@@ -76,7 +76,7 @@ class Processor:
         self.processing_queue: deque[int] = deque()
         self.repository = repository
         self.running = False
-        self.message_queue = queue.Queue()
+        self.message_queue = queue.Queue(-1)
         self.processing_daemon = None
         self.cached_exception: ProcessingException = None
 

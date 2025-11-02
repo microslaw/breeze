@@ -13,7 +13,7 @@ export async function startSSE(
   es.onopen = (e) => console.log("Connection opened!", e);
   es.onerror = (e) => console.error("ERROR!", e);
   es.onmessage = (e) => {
-    const data: SSEMessageI = JSON.parse(e.data.replace(/'/g, '"'));
+    const data: SSEMessageI = JSON.parse(e.data);
     handleMessageByType(
       data,
       blocks,

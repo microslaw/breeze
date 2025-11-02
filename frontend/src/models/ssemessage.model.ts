@@ -10,4 +10,5 @@ export interface SSEFinishedProcessingContentI {
 
 export enum SSEMessageType {
   FinishedProcessing = "finished_processing",
+  ProcessingError = "processing_error",
 }

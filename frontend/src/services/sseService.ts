@@ -13,6 +13,7 @@ export async function startSSE(
   es.onopen = (e) => console.log("Connection opened!", e);
   es.onerror = (e) => console.error("ERROR!", e);
   es.onmessage = (e) => {
+    console.log("SSE Event:", e.data);
     const data: SSEMessageI = JSON.parse(e.data);
     handleMessageByType(
       data,
@@ -48,6 +49,11 @@ function handleMessageByType(
         selectedBlockRef,
         setSelectedBlock
       );
+      break;
+    }
+    case SSEMessageType.ProcessingError: {
+      alert("Processing error:" + message.content);
+      console.error("Processing error:", message.content);
       break;
     }
     default:

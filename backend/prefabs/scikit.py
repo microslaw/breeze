@@ -7,22 +7,20 @@ from sklearn.preprocessing import OneHotEncoder
 
 
 @NodeType(tags=["sklearn"])
-def create_one_hot_encoder(
-    df: pd.DataFrame,
-) -> OneHotEncoder:
-    encoder = OneHotEncoder(handle_unknown="ignore")
-    encoder.fit(df)
-    return encoder
-
-
-@NodeType(tags=["sklearn"])
 def one_hot_encode(
     df: pd.DataFrame,
-    encoder: OneHotEncoder,
+    column: str,
 ) -> pd.DataFrame:
-    return pd.DataFrame(
-        encoder.transform(df[["Sex"]]).todense(), columns=encoder.categories_[0]
+    encoder = OneHotEncoder(handle_unknown="ignore")
+    encoder.fit(df[[column]])
+
+    df_encoded = pd.DataFrame(
+        encoder.transform(df[[column]]).todense(), columns=encoder.categories_[0]
     )
+
+    df = pd.concat([df.drop(columns=[column]), df_encoded], axis=1)
+
+    return df
 
 
 @NodeType(tags=["sklearn"])
@@ -36,6 +34,7 @@ def fit_decision_tree(
     return model
 
 
+@NodeType(tags=["sklearn"])
 def predict(
     model: DecisionTreeClassifier,
     df_x: pd.DataFrame,

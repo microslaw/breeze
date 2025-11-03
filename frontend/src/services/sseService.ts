@@ -85,7 +85,6 @@ function handleMessageTypeFinishedProcessing(
         block.isQueued = false;
         block.isProcessed = true;
       }
-      console.log("Processing queue check for block id:", block.id);
       if (processing_queue.includes(block.id)) {
         block.isQueued = true;
       }

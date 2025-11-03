@@ -21,8 +21,9 @@ import {
 import { KwargI } from "../models/kwarg.model";
 import { ProcessingResultMetadataI } from "../models/processingresultmetadata.model";
 import { FrontendTypeEnum } from "../types/frontendType";
-import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faL, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import checkForExceptionByNodeId from "../functions/checkForExceptionByNodeId";
 interface BlockModalDetailsProps {
   show: boolean;
   block: BlockI;
@@ -76,15 +77,25 @@ const BlockModalDetails = ({
   }, [errorMsg]);
 
   const getProcessingResultAndProcessingResultMetadata = () => {
-    getProcessingResultMetadataByNodeId(block.id).then((result) => {
-      setProcessingResultMetadata(result);
-      if (result.is_processed) {
-        block.isProcessed = true;
-        getProcessingResultByNodeId(block.id).then((result) => {
-          setProcessingResult(result);
+    checkForExceptionByNodeId(block.id).then((e) => {
+      if (e) {
+        setProcessingResultMetadata({
+          is_processed: false,
+          frontend_type: FrontendTypeEnum.ERROR,
         });
+        setProcessingResult(`Exception occurred: ${e}`);
       } else {
-        block.isProcessed = false;
+        getProcessingResultMetadataByNodeId(block.id).then((result) => {
+          setProcessingResultMetadata(result);
+          if (result.is_processed) {
+            block.isProcessed = true;
+            getProcessingResultByNodeId(block.id).then((result) => {
+              setProcessingResult(result);
+            });
+          } else {
+            block.isProcessed = false;
+          }
+        });
       }
     });
   };
@@ -97,25 +108,25 @@ const BlockModalDetails = ({
 
   const handleRunJobAndGetResult = async () => {
     await runProcessingJob(block.id);
-    let count = 0;
-    const intervalId = setInterval(() => {
-      getProcessingResultMetadataByNodeId(block.id).then((result) => {
-        setProcessingResultMetadata(result);
-        if (result.is_processed) {
-          getProcessingResultByNodeId(block.id).then((result) => {
-            setProcessingResult(result);
-            count++;
-            if (
-              count >= 3 ||
-              processingResultMetadata.is_processed ||
-              show === false
-            ) {
-              clearInterval(intervalId);
-            }
-          });
-        }
-      });
-    }, 1000);
+    // let count = 0;
+    // const intervalId = setInterval(() => {
+    //   getProcessingResultMetadataByNodeId(block.id).then((result) => {
+    //     setProcessingResultMetadata(result);
+    //     if (result.is_processed) {
+    //       getProcessingResultByNodeId(block.id).then((result) => {
+    //         setProcessingResult(result);
+    //         count++;
+    //         if (
+    //           count >= 3 ||
+    //           processingResultMetadata.is_processed ||
+    //           show === false
+    //         ) {
+    //           clearInterval(intervalId);
+    //         }
+    //       });
+    //     }
+    //   });
+    // }, 1000);
   };
 
   const getAndAssignKwargs = () => {
@@ -171,6 +182,13 @@ const BlockModalDetails = ({
   }
 
   function renderProcessingResult() {
+    if (processingResultMetadata.frontend_type === FrontendTypeEnum.ERROR) {
+      return (
+        <Card.Body>
+          <Card.Text className={styles.errorText}>{processingResult}</Card.Text>
+        </Card.Body>
+      );
+    }
     if (!processingResultMetadata.is_processed) {
       return (
         <Card.Body>

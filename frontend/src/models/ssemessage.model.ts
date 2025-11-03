@@ -1,3 +1,4 @@
+// TODO split general sse model into separate by type interfaces
 export interface SSEMessageI {
   type: SSEMessageType;
   content: SSEFinishedProcessingContentI | SSEProcessingErrorContentI;

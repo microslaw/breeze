@@ -46,3 +46,7 @@
 .newWindowButton {
   margin-top: 0.2rem;
 }
+
+.errorText {
+  color: red;
+}

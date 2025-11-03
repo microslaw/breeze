@@ -6,4 +6,6 @@ export enum FrontendTypeEnum {
   Json = "json",
   Integer = "integer",
   Decimal = "decimal",
+  // Used only if there was an error during processing (ont a real frontend type)
+  ERROR = "error",
 }

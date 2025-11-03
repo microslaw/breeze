@@ -65,6 +65,25 @@ export async function runProcessingJob(nodeId: number): Promise<any> {
   }
 }
 
+// TODO unify ts type (processing_error) to cover both sse message and this api response
+export async function getProcessingException(): Promise<any> {
+  try {
+    const response = await axios({
+      method: "get",
+      url: "http://127.0.0.1:5000/processingResult/exception",
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching processing result all:", error);
+    if (error.response && error.response.status === 500) {
+      alert("can not connect with the server");
+    } else {
+      alert("Error fetching processing exception: " + error);
+    }
+    throw error;
+  }
+}
+
 export async function getProcessingQueue(): Promise<number[]> {
   try {
     const response = await axios({

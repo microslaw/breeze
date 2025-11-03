@@ -5,6 +5,7 @@ import {
   SSEMessageType,
   SSEProcessingErrorContentI,
 } from "../models/ssemessage.model";
+import { getProcessingQueue } from "./processingApiService";
 
 export async function startSSE(
   blocks: BlockI[],
@@ -58,7 +59,11 @@ function handleMessageByType(
     }
     case SSEMessageType.ProcessingError: {
       const errorContent = message.content as SSEProcessingErrorContentI;
-      handleMessageTypeProcessingError(errorContent);
+      handleMessageTypeProcessingError(
+        errorContent,
+        setBlocks,
+        setProcessingQueue
+      );
       break;
     }
     default:
@@ -100,8 +105,22 @@ function handleMessageTypeFinishedProcessing(
 }
 
 function handleMessageTypeProcessingError(
-  messageContent: SSEProcessingErrorContentI
+  messageContent: SSEProcessingErrorContentI,
+  setBlocks: React.Dispatch<React.SetStateAction<BlockI[]>>,
+  setProcessingQueue: React.Dispatch<React.SetStateAction<number[]>>
 ) {
+  getProcessingQueue().then((updatedQueue) => {
+    setProcessingQueue(updatedQueue);
+    setBlocks((prevBlocks) => {
+      const updatedBlocks = [...prevBlocks];
+      updatedBlocks.forEach((block) => {
+        updatedQueue.find((item) => block.id === item)
+          ? (block.isQueued = true)
+          : (block.isQueued = false);
+      });
+      return updatedBlocks;
+    });
+  });
   alert(
     "Processing error in node " +
       messageContent.origin.node_id +

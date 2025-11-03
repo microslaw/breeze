@@ -2,7 +2,7 @@ from types import GenericAlias
 from typing import Optional, Callable, Any, TypeVar
 from datetime import datetime
 from enum import Enum
-
+from abc import ABCMeta
 
 class FrontendDisplayType(Enum):
     image = "image"
@@ -134,6 +134,7 @@ add_display_format(type(None), lambda _: None)
 add_display_format(datetime, lambda x: x.strftime("%Y-%m-%d %H:%M:%S"))
 add_display_format(int, lambda x: str(x), FrontendDisplayType.integer)
 add_display_format(str, lambda x: str(x), FrontendDisplayType.plaintext)
+add_display_format(ABCMeta, lambda x: str(x))
 add_tag_color_mapping("plotly", "#89f1b6")
 add_tag_color_mapping("pandas", "#9289f1")
 add_tag_color_mapping("numpy", "#f7935d")

@@ -79,6 +79,19 @@ def filter(
     return df[filtered_rows]
 
 
+@NodeType(tags=["pandas"])
+def drop_na(df: pd.DataFrame):
+    return df.dropna()
+
+
+@NodeType(tags=["pandas"])
+def merge_df(df_left: pd.DataFrame, df_right: pd.DataFrame, how: str = "inner"):
+    """
+    Naively merges df by index
+    """
+    return pd.merge(df_left, df_right, how=how, left_index=True, right_index=True)
+
+
 add_input_format(list[str], lambda x: x.decode("utf-8").split(","))
 add_input_format(
     dict[str, str],
@@ -87,4 +100,4 @@ add_input_format(
 add_display_format(
     pd.DataFrame, lambda x: x.head().to_html(), FrontendDisplayType.html_div
 )
-add_display_format(list[str], lambda x: ",".join(x))
+add_display_format(list, lambda x: ",".join(x))

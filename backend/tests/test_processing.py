@@ -7,6 +7,7 @@ import backend.prefabs.testing.processing
 import threading
 import time
 from datetime import datetime
+import json
 
 
 def initialize_processor() -> Processor:
@@ -72,7 +73,21 @@ def test_processing_scheduling():
 
 
 # Processor-reliant api tests
+def test_processing_api():
+    controller = initalize_api_server()
+    with controller.test_client() as client:
+        response = client.post(
+            "/queueProcessing",
+            data=json.dumps({"node_id": 0}),
+            content_type="application/json",
+        )
 
+    assert response.status_code == 200
+    assert response.data == b"OK"
+
+    controller.processor.wait_till_finished(0.05)
+
+    assert controller.repository.read_output(0) == 1
 
 def test_check_processing_queue():
     controller = initalize_api_server()

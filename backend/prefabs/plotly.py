@@ -80,5 +80,9 @@ def scatterplot_3d(
     """
     return px.scatter_3d(data_frame=df, x=x, y=y, z=z, color=color)
 
+@NodeType(tags=["plotly"])
+def corr_plot(df:pd.DataFrame):
+    return px.imshow(df.corr())
+
 
 add_display_format(Figure, lambda x: x.to_html(), FrontendDisplayType.html_website)

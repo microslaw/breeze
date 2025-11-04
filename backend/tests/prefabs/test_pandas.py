@@ -24,6 +24,8 @@ def test_initialization():
         "select_columns",
         "groupby_agg",
         "filter",
+        "drop_na",
+        "merge_df",
     ]
 
 

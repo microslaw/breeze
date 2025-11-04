@@ -12,6 +12,7 @@ from backend.formatting import (
     get_tag_color_map,
 )
 from typing import Any
+import json
 
 
 class BadRequestException(Exception):
@@ -270,6 +271,7 @@ class Controller:
             """
             return format_for_display(self.repository.read_output(node_id))
 
+        # TODO: remove duplicate
         @self.flask_server.route("/processingResult/<node_id>", methods=["DELETE"])
         def delete_processing_result(node_id: int):
             """
@@ -419,11 +421,12 @@ class Controller:
             return get_tag_color_map()
 
         @self.flask_server.route("/stream")
-        def stream():
+        def stream_sse():
             def get_data():
                 while True:
                     message = self.processor.message_queue.get()
-                    yield f"data: {message} \n\n"
+                    json_message = json.dumps(message)
+                    yield f"data: {json_message} \n\n"
 
             return self.flask_server.response_class(
                 get_data(), mimetype="text/event-stream"

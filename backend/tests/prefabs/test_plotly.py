@@ -24,10 +24,13 @@ def test_initialization():
         "histogram",
         "scatterplot",
         "scatterplot_3d",
+        "corr_plot",
         "read_csv",
         "select_columns",
         "groupby_agg",
         "filter",
+        "drop_na",
+        "merge_df",
     ]
 
 

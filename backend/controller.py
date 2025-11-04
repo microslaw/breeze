@@ -407,7 +407,6 @@ class Controller:
             self.repository.init_db()
             return "OK", 200
 
-        # elko
         @self.flask_server.route("/processingResult/exception", methods=["DELETE"])
         def clear_processing_exception():
             exception = self.processor.get_cached_exception()

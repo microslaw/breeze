@@ -143,22 +143,6 @@ function App() {
     });
   };
 
-  // DEPRECATED used for updating queue state before SSE was implemented
-  // function updateProcessingQueue() {
-  //   getProcessingQueue().then((queue) => {
-  //     setProcessingQueue(queue);
-  //     setBlocks((prevBlocks) => {
-  //       const updatedBlocks = [...prevBlocks];
-  //       updatedBlocks.forEach((block) => {
-  //         queue.find((item) => block.id === item)
-  //           ? (block.isQueued = true)
-  //           : (block.isQueued = false);
-  //       });
-  //       return updatedBlocks;
-  //     });
-  //   });
-  // }
-
   return (
     <div>
       <Menu

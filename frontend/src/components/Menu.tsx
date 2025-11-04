@@ -15,6 +15,10 @@ const Menu = ({
   setIsBlockModalCreateVisible,
   setIsQueueModalDetailsVisible,
 }: MenuProps) => {
+  function getBlockById(id: number): BlockI | undefined {
+    return blocks.find((block) => block.id === id);
+  }
+
   return (
     <div className={styles.menu}>
       <span>
@@ -26,7 +30,7 @@ const Menu = ({
         </Button> */}
       </span>
       <h5 className={styles.queueHeader}>Processing Queue</h5>
-      {processingQueue.length !== 0 ? (
+      {processingQueue.length !== 0 && blocks.length !== 0 ? (
         <div>
           <div className={styles.scrollableListGroup}>
             <ListGroup>
@@ -36,10 +40,10 @@ const Menu = ({
                   key={queuedBlockId}
                   style={{ wordBreak: "break-word" }}
                 >
-                  <span>{blocks[queuedBlockId].name}</span>
+                  <span>{getBlockById(queuedBlockId)?.name}</span>
                   <small
                     style={{
-                      backgroundColor: blocks[queuedBlockId].colour,
+                      backgroundColor: getBlockById(queuedBlockId)?.colour,
                       color: "black",
                       borderRadius: "12px",
                       padding: "2px 8px",

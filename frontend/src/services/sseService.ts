@@ -1,5 +1,11 @@
 import { BlockI } from "../models/block.model";
-import { SSEMessageI, SSEMessageType } from "../models/ssemessage.model";
+import {
+  SSEFinishedProcessingContentI,
+  SSEMessageI,
+  SSEMessageType,
+  SSEProcessingErrorContentI,
+} from "../models/ssemessage.model";
+import { getProcessingQueue } from "./processingApiService";
 
 export async function startSSE(
   blocks: BlockI[],
@@ -13,7 +19,8 @@ export async function startSSE(
   es.onopen = (e) => console.log("Connection opened!", e);
   es.onerror = (e) => console.error("ERROR!", e);
   es.onmessage = (e) => {
-    const data: SSEMessageI = JSON.parse(e.data.replace(/'/g, '"'));
+    const data: SSEMessageI = JSON.parse(e.data);
+    console.log("SSE Message received:", data);
     handleMessageByType(
       data,
       blocks,
@@ -40,13 +47,22 @@ function handleMessageByType(
   switch (message.type) {
     case SSEMessageType.FinishedProcessing: {
       handleMessageTypeFinishedProcessing(
-        message,
+        message.content as SSEFinishedProcessingContentI,
         blocks,
         setBlocks,
         processingQueue,
         setProcessingQueue,
         selectedBlockRef,
         setSelectedBlock
+      );
+      break;
+    }
+    case SSEMessageType.ProcessingError: {
+      const errorContent = message.content as SSEProcessingErrorContentI;
+      handleMessageTypeProcessingError(
+        errorContent,
+        setBlocks,
+        setProcessingQueue
       );
       break;
     }
@@ -57,7 +73,7 @@ function handleMessageByType(
 }
 
 function handleMessageTypeFinishedProcessing(
-  message: SSEMessageI,
+  messageContent: SSEFinishedProcessingContentI,
   blocks: BlockI[],
   setBlocks: React.Dispatch<React.SetStateAction<BlockI[]>>,
   processingQueue: number[],
@@ -65,7 +81,7 @@ function handleMessageTypeFinishedProcessing(
   selectedBlockRef: React.MutableRefObject<BlockI>,
   setSelectedBlock: React.Dispatch<React.SetStateAction<BlockI>>
 ) {
-  const { node_id, processing_queue } = message.content;
+  const { node_id, processing_queue } = messageContent;
 
   setBlocks((prevBlocks) => {
     const updatedBlocks = [...prevBlocks];
@@ -74,7 +90,6 @@ function handleMessageTypeFinishedProcessing(
         block.isQueued = false;
         block.isProcessed = true;
       }
-      console.log("Processing queue check for block id:", block.id);
       if (processing_queue.includes(block.id)) {
         block.isQueued = true;
       }
@@ -87,4 +102,29 @@ function handleMessageTypeFinishedProcessing(
   });
 
   setProcessingQueue(processing_queue);
+}
+
+function handleMessageTypeProcessingError(
+  messageContent: SSEProcessingErrorContentI,
+  setBlocks: React.Dispatch<React.SetStateAction<BlockI[]>>,
+  setProcessingQueue: React.Dispatch<React.SetStateAction<number[]>>
+) {
+  getProcessingQueue().then((updatedQueue) => {
+    setProcessingQueue(updatedQueue);
+    setBlocks((prevBlocks) => {
+      const updatedBlocks = [...prevBlocks];
+      updatedBlocks.forEach((block) => {
+        updatedQueue.find((item) => block.id === item)
+          ? (block.isQueued = true)
+          : (block.isQueued = false);
+      });
+      return updatedBlocks;
+    });
+  });
+  alert(
+    "Processing error in node " +
+      messageContent.origin.node_id +
+      ". Check node details (or console) for more information."
+  );
+  console.error("Processing error:", messageContent);
 }

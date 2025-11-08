@@ -92,6 +92,8 @@ function handleMessageTypeFinishedProcessing(
       }
       if (processing_queue.includes(block.id)) {
         block.isQueued = true;
+      } else {
+        block.isQueued = false;
       }
       if (block.id === selectedBlockRef.current.id) {
         selectedBlockRef.current.isProcessed = block.isProcessed;

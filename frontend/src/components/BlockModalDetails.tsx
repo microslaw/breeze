@@ -189,12 +189,10 @@ const BlockModalDetails = ({
     if (processingResultMetadata.frontend_type === FrontendTypeEnum.HtmlDiv) {
       return (
         <Card.Body>
-          <Card.Text>
             <div
               className={styles.processingResult}
               dangerouslySetInnerHTML={{ __html: processingResult }}
             />
-          </Card.Text>
           <Card.Text className={styles.processedAt}>
             Processed at:{" "}
             <span className={styles.processedAtDate}>

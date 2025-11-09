@@ -15,6 +15,18 @@ npm run dev
 
 make sure to execute this commends from this directory (/frontend)
 
+## Documentation
+
+To generate documentation execute following command in terminal:
+
+```
+npx typedoc --entryPointStrategy Expand src
+```
+
+To view documentation open (/frontend/docs/index.html) in browser
+
+make sure to execute this commends from this directory (/frontend)
+
 ## 📋 Prerequisites
 
 Ensure you have the following installed:

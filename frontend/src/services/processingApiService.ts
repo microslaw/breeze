@@ -84,6 +84,24 @@ export async function getProcessingException(): Promise<any> {
   }
 }
 
+export async function clearProcessingException(): Promise<any> {
+  try {
+    await axios({
+      method: "delete",
+      url: "http://127.0.0.1:5000/processingResult/exception",
+    });
+    return;
+  } catch (error: any) {
+    console.error("Error clearing processing exception:", error);
+    if (error.response && error.response.status === 500) {
+      alert("can not connect with the server");
+    } else {
+      alert("Error clearing processing exception: " + error);
+    }
+    throw error;
+  }
+}
+
 export async function getProcessingQueue(): Promise<number[]> {
   try {
     const response = await axios({

@@ -9,6 +9,7 @@ import {
 } from "react-bootstrap";
 import { BlockI } from "../models/block.model";
 import {
+  clearProcessingException,
   getProcessingResultByNodeId,
   getProcessingResultMetadataByNodeId,
   runProcessingJob,
@@ -21,7 +22,7 @@ import {
 import { KwargI } from "../models/kwarg.model";
 import { ProcessingResultMetadataI } from "../models/processingresultmetadata.model";
 import { FrontendTypeEnum } from "../types/frontendType";
-import { faL, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faTrashCan, faRotate } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import checkForExceptionByNodeId from "../functions/checkForExceptionByNodeId";
 interface BlockModalDetailsProps {
@@ -96,7 +97,7 @@ const BlockModalDetails = ({
           is_processed: false,
           frontend_type: FrontendTypeEnum.ERROR,
         });
-        setProcessingResult(`Exception occurred: ${e}`);
+        setProcessingResult(e);
       } else {
         getProcessingResultMetadataByNodeId(block.id).then((result) => {
           setProcessingResultMetadata(result);
@@ -113,9 +114,15 @@ const BlockModalDetails = ({
     });
   };
 
-  const renderTooltip = (props: any) => (
+  const renderTooltipClear = (props: any) => (
     <Tooltip id="button-tooltip" {...props}>
       Clear processing result
+    </Tooltip>
+  );
+
+  const renderTooltipRefresh = (props: any) => (
+    <Tooltip id="button-tooltip" {...props}>
+      Refresh processing result
     </Tooltip>
   );
 
@@ -274,12 +281,37 @@ const BlockModalDetails = ({
             style={{ height: "70px" }}
           >
             <p className="me-auto mb-0 fs-5">Processing Result</p>
-            {block.isProcessed && (
-              <div className="my-2">
+            <OverlayTrigger
+              placement="right"
+              delay={{ show: 100, hide: 150 }}
+              overlay={renderTooltipRefresh}
+            >
+              <Button
+                variant="secondary"
+                style={{
+                  borderRadius: "50%",
+                  width: "40px",
+                  height: "40px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: 0,
+                }}
+                onClick={() => {
+                  getProcessingResultAndProcessingResultMetadata();
+                }}
+              >
+                <FontAwesomeIcon icon={faRotate} />
+              </Button>
+            </OverlayTrigger>
+            {(block.isProcessed ||
+              processingResultMetadata.frontend_type ===
+                FrontendTypeEnum.ERROR) && (
+              <div className="my-2 ms-2">
                 <OverlayTrigger
                   placement="right"
                   delay={{ show: 100, hide: 150 }}
-                  overlay={renderTooltip}
+                  overlay={renderTooltipClear}
                 >
                   <Button
                     variant="danger"
@@ -292,11 +324,23 @@ const BlockModalDetails = ({
                       justifyContent: "center",
                       padding: 0,
                     }}
-                    onClick={() =>
-                      handleDeleteProcessingResult(block.id).then(() => {
-                        getProcessingResultAndProcessingResultMetadata();
-                      })
-                    }
+                    onClick={() => {
+                      if (
+                        processingResultMetadata.frontend_type ===
+                        FrontendTypeEnum.ERROR
+                      ) {
+                        clearProcessingException().then(() => {
+                          setProcessingResult(null);
+                          setProcessingResultMetadata({
+                            is_processed: false,
+                          });
+                        });
+                      } else if (block.isProcessed) {
+                        handleDeleteProcessingResult(block.id).then(() => {
+                          getProcessingResultAndProcessingResultMetadata();
+                        });
+                      }
+                    }}
                   >
                     <FontAwesomeIcon icon={faTrashCan} />
                   </Button>
@@ -371,7 +415,12 @@ const BlockModalDetails = ({
         <Button variant="secondary" className="me-auto" onClick={handleClose}>
           Close
         </Button>
-        <Button variant="primary" onClick={() => runProcessingJob(block.id)}>
+        <Button
+          variant="primary"
+          onClick={() => {
+            runProcessingJob(block.id);
+          }}
+        >
           Run job
         </Button>
         <Button variant="danger" onClick={() => handleDelete(block.id)}>

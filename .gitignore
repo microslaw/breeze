@@ -200,6 +200,7 @@ yarn-error.log*
 .vscode
 backend/data
 backend/tests/data
+.kaggle
 
 # React specific files
 node_modules/

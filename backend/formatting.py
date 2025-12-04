@@ -58,7 +58,7 @@ def add_tag_color_mapping(tag: str, colour: str):
     """
 
     if len(colour) != 7 or colour[0] != "#":
-        raise ValueError(f"Colour should have format: #112233 but has {colour}" )
+        raise ValueError(f"Colour should have format: #112233 but has {colour}")
     tag_color_map[tag] = colour
 
 
@@ -73,6 +73,8 @@ def format_for_display(obj: object) -> object:
         return display_format_map[type(obj)](obj)
 
     if type(obj) is GenericAlias:
+        obj_str = str(obj)
+    elif isinstance(obj, type):
         obj_str = str(obj)
     else:
         obj_str = obj.__str__()
@@ -135,7 +137,12 @@ add_display_format(datetime, lambda x: x.strftime("%Y-%m-%d %H:%M:%S"))
 add_display_format(int, lambda x: str(x), FrontendDisplayType.integer)
 add_display_format(str, lambda x: str(x), FrontendDisplayType.plaintext)
 add_display_format(ABCMeta, lambda x: str(x))
+add_display_format(ABCMeta, lambda x: str(x))
+add_display_format(type(None), lambda _: "None")
+
 add_tag_color_mapping("plotly", "#89f1b6")
 add_tag_color_mapping("pandas", "#9289f1")
-add_tag_color_mapping("numpy", "#f7935d")
+add_tag_color_mapping("pytorch", "#f5742f")
+add_tag_color_mapping("numpy", "#3834ff")
 add_tag_color_mapping("import", "#f189d2")
+add_tag_color_mapping("kaggle", "#1e00c5")

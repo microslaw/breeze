@@ -31,6 +31,7 @@ def download_kaggle_dataset():
         f"{path}/data", "backend/data_radar/.kaggle", dirs_exist_ok=True
     )
     return output_dir
+formatting.add_tag_color_mapping("kaggle", "#1e00c5")
 
 
 @NodeType(tags=["kaggle"])
@@ -125,6 +126,8 @@ def create_train_dataset(data: tuple, test_ratio: float):
         mode="train",
         test_ratio=test_ratio,
     )
+formatting.add_tag_color_mapping("pytorch", "#f5742f")
+
 
 
 @NodeType(tags=["pytorch"])

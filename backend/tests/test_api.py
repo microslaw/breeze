@@ -1,6 +1,6 @@
 import pytest
 from importlib import reload
-import backend.prefabs.testing.default
+import backend.prefabs.for_tests.default
 from backend import NodeType
 from backend import Repository
 from backend import Processor
@@ -14,7 +14,7 @@ def initialize_server() -> Controller:
     controller = Controller(repository, processor)
 
     NodeType.clear_udns()
-    reload(backend.prefabs.testing.default)
+    reload(backend.prefabs.for_tests.default)
     repository.load_workflow("backend/tests/workflows/default")
 
     return controller

@@ -142,7 +142,5 @@ add_display_format(type(None), lambda _: "None")
 
 add_tag_color_mapping("plotly", "#89f1b6")
 add_tag_color_mapping("pandas", "#9289f1")
-add_tag_color_mapping("pytorch", "#f5742f")
-add_tag_color_mapping("numpy", "#3834ff")
+add_tag_color_mapping("numpy", "#f7935d")
 add_tag_color_mapping("import", "#f189d2")
-add_tag_color_mapping("kaggle", "#1e00c5")

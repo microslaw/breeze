@@ -3,7 +3,7 @@ from importlib import reload
 from backend import Repository
 from backend import Processor
 from backend import Controller
-import backend.prefabs.testing.processing
+import backend.prefabs.for_tests.processing
 import threading
 import time
 from datetime import datetime
@@ -15,7 +15,7 @@ def initialize_processor() -> Processor:
     processor = Processor(repository)
 
     NodeType.clear_udns()
-    reload(backend.prefabs.testing.processing)
+    reload(backend.prefabs.for_tests.processing)
 
     repository.load_workflow("backend/tests/workflows/processing")
 
@@ -129,8 +129,8 @@ def test_processing_exception_sse():
                     "instance_name": None,
                 },
                 "traceback_str": "Traceback (most recent call last):\n"
-                f'  File "{backend.prefabs.testing.processing.__file__}", '
-                f"line {backend.prefabs.testing.processing.add_int.func.__code__.co_firstlineno + 2}, in add_int\n"
+                f'  File "{backend.prefabs.for_tests.processing.__file__}", '
+                f"line {backend.prefabs.for_tests.processing.add_int.func.__code__.co_firstlineno + 2}, in add_int\n"
                 "    return a + b\n"
                 "           ~~^~~\n"
                 "TypeError: unsupported operand type(s) for +: 'int' and 'str'\n",
@@ -166,8 +166,8 @@ def test_processing_exception_rest():
                     "instance_name": None,
                 },
                 "traceback_str": "Traceback (most recent call last):\n"
-                f'  File "{backend.prefabs.testing.processing.__file__}", '
-                f"line {backend.prefabs.testing.processing.add_int.func.__code__.co_firstlineno + 2}, in add_int\n"
+                f'  File "{backend.prefabs.for_tests.processing.__file__}", '
+                f"line {backend.prefabs.for_tests.processing.add_int.func.__code__.co_firstlineno + 2}, in add_int\n"
                 "    return a + b\n"
                 "           ~~^~~\n"
                 "TypeError: unsupported operand type(s) for +: 'int' and 'str'\n",
@@ -203,8 +203,8 @@ def test_processing_exception_delete_rest():
                     "instance_name": None,
                 },
                 "traceback_str": "Traceback (most recent call last):\n"
-                f'  File "{backend.prefabs.testing.processing.__file__}", '
-                f"line {backend.prefabs.testing.processing.add_int.func.__code__.co_firstlineno + 2}, in add_int\n"
+                f'  File "{backend.prefabs.for_tests.processing.__file__}", '
+                f"line {backend.prefabs.for_tests.processing.add_int.func.__code__.co_firstlineno + 2}, in add_int\n"
                 "    return a + b\n"
                 "           ~~^~~\n"
                 "TypeError: unsupported operand type(s) for +: 'int' and 'str'\n",

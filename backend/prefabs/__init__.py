@@ -1,4 +1,4 @@
-import backend.prefabs.testing as testing
+import backend.prefabs.for_tests as for_tests
 
 
 def load_pandas():

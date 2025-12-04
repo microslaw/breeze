@@ -1,14 +1,14 @@
 from backend.datatypes import NodeType
 from importlib import reload
 from backend import BreezeApp, Repository
-import backend.prefabs.testing.kwargs
+import backend.prefabs.for_tests.kwargs
 
 
 def initalize_app() -> BreezeApp:
     app = BreezeApp(repository=Repository(db_folder_path="backend/tests/data"))
 
     NodeType.clear_udns()
-    reload(backend.prefabs.testing.kwargs)
+    reload(backend.prefabs.for_tests.kwargs)
     app.repository.load_workflow("backend/tests/workflows/kwargs")
 
     return app
@@ -239,7 +239,8 @@ def test_custom_format_from_input():
     assert app.repository.is_kwarg_created(node_id=3, kwarg_name="instance")
     instance = app.repository.read_kwarg(parent_node_id=3, kwarg_name="instance")
     assert (
-        instance.describe() == backend.prefabs.testing.kwargs.MyClass("name").describe()
+        instance.describe()
+        == backend.prefabs.for_tests.kwargs.MyClass("name").describe()
     )
 
 
@@ -253,7 +254,7 @@ def test_final_kwargs():
                 "arg_name": "to_round",
                 "arg_source": "default",
                 "datatype": "float",
-                "value": None,
+                "value": "None",
             },
             {
                 "arg_name": "digits",
